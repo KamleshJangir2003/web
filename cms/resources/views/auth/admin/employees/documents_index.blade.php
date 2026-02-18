@@ -92,7 +92,7 @@
                                      class="rounded-circle me-2"
                                      width="40" height="40">
                                 <div>
-                                    <div class="fw-medium">{{ $emp->full_name }}</div>
+                                    <div class="fw-medium">{{ $emp->full_name ?? ($emp->first_name . ' ' . $emp->last_name) }}</div>
                                     <small class="text-muted">{{ $emp->phone ?? 'N/A' }}</small>
                                 </div>
                             </div>
@@ -121,14 +121,18 @@
                             @endif
                         </td>
                         <td class="text-center">
-                            <form method="POST" action="{{ route('admin.employees.update-hired-status', $emp->id) }}" class="d-inline">
-                                @csrf
-                                @method('PATCH')
-                                <select name="hired_status" class="form-select form-select-sm" style="width: 120px;" onchange="this.form.submit()">
-                                    <option value="not_hired" {{ ($emp->hired_status ?? 'not_hired') == 'not_hired' ? 'selected' : '' }}>Not Hired</option>
-                                    <option value="hired" {{ ($emp->hired_status ?? 'not_hired') == 'hired' ? 'selected' : '' }} {{ $emp->document_stats['uploaded'] != $emp->document_stats['total_required'] ? 'disabled' : '' }}>Hired</option>
-                                </select>
-                            </form>
+                            @if(isset($emp->is_interview_candidate) && $emp->is_interview_candidate)
+                                <span class="badge bg-warning text-dark">Pending Documents</span>
+                            @else
+                                <form method="POST" action="{{ route('admin.employees.update-hired-status', $emp->id) }}" class="d-inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <select name="hired_status" class="form-select form-select-sm" style="width: 120px;" onchange="this.form.submit()">
+                                        <option value="not_hired" {{ ($emp->hired_status ?? 'not_hired') == 'not_hired' ? 'selected' : '' }}>Not Hired</option>
+                                        <option value="hired" {{ ($emp->hired_status ?? 'not_hired') == 'hired' ? 'selected' : '' }} {{ $emp->document_stats['uploaded'] != $emp->document_stats['total_required'] ? 'disabled' : '' }}>Hired</option>
+                                    </select>
+                                </form>
+                            @endif
                         </td>
                         <td class="text-center">
                             @php
@@ -167,11 +171,15 @@
                             <small class="text-muted">{{ $stats['uploaded'] }}/{{ $stats['total_required'] }}</small>
                         </td>
                         <td class="text-center">
-                            <a href="{{ route('admin.employees.document', ['userId' => $emp->id]) }}"
-                               class="btn btn-sm btn-primary"
-                               title="View Documents">
-                                <i class="fa-solid fa-file-lines me-1"></i> Documents
-                            </a>
+                            @if(isset($emp->is_interview_candidate) && $emp->is_interview_candidate)
+                                <span class="text-muted">Awaiting Documents</span>
+                            @else
+                                <a href="{{ route('admin.employees.document', ['userId' => $emp->id]) }}"
+                                   class="btn btn-sm btn-primary"
+                                   title="View Documents">
+                                    <i class="fa-solid fa-file-lines me-1"></i> Documents
+                                </a>
+                            @endif
                         </td>
                     </tr>
                     @empty

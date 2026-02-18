@@ -364,7 +364,7 @@ function saveEmploymentDetails(interviewId) {
         .then(data => {
             if (data.success) {
                 alert('Employment details saved successfully!');
-                location.reload();
+                location.reload(); // Just reload current page
             } else {
                 alert('Error: ' + data.message);
             }
@@ -414,8 +414,9 @@ function sendWelcomeLetter(interviewId) {
                     <div style="background: white; padding: 30px; border-radius: 10px; text-align: center; max-width: 400px;">
                         <div style="font-size: 48px; margin-bottom: 15px;">✅</div>
                         <h4 style="margin-bottom: 15px; color: #28a745;">Welcome Letter Sent!</h4>
-                        <p style="color: #666; margin-bottom: 20px;">The welcome letter has been sent successfully. Employee has been moved to Documents section.</p>
-                        <button onclick="location.reload()" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">OK</button>
+                        <p style="color: #666; margin-bottom: 20px;">Employee record created with Employee ID. Ready to move to Documents section.</p>
+                        <button onclick="window.location.href='/admin/employees/documents'" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;">Go to Documents</button>
+                        <button onclick="location.reload()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Stay Here</button>
                     </div>
                 </div>
             `;

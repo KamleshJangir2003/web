@@ -199,7 +199,7 @@ $submitRoute = $isAdminView ? route('admin.employees.document.submit', ['userId'
                     
                     <div class="row">
                         <div class="col-md-6">
-                            <strong>10th Marksheet</strong>
+                            <strong>10th/12th Marksheet</strong>
                             <span class="badge bg-{{ $class10?->status === 'verified' ? 'success' : ($class10?->status === 'submitted' ? 'info' : ($class10?->status === 'uploaded' ? 'secondary' : 'warning')) }} float-end">
                                 {{ $class10->status ?? 'not uploaded' }}
                             </span>
@@ -217,7 +217,7 @@ $submitRoute = $isAdminView ? route('admin.employees.document.submit', ['userId'
                                 </form>
                             @endif
                         </div>
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <strong>12th Marksheet</strong>
                             <span class="badge bg-{{ $class12?->status === 'verified' ? 'success' : ($class12?->status === 'submitted' ? 'info' : ($class12?->status === 'uploaded' ? 'secondary' : 'warning')) }} float-end">
                                 {{ $class12->status ?? 'not uploaded' }}
@@ -235,7 +235,7 @@ $submitRoute = $isAdminView ? route('admin.employees.document.submit', ['userId'
                                     <button type="submit" class="btn btn-primary btn-sm">Upload</button>
                                 </form>
                             @endif
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -254,7 +254,7 @@ $submitRoute = $isAdminView ? route('admin.employees.document.submit', ['userId'
                     
                     <div class="row">
                         <div class="col-md-4">
-                            <strong>Diploma</strong>
+                            <strong>D/G/P</strong>
                             <span class="badge bg-{{ $diploma?->status === 'verified' ? 'success' : ($diploma?->status === 'submitted' ? 'info' : ($diploma?->status === 'uploaded' ? 'secondary' : 'warning')) }} float-end">
                                 {{ $diploma->status ?? 'not uploaded' }}
                             </span>
@@ -272,7 +272,7 @@ $submitRoute = $isAdminView ? route('admin.employees.document.submit', ['userId'
                                 </form>
                             @endif
                         </div>
-                        <div class="col-md-4">
+                        <!-- <div class="col-md-4">
                             <strong>Graduation</strong>
                             <span class="badge bg-{{ $graduation?->status === 'verified' ? 'success' : ($graduation?->status === 'submitted' ? 'info' : ($graduation?->status === 'uploaded' ? 'secondary' : 'warning')) }} float-end">
                                 {{ $graduation->status ?? 'not uploaded' }}
@@ -309,7 +309,7 @@ $submitRoute = $isAdminView ? route('admin.employees.document.submit', ['userId'
                                     <button type="submit" class="btn btn-primary btn-sm">Upload</button>
                                 </form>
                             @endif
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -331,7 +331,7 @@ $submitRoute = $isAdminView ? route('admin.employees.document.submit', ['userId'
                     
                     <div class="row">
                         <div class="col-md-6">
-                            <strong>Passbook</strong>
+                            <strong>Passbook/Cheque</strong>
                             <span class="badge bg-{{ $passbook?->status === 'verified' ? 'success' : ($passbook?->status === 'submitted' ? 'info' : ($passbook?->status === 'uploaded' ? 'secondary' : 'warning')) }} float-end">
                                 {{ $passbook->status ?? 'not uploaded' }}
                             </span>
@@ -350,7 +350,7 @@ $submitRoute = $isAdminView ? route('admin.employees.document.submit', ['userId'
                                 </form>
                             @endif
                         </div>
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <strong>Cheque</strong>
                             <span class="badge bg-{{ $cheque?->status === 'verified' ? 'success' : ($cheque?->status === 'submitted' ? 'info' : ($cheque?->status === 'uploaded' ? 'secondary' : 'warning')) }} float-end">
                                 {{ $cheque->status ?? 'not uploaded' }}
@@ -369,7 +369,7 @@ $submitRoute = $isAdminView ? route('admin.employees.document.submit', ['userId'
                                     <button type="submit" class="btn btn-primary btn-sm">Upload</button>
                                 </form>
                             @endif
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>

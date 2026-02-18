@@ -523,15 +523,15 @@ class InterviewController extends Controller
                         ->from('hr@thekwikster.com', 'Kwikster HR Team');
             });
 
-            // Update interview status
-            $interview->update(['welcome_letter_sent' => true]);
-            
-            // Create employee record from interview data
-            $this->createEmployeeFromInterview($interview, $request->joining_date);
+            // Update interview with joining date and mark welcome letter sent
+            $interview->update([
+                'welcome_letter_sent' => true,
+                'joining_date' => $request->joining_date
+            ]);
             
             return response()->json([
                 'success' => true, 
-                'message' => 'Welcome letter sent successfully and employee record created!'
+                'message' => 'Welcome letter sent successfully! Candidate will appear in Documents section.'
             ]);
         } catch (\Exception $e) {
             \Log::error('Welcome letter error: ' . $e->getMessage());
@@ -598,6 +598,14 @@ class InterviewController extends Controller
         ]);
 
         try {
+            // Debug log
+            Log::info('Interview data:', [
+                'id' => $interview->id,
+                'candidate_name' => $interview->candidate_name,
+                'candidate_email' => $interview->candidate_email,
+                'lead_id' => $interview->lead_id
+            ]);
+            
             // Find or create employee record
             $employee = Employee::where('email', $interview->candidate_email)->first();
             
@@ -610,7 +618,7 @@ class InterviewController extends Controller
                 $employee = Employee::create([
                     'first_name' => $firstName,
                     'last_name' => $lastName,
-                    'email' => $interview->candidate_email,
+                    'email' => $interview->candidate_email ?: ('temp_' . $interview->id . '@example.com'), // Unique fallback email
                     'phone' => $interview->lead->number ?? null,
                     'department' => $interview->job_role,
                     'user_type' => 'employee',

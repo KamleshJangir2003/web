@@ -266,12 +266,7 @@ class EmployeeDocumentController extends Controller
             return back()->with('error', 'Missing documents: ' . implode(', ', array_map(fn($m) => ucwords(str_replace('_', ' ', $m)), $missing)));
         }
 
-        // Update all uploaded documents to submitted status
-        EmployeeDocument::where('user_id', $userId)
-            ->where('status', 'uploaded')
-            ->update(['status' => 'submitted']);
-
-        // Send offer letter via email
+        // Send offer letter via email (without changing document status)
         return $this->sendOfferLetterEmail($userId);
     }
 
@@ -283,17 +278,17 @@ class EmployeeDocumentController extends Controller
         $employee = Employee::findOrFail($userId);
         $bankDetail = EmployeeBankDetail::where('user_id', $userId)->first();
         
-        // Check if all required documents are submitted for verification
-        $submittedTypes = EmployeeDocument::where('user_id', $userId)
-            ->where('status', 'submitted')
+        // Check if all required documents are uploaded
+        $uploadedTypes = EmployeeDocument::where('user_id', $userId)
+            ->whereIn('status', ['uploaded', 'submitted', 'verified'])
             ->pluck('document_type')
             ->unique()
             ->toArray();
 
-        $missing = array_diff(self::REQUIRED_DOCUMENTS, $submittedTypes);
+        $missing = array_diff(self::REQUIRED_DOCUMENTS, $uploadedTypes);
 
         if (!empty($missing)) {
-            return back()->with('error', 'Cannot send offer letter. Please submit all documents for verification first.');
+            return back()->with('error', 'Cannot send offer letter. Please upload all required documents first.');
         }
 
         try {
