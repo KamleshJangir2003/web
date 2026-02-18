@@ -48,38 +48,78 @@ class EmployeeController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:employees,email',
-            'password' => 'required|min:8',
-            'user_type' => 'required|in:employee,client,manager',
+            'father_name' => 'required|string|max:255',
+            'mother_name' => 'required|string|max:255',
+            'dob' => 'required|date',
+            'contact_number' => 'required|string|max:20',
+            'guardian_number' => 'required|string|max:20',
+            'gender' => 'required|in:male,female,other',
+            'address' => 'required|string',
+            'city' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'pincode' => 'required|string|max:10',
+            'last_company_name' => 'required|string|max:255',
+            'last_salary_in_hand' => 'required|numeric|min:0',
+            'last_salary_ctc' => 'required|numeric|min:0',
+            'uan_number' => 'required|string|max:50',
+            'bank_name' => 'required|string|max:255',
+            'ifsc_code' => 'required|string|max:20',
+            'bank_account_number' => 'required|string|max:50',
             'department' => 'required|string|max:255',
-            'platform' => 'nullable|string|max:255',
+            'selfie' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        Employee::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'user_type' => $request->user_type,
-            'department' => $request->department,
-            'platform' => $request->platform,
-            'is_approved' => true,
-        ]);
+        try {
+            Employee::create([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'phone' => $request->contact_number,
+                'password' => Hash::make('password123'), // Default password
+                'user_type' => 'employee',
+                'department' => $request->department,
+                'is_approved' => true,
+                'father_name' => $request->father_name,
+                'mother_name' => $request->mother_name,
+                'dob' => $request->dob,
+                'contact_number' => $request->contact_number,
+                'guardian_number' => $request->guardian_number,
+                'gender' => $request->gender,
+                'address' => $request->address,
+                'city' => $request->city,
+                'state' => $request->state,
+                'pincode' => $request->pincode,
+                'last_company_name' => $request->last_company_name,
+                'last_salary_in_hand' => $request->last_salary_in_hand,
+                'last_salary_ctc' => $request->last_salary_ctc,
+                'uan_number' => $request->uan_number,
+                'bank_name' => $request->bank_name,
+                'ifsc_code' => $request->ifsc_code,
+                'bank_account_number' => $request->bank_account_number,
+                'joining_date' => now(),
+                'current_ctc' => $request->last_salary_ctc,
+                'in_hand_salary' => $request->last_salary_in_hand,
+            ]);
 
-        // Log activity
-        \App\Models\ActivityLog::log(
-            'Created Employee', 
-            'Employee Management', 
-            'Created new employee: ' . $request->first_name . ' ' . $request->last_name
-        );
+            // Log activity
+            \App\Models\ActivityLog::log(
+                'Created Employee', 
+                'Employee Management', 
+                'Created new employee: ' . $request->first_name . ' ' . $request->last_name
+            );
 
-        // Create notification
-        \App\Helpers\NotificationHelper::employeeAdded($request->first_name . ' ' . $request->last_name);
+            // Create notification
+            \App\Helpers\NotificationHelper::employeeAdded($request->first_name . ' ' . $request->last_name);
 
-        return redirect()->route('admin.employees.index')->with('success', 'Employee created successfully!');
+            return redirect()->route('admin.employees.index')->with('success', 'Employee created successfully!');
+            
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error saving employment details: ' . $e->getMessage())->withInput();
+        }
     }
 
     public function allEmployees()
@@ -307,6 +347,9 @@ class EmployeeController extends Controller
                 'user_type' => $request->user_type,
                 'password' => Hash::make('password123'), // Default password
                 'is_approved' => true,
+                'joining_date' => now(),
+                'current_ctc' => 0,
+                'in_hand_salary' => 0,
             ]);
 
             return response()->json([

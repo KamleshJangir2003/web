@@ -67,10 +67,10 @@
                                     </button>
                                 @elseif($interview->status == 'Completed' && $interview->result == 'Pending')
                                     <button class="btn btn-sm btn-success select-btn" onclick="selectCandidate({{ $interview->id }})">
-                                        <i class="fas fa-check"></i> Select
+                                        <i class="fas fa-check"></i> Selected
                                     </button>
                                     <button class="btn btn-sm btn-danger reject-btn" onclick="rejectCandidate({{ $interview->id }})">
-                                        <i class="fas fa-times"></i> Reject
+                                        <i class="fas fa-times"></i> Rejected
                                     </button>
                                 @else
                                     <span class="text-muted">Process Complete</span>

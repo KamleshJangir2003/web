@@ -114,12 +114,19 @@
                 <div class="row" style="margin-top:15px;">
                     <div class="col">
                         <label>Interviewer</label>
-                        <select name="interviewer" required>
-                            <option value="">Select Interviewer</option>
-                            @foreach($interviewers as $interviewer)
-                                <option value="{{ $interviewer }}">{{ $interviewer }}</option>
-                            @endforeach
-                        </select>
+                        <div style="display: flex; gap: 5px;">
+                            <select name="interviewer" id="interviewer_select" required style="flex: 1;" onchange="updateInterviewerInfo(this)">
+                                <option value="">Select Interviewer</option>
+                                @foreach($interviewers as $interviewer)
+                                    <option value="{{ $interviewer['name'] }}" data-email="{{ $interviewer['email'] }}" data-phone="{{ $interviewer['phone'] }}">{{ $interviewer['name'] }}</option>
+                                @endforeach
+                            </select>
+                            <button type="button" onclick="toggleAddInterviewer()" style="padding: 8px 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">+</button>
+                        </div>
+                        <input type="text" id="new_interviewer" placeholder="Enter new interviewer name" style="margin-top: 5px; display: none;">
+                        <input type="email" id="new_interviewer_email" placeholder="Enter email" style="margin-top: 5px; display: none;">
+                        <input type="tel" id="new_interviewer_phone" placeholder="Enter phone" style="margin-top: 5px; display: none;">
+                        <button type="button" id="save_interviewer_btn" onclick="saveNewInterviewer()" style="margin-top: 5px; display: none; padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">Save Interviewer</button>
                     </div>
                     
                     <div class="col">
@@ -542,6 +549,168 @@ function handleFormSubmit() {
     }
     
     return true;
+}
+
+function toggleAddInterviewer() {
+    const newInterviewerInput = document.getElementById('new_interviewer');
+    const newEmailInput = document.getElementById('new_interviewer_email');
+    const newPhoneInput = document.getElementById('new_interviewer_phone');
+    const saveBtn = document.getElementById('save_interviewer_btn');
+    const select = document.getElementById('interviewer_select');
+    
+    if (newInterviewerInput.style.display === 'none') {
+        newInterviewerInput.style.display = 'block';
+        newEmailInput.style.display = 'block';
+        newPhoneInput.style.display = 'block';
+        saveBtn.style.display = 'block';
+        newInterviewerInput.focus();
+    } else {
+        newInterviewerInput.style.display = 'none';
+        newEmailInput.style.display = 'none';
+        newPhoneInput.style.display = 'none';
+        saveBtn.style.display = 'none';
+        newInterviewerInput.value = '';
+        newEmailInput.value = '';
+        newPhoneInput.value = '';
+        select.value = '';
+    }
+}
+
+function saveNewInterviewer() {
+    const input = document.getElementById('new_interviewer');
+    const emailInput = document.getElementById('new_interviewer_email');
+    const phoneInput = document.getElementById('new_interviewer_phone');
+    const select = document.getElementById('interviewer_select');
+    const saveBtn = document.getElementById('save_interviewer_btn');
+    
+    const name = input.value.trim();
+    const email = emailInput.value.trim();
+    const phone = phoneInput.value.trim();
+    
+    console.log('Saving - Name:', name, 'Email:', email, 'Phone:', phone);
+    
+    if (name && email && phone) {
+        // Remove any existing duplicate options first
+        for (let i = select.options.length - 1; i >= 0; i--) {
+            if (select.options[i].value === name) {
+                select.remove(i);
+            }
+        }
+        
+        // Add the new interviewer with email and phone data
+        const newOption = new Option(name, name);
+        newOption.setAttribute('data-email', email);
+        newOption.setAttribute('data-phone', phone);
+        select.add(newOption);
+        select.value = name;
+        
+        console.log('Added interviewer:', name);
+        
+        // Auto-fill email and phone fields
+        updateInterviewerInfo(select);
+        
+        // Hide inputs and clear them
+        input.style.display = 'none';
+        emailInput.style.display = 'none';
+        phoneInput.style.display = 'none';
+        saveBtn.style.display = 'none';
+        input.value = '';
+        emailInput.value = '';
+        phoneInput.value = '';
+        
+        alert('Interviewer added successfully!');
+    } else {
+        if (!name) {
+            alert('Please enter interviewer name');
+            input.focus();
+        } else if (!email) {
+            alert('Please enter email');
+            emailInput.focus();
+        } else if (!phone) {
+            alert('Please enter phone number');
+            phoneInput.focus();
+        }
+    }
+}
+
+function addInterviewerOnComplete(value) {
+    const select = document.getElementById('interviewer_select');
+    const input = document.getElementById('new_interviewer');
+    const emailInput = document.getElementById('new_interviewer_email');
+    const phoneInput = document.getElementById('new_interviewer_phone');
+    
+    console.log('Name:', value.trim());
+    console.log('Email:', emailInput.value.trim());
+    console.log('Phone:', phoneInput.value.trim());
+    
+    if (value.trim() && emailInput.value.trim() && phoneInput.value.trim()) {
+        // Remove any existing duplicate options first
+        for (let i = select.options.length - 1; i >= 0; i--) {
+            if (select.options[i].value === value.trim()) {
+                select.remove(i);
+            }
+        }
+        
+        // Add the new interviewer with email and phone data
+        const newOption = new Option(value.trim(), value.trim());
+        newOption.setAttribute('data-email', emailInput.value.trim());
+        newOption.setAttribute('data-phone', phoneInput.value.trim());
+        select.add(newOption);
+        select.value = value.trim();
+        
+        console.log('Added interviewer:', value.trim());
+        
+        // Auto-fill email and phone fields
+        updateInterviewerInfo(select);
+        
+        // Hide inputs and clear them
+        input.style.display = 'none';
+        emailInput.style.display = 'none';
+        phoneInput.style.display = 'none';
+        input.value = '';
+        emailInput.value = '';
+        phoneInput.value = '';
+    } else {
+        alert('Please fill all fields: Name, Email, and Phone');
+        console.log('Missing fields - Name:', !!value.trim(), 'Email:', !!emailInput.value.trim(), 'Phone:', !!phoneInput.value.trim());
+    }
+}
+
+function updateInterviewerInfo(select) {
+    const selectedOption = select.options[select.selectedIndex];
+    const emailField = document.querySelector('input[name="interviewer_email"]');
+    const phoneField = document.querySelector('input[name="interviewer_phone"]');
+    
+    if (selectedOption && selectedOption.value) {
+        const email = selectedOption.getAttribute('data-email');
+        const phone = selectedOption.getAttribute('data-phone');
+        
+        if (email) emailField.value = email;
+        if (phone) phoneField.value = phone;
+    } else {
+        emailField.value = '';
+        phoneField.value = '';
+    }
+}
+
+function handleEnterKey(event, value) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        const emailInput = document.getElementById('new_interviewer_email');
+        const phoneInput = document.getElementById('new_interviewer_phone');
+        
+        // Check if all fields are filled
+        if (!emailInput.value.trim()) {
+            emailInput.focus();
+            return;
+        }
+        if (!phoneInput.value.trim()) {
+            phoneInput.focus();
+            return;
+        }
+        
+        addInterviewerOnComplete(value);
+    }
 }
 </script>
 @endsection

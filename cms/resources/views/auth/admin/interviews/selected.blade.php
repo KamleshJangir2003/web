@@ -377,33 +377,58 @@ function saveEmploymentDetails(interviewId) {
 }
 
 function sendWelcomeLetter(interviewId) {
-    const joiningDate = prompt('Enter joining date (MM-DD-YYYY):');
+    // Show loading immediately
+    const loadingModal = document.createElement('div');
+    loadingModal.innerHTML = `
+        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1001; display: flex; align-items: center; justify-content: center;">
+            <div style="background: white; padding: 30px; border-radius: 10px; text-align: center;">
+                <div style="margin-bottom: 15px;">📧</div>
+                <h4 style="margin-bottom: 10px;">Sending Welcome Letter...</h4>
+                <p style="color: #666;">Please wait while we send the welcome letter.</p>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(loadingModal);
+    loadingModal.id = 'loadingModal';
     
-    if (!joiningDate) return;
+    // Send with current date as joining date
+    const today = new Date().toISOString().split('T')[0];
     
-    if (confirm('Send welcome letter to this employee?')) {
-        fetch(`/admin/interviews/${interviewId}/welcome-letter`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ joining_date: joiningDate })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Welcome letter sent successfully! Employee has been moved to Documents section.');
-                location.reload();
-            } else {
-                alert('Error: ' + data.message);
-            }
-        })
-        .catch(error => {
-            alert('Error sending welcome letter');
-            console.error(error);
-        });
-    }
+    fetch(`/admin/interviews/${interviewId}/welcome-letter`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ joining_date: today })
+    })
+    .then(response => response.json())
+    .then(data => {
+        loadingModal.remove();
+        
+        if (data.success) {
+            // Success modal
+            const successModal = document.createElement('div');
+            successModal.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1001; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 30px; border-radius: 10px; text-align: center; max-width: 400px;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">✅</div>
+                        <h4 style="margin-bottom: 15px; color: #28a745;">Welcome Letter Sent!</h4>
+                        <p style="color: #666; margin-bottom: 20px;">The welcome letter has been sent successfully. Employee has been moved to Documents section.</p>
+                        <button onclick="location.reload()" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">OK</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(successModal);
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        loadingModal.remove();
+        alert('Error sending welcome letter');
+        console.error(error);
+    });
 }
 </script>
 @endsection

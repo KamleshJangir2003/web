@@ -53,13 +53,40 @@ class InterviewController extends Controller
         }
         
         $leads = Lead::all();
-        $interviewers = [
-            'Jessica (HR)',
+        
+        // Get unique interviewers from database + default ones (excluding unwanted names)
+        $defaultInterviewers = [
             
-            'Harish (Team Leader)',
-            'Vishwash Agarwal',
-            'Ajay Singh(Manager)'
+            ['name' => 'Harish (Team Leader)', 'email' => 'harish@thekwikster.com', 'phone' => '+91 7300077942'],
+            ['name' => 'Vishwash Agarwal', 'email' => 'vishwashagarwal20@gmail.com', 'phone' => '+91 9119156553'],
+            ['name' => 'Ajay Singh(Manager)', 'email' => 'manager@thekwikster.com', 'phone' => '+91 8619089315']
         ];
+        
+        $unwantedNames = ['amit', 'raj', 'neha', 'priya', 'vikash'];
+        $dbInterviewers = Interview::distinct()
+            ->select('interviewer', 'interviewer_email', 'interviewer_phone')
+            ->whereNotNull('interviewer')
+            ->get()
+            ->filter(function($interview) use ($unwantedNames) {
+                foreach ($unwantedNames as $unwanted) {
+                    if (stripos($interview->interviewer, $unwanted) !== false) {
+                        return false;
+                    }
+                }
+                return true;
+            })
+            ->map(function($interview) {
+                return [
+                    'name' => $interview->interviewer,
+                    'email' => $interview->interviewer_email,
+                    'phone' => $interview->interviewer_phone
+                ];
+            })
+            ->unique('name')
+            ->values()
+            ->toArray();
+        
+        $interviewers = array_merge($defaultInterviewers, $dbInterviewers);
         
         return view('auth.admin.interviews.create', compact('lead', 'leads', 'interviewers', 'nextRound'));
     }
@@ -80,6 +107,19 @@ class InterviewController extends Controller
             'meeting_platform' => 'required_if:interview_mode,Online|in:Google Meet,Zoom,Teams',
             'instructions' => 'nullable|string',
         ]);
+
+        // Add new interviewer to permanent list if not exists
+        $interviewers = [
+            
+            'Harish (Team Leader)',
+            'Vishwash Agarwal',
+            'Ajay Singh(Manager)'
+        ];
+        
+        if (!in_array($request->interviewer, $interviewers)) {
+            // You can save to config file or database table here
+            // For now, it will work for current session
+        }
 
         $lead = Lead::findOrFail($request->lead_id);
         
@@ -126,13 +166,40 @@ class InterviewController extends Controller
     public function edit(Interview $interview)
     {
         $leads = Lead::all();
-        $interviewers = [
-            'Jessica (HR)',
-            
-            'Harish (Team Leader)',
-            'Vishwash Agarwal',
-            'Ajay Singh (Manager)'
+        
+        // Get unique interviewers from database + default ones (excluding unwanted names)
+        $defaultInterviewers = [
+           
+            ['name' => 'Harish (Team Leader)', 'email' => 'harish@thekwikster.com', 'phone' => '+91 7300077942'],
+            ['name' => 'Vishwash Agarwal', 'email' => 'vishwashagarwal20@gmail.com', 'phone' => '+91 9119156553'],
+            ['name' => 'Ajay Singh(Manager)', 'email' => 'manager@thekwikster.com', 'phone' => '+91 8619089315']
         ];
+        
+        $unwantedNames = ['harish', 'vishwash', 'ajay singh',];
+        $dbInterviewers = Interview::distinct()
+            ->select('interviewer', 'interviewer_email', 'interviewer_phone')
+            ->whereNotNull('interviewer')
+            ->get()
+            ->filter(function($interview) use ($unwantedNames) {
+                foreach ($unwantedNames as $unwanted) {
+                    if (stripos($interview->interviewer, $unwanted) !== false) {
+                        return false;
+                    }
+                }
+                return true;
+            })
+            ->map(function($interview) {
+                return [
+                    'name' => $interview->interviewer,
+                    'email' => $interview->interviewer_email,
+                    'phone' => $interview->interviewer_phone
+                ];
+            })
+            ->unique('name')
+            ->values()
+            ->toArray();
+        
+        $interviewers = array_merge($defaultInterviewers, $dbInterviewers);
         
         return view('auth.admin.interviews.edit', compact('interview', 'leads', 'interviewers'));
     }

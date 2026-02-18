@@ -850,9 +850,9 @@ function showStatusPopup(type, title, message, details = null) {
     <select class="form-select form-select-sm" id="roleSelect">
         <option value="">-- Select Role --</option>
         <option value="python">Python Developer</option>
-        <!-- <option value="python_intern">Python Intern</option> -->
+        <option value="python_intern">Python Intern</option>
         <option value="php">PHP Developer</option>
-        <!-- <option value="php_intern">PHP Intern</option> -->
+        <option value="php_intern">PHP Intern</option>
         <option value="frontend">Frontend Developer</option>
         <option value="leads_constent">leads consultant</option>
         <option value="manager">Manager</option>
