@@ -1,11 +1,22 @@
 @extends('auth.layouts.app')
+<style>
+    .main-content{
+        padding-top: 15px;
+    }
+    .page-header{
+    display: flex;
+       /* Horizontal center */
+    align-items: center;       /* Vertical center (optional) */
+    margin-top: 40px;
+}
 
+</style>
 @section('title', 'Schedule Interview')
 
 @section('content')
 <div class="main-content">
     <div class="page-header">
-        <h1>📅 Schedule Interview</h1>
+        <!-- <h1>📅 Schedule Interview</h1> -->
         <a href="{{ route('admin.interviews.index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Back to List
         </a>
@@ -110,6 +121,7 @@
                             @endforeach
                         </select>
                     </div>
+                    
                     <div class="col">
                         <label>Interviewer Email</label>
                         <input type="email" name="interviewer_email" required placeholder="interviewer@company.com">
@@ -197,7 +209,7 @@ body{
 
 .container{
     max-width:1100px;
-    margin:30px auto;
+    margin:10px auto;
     background:#fff;
     padding:25px;
     border-radius:10px;

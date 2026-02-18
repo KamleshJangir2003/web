@@ -54,11 +54,11 @@ class InterviewController extends Controller
         
         $leads = Lead::all();
         $interviewers = [
-            'Amit (HR)',
-            'Neha (Tech Lead)',
-            'Raj (Manager)',
-            'Priya (Senior Developer)',
-            'Vikash (Team Lead)'
+            'Jessica (HR)',
+            
+            'Harish (Team Leader)',
+            'Vishwash Agarwal',
+            'Ajay Singh(Manager)'
         ];
         
         return view('auth.admin.interviews.create', compact('lead', 'leads', 'interviewers', 'nextRound'));
@@ -127,11 +127,11 @@ class InterviewController extends Controller
     {
         $leads = Lead::all();
         $interviewers = [
-            'Amit (HR)',
-            'Neha (Tech Lead)',
-            'Raj (Manager)',
-            'Priya (Senior Developer)',
-            'Vikash (Team Lead)'
+            'Jessica (HR)',
+            
+            'Harish (Team Leader)',
+            'Vishwash Agarwal',
+            'Ajay Singh (Manager)'
         ];
         
         return view('auth.admin.interviews.edit', compact('interview', 'leads', 'interviewers'));

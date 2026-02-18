@@ -1,147 +1,90 @@
 @extends('auth.layouts.app')
-<style>
-    .card-header{
-        margin-top: 70px;
-        display: flex;
-    }
-    .btn-secondary{
-        margin-left: 600px;
-    }
-</style>
+
 @section('title', 'Intern Callbacks')
 
 @section('content')
-<div class="main-content">
-    <div class="card">
-        <div class="card-header">
-            <h4>Intern Callbacks</h4>
-            <a href="{{ route('admin.interns.index') }}" class="btn btn-secondary">Back to Interns</a>
-        </div>
-
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Number</th>
-                            <th>Internship Type</th>
-                            <th>Callback Date</th>
-                            <th>Notes</th>
-                            <th>Status</th>
-                            <th>WhatsApp</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($callbacks as $callback)
-                        <tr>
-                            <td>{{ $callback->name }}</td>
-                            <td>{{ $callback->number }}</td>
-                            <td>{{ $callback->role }}</td>
-                            <td>{{ $callback->callback_date->format('d M Y') }}</td>
-                            <td>{{ Str::limit($callback->notes, 30) }}</td>
-                            <td>
-                                <select class="status-select" data-id="{{ $callback->id }}">
-                                    <option value="">Select Status</option>
-                                    <option value="interested">Interested</option>
-                                    <option value="not_interested">Not Interested</option>
-                                    <option value="rejected">Rejected</option>
-                                    <option value="wrong_number">Wrong Number</option>
-                                </select>
-                            </td>
-                            <td>
-                                @php
-                                $message = "Follow up for internship opportunity.\n\n".
-                                "Position: {$callback->role} Intern\n".
-                                "Company: Kwikster Innovative Optimisations Pvt Ltd.\n\n".
-                                "Are you still interested?\n\n".
-                                "Best Regards,\nHR Team";
-                                @endphp
-                                <a href="https://wa.me/91{{ $callback->number }}?text={{ urlencode($message) }}" target="_blank" class="btn btn-success btn-sm">
-                                    <i class="fa-brands fa-whatsapp"></i>
-                                </a>
-                            </td>
-                            <td>
-                                <button class="btn btn-warning btn-sm" onclick="editCallback({{ $callback->id }}, '{{ $callback->callback_date }}', '{{ $callback->notes }}')">Edit</button>
-                                <button class="btn btn-danger btn-sm" onclick="deleteCallback({{ $callback->id }})">Delete</button>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="8" class="text-center">No callbacks found</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            @if($callbacks->hasPages())
-                {{ $callbacks->links() }}
-            @endif
-        </div>
-    </div>
-</div>
-
-<!-- Status Update Modal -->
-<div id="statusModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5>Update Callback Status</h5>
-            <span class="close">&times;</span>
-        </div>
-        <form id="statusForm">
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>New Status</label>
-                    <select name="status" required>
-                        <option value="">Select Status</option>
-                        <option value="interested">Interested</option>
-                        <option value="not_interested">Not Interested</option>
-                        <option value="rejected">Rejected</option>
-                        <option value="wrong_number">Wrong Number</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Reason/Notes</label>
-                    <textarea name="reason" rows="3" placeholder="Enter reason or notes..."></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Update Status</button>
-                <button type="button" class="btn btn-secondary" onclick="closeStatusModal()">Cancel</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Edit Callback Modal -->
-<div id="editModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5>Edit Callback</h5>
-            <span class="close">&times;</span>
-        </div>
-        <form id="editForm">
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Callback Date</label>
-                    <input type="date" name="callback_date" required>
-                </div>
-                <div class="form-group">
-                    <label>Notes</label>
-                    <textarea name="notes" rows="3"></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Update</button>
-                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <style>
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background: #f8f9fa;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.table td {
+    vertical-align: middle;
+    padding: 14px 10px;
+    font-size: 14px;
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: #f5faff;
+}
+
+.notes-box {
+    border-left: 4px solid #4e73df;
+    background: #f4f7ff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    max-width: 220px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.status-select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #dcdcdc;
+    font-size: 13px;
+    min-width: 140px;
+    transition: 0.2s;
+}
+
+.status-select:focus {
+    border-color: #4e73df;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(78,115,223,0.15);
+}
+
+.btn-warning {
+    background: #ffc107;
+    border: none;
+    font-weight: 500;
+}
+
+.btn-danger {
+    background: #dc3545;
+    border: none;
+    font-weight: 500;
+}
+
+.btn-success {
+    background: #25d366;
+    border: none;
+}
+
+.btn-warning:hover,
+.btn-danger:hover,
+.btn-success:hover {
+    opacity: 0.85;
+    transition: 0.2s;
+}
+
+.btn-secondary {
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 14px;
+}
+
 .modal {
     position: fixed;
     z-index: 1000;
@@ -219,87 +162,131 @@
     color: white;
 }
 
-.btn-secondary {
-    background-color: #6c757d;
-    color: white;
-}
+@media (max-width: 768px) {
+    .table td {
+        font-size: 12px;
+    }
 
-.status-select {
-    padding: 5px 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: white;
-    font-size: 12px;
-    width: 140px;
-}
-</style>
-
-<script>
-let currentCallbackId = null;
-
-// Status change handler
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.status-select').forEach(select => {
-        select.addEventListener('change', function() {
-            const callbackId = this.dataset.id;
-            const status = this.value;
-            const row = this.closest('tr');
-            
-            if (!status) return;
-            
-            // Show reason modal for certain statuses
-            if (['not_interested', 'rejected'].includes(status)) {
-                showReasonModal(callbackId, status, row);
-            } else {
-                updateCallbackStatus(callbackId, status, '', row);
-            }
-        });
-    });
-});
-
-function showReasonModal(callbackId, status, row) {
-    const reason = prompt(`Please provide reason for ${status.replace('_', ' ')}:`);
-    if (reason !== null) {
-        updateCallbackStatus(callbackId, status, reason, row);
-    } else {
-        // Reset dropdown if cancelled
-        row.querySelector('.status-select').value = '';
+    .notes-box {
+        max-width: 150px;
     }
 }
 
-function updateCallbackStatus(callbackId, status, reason, row) {
-    const formData = new FormData();
-    formData.append('status', status);
-    formData.append('reason', reason);
-    formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
-    
-    fetch(`/admin/interns/callbacks/${callbackId}/status`, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Show success message
-            alert('Status updated successfully!');
-            // Redirect to appropriate page
-            if (data.redirect) {
-                window.location.href = data.redirect;
-            } else {
-                // Remove row from table if no redirect
-                row.remove();
-            }
-        } else {
-            alert('Error updating status');
-            row.querySelector('.status-select').value = '';
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Network error occurred');
-        row.querySelector('.status-select').value = '';
-    });
+.main-content{
+    margin-top: 70px;
 }
+.card-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+</style>
+
+<div class="main-content">
+    <div class="card">
+        <div class="card-header">
+            <h5>Intern Callbacks</h4>
+            <a href="{{ route('admin.interns.index') }}" class="btn btn-secondary">Back to Interns</a>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Number</th>
+                            <th>Internship Type</th>
+                            <th>Callback Date</th>
+                            <th>Notes</th>
+                            <th>Status</th>
+                            <th>WhatsApp</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($callbacks as $callback)
+                        <tr>
+                            <td>{{ $callback->name }}</td>
+                            <td>{{ $callback->number }}</td>
+                            <td>{{ $callback->role }}</td>
+                            <td>{{ $callback->callback_date->format('d M Y') }}</td>
+                            <td>
+                                <div class="notes-box">
+                                    {{ Str::limit($callback->notes, 30) }}
+                                </div>
+                            </td>
+                            <td>
+                                <select class="status-select" data-id="{{ $callback->id }}">
+                                    <option value="">Select Status</option>
+                                    <option value="interested">Interested</option>
+                                    <option value="not_interested">Not Interested</option>
+                                    <option value="rejected">Rejected</option>
+                                    <option value="wrong_number">Wrong Number</option>
+                                </select>
+                            </td>
+                            <td>
+                                @php
+                                $message = "Follow up for internship opportunity.\n\n".
+                                "Position: {$callback->role} Intern\n".
+                                "Company: Kwikster Innovative Optimisations Pvt Ltd.\n\n".
+                                "Are you still interested?\n\n".
+                                "Best Regards,\nHR Team";
+                                @endphp
+                                <a href="https://wa.me/91{{ $callback->number }}?text={{ urlencode($message) }}" target="_blank" class="btn btn-success btn-sm">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" onclick="editCallback({{ $callback->id }}, '{{ $callback->callback_date }}', '{{ $callback->notes }}')">Edit</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteCallback({{ $callback->id }})">Delete</button>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center">No callbacks found</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if($callbacks->hasPages())
+                {{ $callbacks->links() }}
+            @endif
+        </div>
+    </div>
+</div>
+
+<!-- Edit Callback Modal -->
+<div id="editModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5>Edit Callback</h5>
+            <span class="close">&times;</span>
+        </div>
+        <form id="editForm">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Callback Date</label>
+                    <input type="date" name="callback_date" required>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea name="notes" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let currentCallbackId = null;
 
 function editCallback(id, date, notes) {
     currentCallbackId = id;
@@ -308,26 +295,29 @@ function editCallback(id, date, notes) {
     document.getElementById('editModal').style.display = 'flex';
 }
 
-function closeEditModal() {
-    document.getElementById('editModal').style.display = 'none';
-    currentCallbackId = null;
-}
-
 function deleteCallback(id) {
     if (confirm('Are you sure you want to delete this callback?')) {
         fetch(`/admin/interns/callbacks/${id}`, {
             method: 'DELETE',
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json'
             }
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 location.reload();
+            } else {
+                alert('Error deleting callback');
             }
         });
     }
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+    currentCallbackId = null;
 }
 
 // Edit form submission
@@ -338,17 +328,33 @@ document.getElementById('editForm').addEventListener('submit', function(e) {
     
     fetch(`/admin/interns/callbacks/${currentCallbackId}`, {
         method: 'PUT',
-        body: formData,
         headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        }
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            callback_date: formData.get('callback_date'),
+            notes: formData.get('notes')
+        })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            closeEditModal();
             location.reload();
+        } else {
+            alert('Error updating callback');
         }
     });
 });
+
+// Close modals when clicking outside
+window.onclick = function(event) {
+    const editModal = document.getElementById('editModal');
+    if (event.target == editModal) {
+        closeEditModal();
+    }
+}
 </script>
+
 @endsection

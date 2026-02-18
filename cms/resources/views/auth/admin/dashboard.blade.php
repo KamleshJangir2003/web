@@ -56,6 +56,7 @@
     position: relative;
     overflow: hidden;
     min-height: 130px;
+    
 }
 .stat-card i{
     position: absolute;
@@ -122,13 +123,14 @@
         }
 
         body {
-            background: linear-gradient(145deg, #f0f2f5 0%, #e6e9f0 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
+    background: linear-gradient(145deg, #f0f2f5 0%, #e6e9f0 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
 
         /* Main Card */
         .employee-card {
@@ -449,12 +451,169 @@
 
 .male-all-employee{
     display: flex;
-    height: 550px;
+    gap: 30px;
+    align-items: flex-start;
 }
+
 
 .table-card{
     margin-left: 50px;
 }
+    </style>
+    <style>
+        /* ============================= */
+/* 📱 MOBILE RESPONSIVE FIX */
+/* ============================= */
+
+@media (max-width: 768px) {
+
+/* Employee Structure Card */
+.employee-card {
+    padding: 15px;
+}
+
+.card-header h2 {
+    font-size: 18px;
+}
+
+.info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+.info-row .value {
+    font-size: 14px;
+}
+
+.progress-header {
+    font-size: 13px;
+}
+
+.footer-note {
+    font-size: 13px;
+    text-align: center;
+}
+
+/* Table Cards */
+.table-card {
+    margin: 10px;
+    border-radius: 12px;
+}
+
+.card-header {
+    /* flex-direction: column !important; */
+    align-items: flex-start !important;
+    gap: 10px;
+}
+
+.card-header h5 {
+    font-size: 15px;
+}
+
+/* Search box full width */
+.employee-search {
+    max-width: 100%;
+    width: 100%;
+}
+
+/* Table font smaller */
+.table th,
+.table td {
+    font-size: 13px;
+    padding: 8px;
+}
+
+/* Contact buttons smaller */
+.btn-sm {
+    padding: 4px 6px;
+    font-size: 12px;
+}
+
+/* Make table scroll smooth */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Sticky header mobile fix */
+.employee-table-wrapper {
+    max-height: 300px;
+}
+
+/* Activity log badges smaller */
+.badge {
+    font-size: 11px;
+    padding: 5px 6px;
+}
+
+/* Pending approval buttons full width */
+.table .text-end {
+    text-align: left !important;
+}
+
+.table .text-end .btn {
+    width: 100%;
+    margin-bottom: 5px;
+}
+}
+
+
+/* ============================= */
+/* 📱 Extra Small Devices (≤480px) */
+/* ============================= */
+
+@media (max-width: 480px) {
+
+.employee-card {
+    padding: 12px;
+}
+
+.icon-badge {
+    font-size: 18px;
+}
+
+.card-header h2 {
+    font-size: 16px;
+}
+
+.info-row .label {
+    font-size: 13px;
+}
+
+.progress-fill-male,
+.progress-fill-female {
+    height: 6px;
+}
+
+.footer-note {
+    font-size: 12px;
+}
+
+/* Tables more compact */
+.table th,
+.table td {
+    font-size: 12px;
+}
+}
+
+
+@media (max-width: 992px){
+    .male-all-employee{
+        flex-direction: column;
+        height: auto;
+    }
+
+    .table-card{
+        margin-left: 0;
+        max-width: 100%;
+    }
+
+    .employee-card{
+        max-width: 100%;
+    }
+}
+
+
     </style>
 
 <div class="dashboard-wrapper">

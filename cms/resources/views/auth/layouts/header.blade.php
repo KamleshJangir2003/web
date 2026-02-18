@@ -46,7 +46,7 @@
     padding: 8px;
     border-radius: 6px;
     transition: background 0.2s;
-    display: none; /* Hidden by default, shown in mobile via media query */
+    display: none;
 }
 
 .header-icon:hover,
@@ -648,6 +648,46 @@
 }
 
 
+/* ADD EMPLOYEE BUTTON - SAME STYLE AS OTHERS */
+.header-right li a[href*="employee/create"] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background: #e8f5e8;
+    color: #198754;
+    border: 1px solid #c3e6c3;
+}
+
+.header-right li a[href*="employee/create"]:hover {
+    background: #198754;
+    color: #fff;
+    box-shadow: 0 6px 15px rgba(25,135,84,0.3);
+}
+
+.header-right li a[href*="employee/create"] i {
+    font-size: 15px;
+}
+
+.header-right li a[href*="employee"] {
+    background: #eef5ff;
+    color: #2eacb3;
+    border: 1px solid #d6e4ff;
+}
+
+.header-right li a[href*="employee"]:hover {
+    background: #2eacb3;
+    color: #fff;
+    box-shadow: 0 6px 15px rgba(13,110,253,0.3);
+}
+
+
+
 </style>
 
 <script>
@@ -843,11 +883,12 @@ function showStatusPopup(type, title, message, details = null) {
     </li> -->
 
     <li>
-        <a href="{{ route('admin.employee.create') }}" class="header-icon" title="Add Employee">
+    <a href="{{ route('admin.employee.create') }}">
         <i class="fa-solid fa-user-plus"></i>
-           
-        </a>
-    </li>
+        Add Employee
+    </a>
+</li>
+
     <!-- SALARY CALCULATOR LINK -->
     <li>
         <a href="{{ route('admin.salary.calculator') }}">

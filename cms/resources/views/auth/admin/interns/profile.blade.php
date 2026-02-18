@@ -1,5 +1,14 @@
 @extends('auth.layouts.app')
-
+<style>
+    .main-content{
+        padding-top: 30px;
+    }
+    .card-header{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
 @section('title', 'Intern Profile - ' . $intern->name)
 
 @section('content')

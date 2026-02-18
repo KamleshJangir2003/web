@@ -8,6 +8,9 @@
         margin-left: 600px;
     }
 </style>
+<style>
+    
+</style>
 @section('title', 'Interested Interns')
 
 @section('content')

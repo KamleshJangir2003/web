@@ -9,76 +9,39 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+   body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #5f72ff, #9b59b6);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+
         
-        .login-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-            width: 100%;
-            max-width: 1000px;
-        }
+.login-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 480px;   /* perfect balanced width */
+    padding: 0;
+}
+
+
+.login-card:hover {
+    transform: translateY(-5px);
+}
+.login-form-section {
+    padding: 45px 35px;
+}
         
-        .login-form-section {
-            padding: 40px;
-        }
+       
         
-        .video-section {
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
-                        url('https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?auto=format&fit=crop&w=800');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
         
-        .video-card {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            transition: transform 0.3s;
-            cursor: pointer;
-        }
-        
-        .video-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .video-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .video-meta {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-        
-        .play-btn {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-        }
+       
         
         .form-control {
             border-radius: 8px;
@@ -190,12 +153,23 @@
                 min-height: 300px;
             }
         }
+
+        .login-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 520px;   /* perfect login width */
+}
+
     </style>
 </head>
 <body>
-    <div class="login-card d-flex">
+<div class="login-card">
+
         <!-- Left Side - Login Form -->
-        <div class="login-form-section col-md-6">
+        <div class="login-form-section">
+
             <div class="text-center mb-4">
                 <h2 class="fw-bold mb-2">Sign in</h2>
                 <p class="text-muted">Enter your credentials to log in</p>
@@ -292,7 +266,7 @@
         </div>
 
         <!-- Right Side - Trending Videos -->
-        <div class="video-section col-md-6">
+        <!-- <div class="video-section col-md-6">
             <h3 class="mb-4">Trending Videos</h3>
             
             <div class="video-card">
@@ -344,7 +318,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 
     <!-- Bootstrap JS -->

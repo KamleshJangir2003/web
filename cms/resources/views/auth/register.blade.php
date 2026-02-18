@@ -18,16 +18,17 @@
             justify-content: center;
             padding: 20px;
         }
+   
+
         
         .register-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-            width: 100%;
-            max-width: 1000px;
-        }
-        
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.12);
+    width: 100%;
+    max-width: 520px;   /* perfect balanced width */
+}
+
         .register-form-section {
             padding: 40px;
         }
@@ -162,9 +163,11 @@
     </style>
 </head>
 <body>
-    <div class="register-card d-flex">
+<div class="register-card">
+
         <!-- Left Side - Employee Register Form -->
-        <div class="register-form-section col-md-6">
+        <div class="register-form-section">
+
             <div class="text-center mb-4">
                 <h2 class="fw-bold mb-2">Employee Signup</h2>
                 <span class="employee-badge">
@@ -312,7 +315,7 @@
         </div>
 
         <!-- Right Side - Employee Benefits & Videos -->
-        <div class="video-section col-md-6">
+        <!-- <div class="video-section col-md-6">
             <h3 class="mb-4"><i class="fas fa-users me-2"></i>Welcome to Kwikster Team</h3>
             
             <div class="video-card">
@@ -379,7 +382,7 @@
                     Your data is protected with 256-bit encryption. Only verified employees can access this portal.
                 </p>
             </div>
-        </div>
+        </div> -->
     </div>
 
     <!-- Bootstrap JS -->

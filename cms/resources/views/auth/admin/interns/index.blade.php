@@ -17,7 +17,7 @@
 
 .interns-table th,
 .interns-table td {
-    padding: 12px;
+    padding: 5px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
@@ -193,6 +193,61 @@
     .btn-secondary{
         margin-left: 600px;
     }
+
+    /* Top Bar Layout */
+.intern-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* Search Box */
+.search-box {
+    position: relative;
+    width: 280px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 8px 35px 8px 35px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+}
+
+.clear-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    color: red;
+    text-decoration: none;
+}
+
+/* Status Buttons */
+.status-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* Result Count */
+.results-info {
+    font-weight: 500;
+    color: #555;
+}
+
+   
 </style>
 @endsection
 
@@ -228,27 +283,50 @@
     <div class="card interns-card">
         <div class="card-header">
             <h4>Interns List</h4>
-            <div>
-                <a href="{{ route('admin.interns.interested') }}" class="btn btn-success btn-sm">Interested</a>
-                <a href="{{ route('admin.interns.rejected') }}" class="btn btn-danger btn-sm">Rejected</a>
-            </div>
+           
         </div>
 
         <div class="card-body">
-            <div class="search-container">
-                <form method="GET" action="{{ route('admin.interns.index') }}" class="search-form">
-                    <div class="search-box">
-                        <i class="fa-solid fa-search"></i>
-                        <input type="text" name="search" placeholder="Search by name, number, or role..." value="{{ request('search') }}">
-                        @if(request('search'))
-                            <a href="{{ route('admin.interns.index') }}" class="clear-btn">Clear</a>
-                        @endif
-                    </div>
-                </form>
-                <div class="results-info">
-                    <span>{{ $interns->total() }} results</span>
-                </div>
-            </div>
+
+<div class="intern-top-bar">
+
+    <!-- 🔍 Search -->
+    <form method="GET" action="{{ route('admin.interns.index') }}" class="search-form">
+        <div class="search-box">
+            <i class="fa-solid fa-search"></i>
+            <input type="text" name="search"
+                   placeholder="Search by name, number, or role..."
+                   value="{{ request('search') }}">
+            
+            @if(request('search'))
+                <a href="{{ route('admin.interns.index') }}" class="clear-btn">✖</a>
+            @endif
+        </div>
+    </form>
+
+    <!-- 🎯 Filter Buttons -->
+    <div class="status-buttons">
+        <a href="{{ route('admin.interns.interested') }}"
+           class="btn btn-success btn-sm">
+            Interested
+        </a>
+
+        <a href="{{ route('admin.interns.rejected') }}"
+           class="btn btn-danger btn-sm">
+            Rejected
+        </a>
+    </div>
+
+    <!-- 📊 Result Count -->
+    <div class="results-info">
+        <span>{{ $interns->total() }} results</span>
+    </div>
+
+</div>
+
+</div>
+
+            
 
             <div class="table-responsive">
                 <table class="interns-table">
