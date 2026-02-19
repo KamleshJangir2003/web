@@ -232,37 +232,22 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/dashboard', function () {
 
                 // Gender statistics for hired employees
-                $hiredEmployees = Employee::where('user_type', 'employee')->where('is_approved', true);
-                $totalHired = $hiredEmployees->count();
-                
-                // Debug: Check what gender values exist
-                $allGenders = Employee::where('user_type', 'employee')
+                $totalHired = Employee::where('user_type', 'employee')
                     ->where('is_approved', true)
-                    ->pluck('gender')
-                    ->unique()
-                    ->filter()
-                    ->values();
+                    ->count();
                 
                 $maleCount = Employee::where('user_type', 'employee')
                     ->where('is_approved', true)
-                    ->where('gender', 'male')
+                    ->whereRaw('LOWER(gender) = ?', ['male'])
                     ->count();
                     
                 $femaleCount = Employee::where('user_type', 'employee')
                     ->where('is_approved', true)
-                    ->where('gender', 'female')
+                    ->whereRaw('LOWER(gender) = ?', ['female'])
                     ->count();
                 
                 $malePercentage = $totalHired > 0 ? round(($maleCount / $totalHired) * 100) : 0;
                 $femalePercentage = $totalHired > 0 ? round(($femaleCount / $totalHired) * 100) : 0;
-                
-                // Debug info
-                \Log::info('Gender Debug', [
-                    'total' => $totalHired,
-                    'male' => $maleCount,
-                    'female' => $femaleCount,
-                    'all_genders' => $allGenders->toArray()
-                ]);
 
                 $stats = [
                     'totalEmployees' => Employee::where('user_type', 'employee')->count(),
