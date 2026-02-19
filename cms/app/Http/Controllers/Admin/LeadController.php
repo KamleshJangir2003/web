@@ -485,7 +485,8 @@ class LeadController extends Controller
 
     public function interested(Request $request)
     {
-        $query = Lead::where('condition_status', 'Interested');
+        $query = Lead::where('condition_status', 'Interested')
+                    ->whereDoesntHave('interviews');
         
         // Search functionality
         if ($request->has('search') && !empty($request->search)) {
