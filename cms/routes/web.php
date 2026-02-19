@@ -384,6 +384,15 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/employees/quick-add', [EmployeeController::class, 'quickAdd'])
                 ->name('employees.quick-add');
 
+            Route::post('/employees/{id}/update-details', [EmployeeController::class, 'updateDetails'])
+                ->name('employees.update-details');
+
+            Route::get('/employees/{id}/check-details', [EmployeeController::class, 'checkDetails'])
+                ->name('employees.check-details');
+
+            Route::post('/employees/{id}/send-welcome', [EmployeeController::class, 'sendWelcome'])
+                ->name('employees.send-welcome');
+
             /*
             |--------------------------------------------------------------------------
             | APPROVE USER

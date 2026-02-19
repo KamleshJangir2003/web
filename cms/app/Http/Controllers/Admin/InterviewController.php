@@ -498,13 +498,25 @@ class InterviewController extends Controller
 
     public function selectedEmployees()
     {
+        // Get selected interviews
         $selectedInterviews = Interview::with('lead')
             ->where('result', 'Selected')
-            ->where('welcome_letter_sent', false) // Only show those who haven't received welcome letter yet
+            ->where('welcome_letter_sent', false)
             ->orderBy('updated_at', 'desc')
-            ->paginate(10);
+            ->get();
+        
+        // Get directly added employees (not from interviews)
+        $directEmployees = Employee::where('user_type', 'employee')
+            ->where('is_approved', true)
+            ->whereNotIn('email', function($query) {
+                $query->select('candidate_email')
+                    ->from('interviews')
+                    ->where('result', 'Selected');
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
             
-        return view('auth.admin.interviews.selected', compact('selectedInterviews'));
+        return view('auth.admin.interviews.selected', compact('selectedInterviews', 'directEmployees'));
     }
 
     public function sendWelcomeLetter(Request $request, Interview $interview)

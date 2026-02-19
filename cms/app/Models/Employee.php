@@ -35,17 +35,23 @@ class Employee extends Authenticatable
         'city',
         'state',
         'pincode',
+        'permanent_address',
+        'permanent_city',
+        'permanent_state',
+        'permanent_pincode',
 
         // Previous Employment
         'last_company_name',
         'last_salary_in_hand',
         'last_salary_ctc',
         'uan_number',
+        'esic_number',
 
         // Bank Details
         'bank_name',
         'ifsc_code',
         'bank_account_number',
+        'account_holder_name',
 
         // Selfie
         'selfie',

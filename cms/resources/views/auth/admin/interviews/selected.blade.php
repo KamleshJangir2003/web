@@ -142,6 +142,91 @@
 
                         </tr>
                     @empty
+                    @endforelse
+                    
+                    @forelse($directEmployees as $employee)
+                        <tr>
+                            <td>
+                                <div>
+                                    <strong>{{ $employee->full_name ?? $employee->first_name . ' ' . $employee->last_name }}</strong><br>
+                                    <small class="text-muted">Direct Add</small>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="job-role">{{ $employee->department }}</span>
+                            </td>
+                            <td>
+                                <span class="badge badge-info">Direct Entry</span>
+                            </td>
+                            <td>
+                                <div>
+                                    <strong>{{ formatDate($employee->created_at) }}</strong><br>
+                                    <small>{{ $employee->created_at->format('g:i A') }}</small>
+                                </div>
+                            </td>
+                            <td>-</td>
+                            <td>
+                                <div>
+                                    <small>{{ $employee->email }}</small><br>
+                                    @if($employee->phone)
+                                        <small>{{ $employee->phone }}</small>
+                                    @endif
+                                </div>
+                            </td>
+                            <td>
+                                <input type="date" class="form-control form-control-sm" 
+                                       id="emp_joining_date_{{ $employee->id }}" 
+                                       value="{{ $employee->joining_date ? $employee->joining_date->format('Y-m-d') : '' }}"
+                                       style="width: 140px; font-size: 12px;">
+                            </td>
+                            <td>
+                                <input type="number" class="form-control form-control-sm" 
+                                       id="emp_current_ctc_{{ $employee->id }}" 
+                                       value="{{ $employee->current_ctc ?? '' }}"
+                                       placeholder="CTC" 
+                                       style="width: 100px; font-size: 12px;">
+                            </td>
+                            <td>
+                                <input type="number" class="form-control form-control-sm" 
+                                       id="emp_in_hand_salary_{{ $employee->id }}" 
+                                       value="{{ $employee->in_hand_salary ?? '' }}"
+                                       placeholder="In Hand" 
+                                       style="width: 100px; font-size: 12px;">
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <span class="badge badge-success">✅ Selected</span>
+
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-light dropdown-toggle action-btn"
+                                            type="button"
+                                            data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                            Actions
+                                        </button>
+
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>
+                                                <a class="dropdown-item"
+                                                   href="javascript:void(0)"
+                                                   onclick="saveDirectEmployeeDetails({{ $employee->id }})">
+                                                    <i class="fas fa-save me-2 text-success"></i> Save Details
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item"
+                                                   href="javascript:void(0)"
+                                                   onclick="sendDirectWelcomeLetter({{ $employee->id }})">
+                                                    <i class="fas fa-envelope me-2 text-primary"></i> Send Welcome Letter
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        @if($selectedInterviews->isEmpty())
                         <tr>
                             <td colspan="10" class="text-center">
                                 <div class="empty-state">
@@ -151,12 +236,11 @@
                                 </div>
                             </td>
                         </tr>
+                        @endif
                     @endforelse
                 </tbody>
             </table>
         </div>
-
-        {{ $selectedInterviews->links() }}
     </div>
 </div>
 @endsection
@@ -355,6 +439,118 @@ function saveEmploymentDetails(interviewId) {
     })
     .catch(error => {
         alert('Error saving employment details');
+        console.error(error);
+    });
+}
+
+function saveDirectEmployeeDetails(employeeId) {
+    const joiningDate = document.getElementById(`emp_joining_date_${employeeId}`).value;
+    const currentCtc = document.getElementById(`emp_current_ctc_${employeeId}`).value;
+    const inHandSalary = document.getElementById(`emp_in_hand_salary_${employeeId}`).value;
+    
+    if (!joiningDate || !currentCtc || !inHandSalary) {
+        alert('Please fill all employment details (Joining Date, CTC, and In Hand Salary)');
+        return;
+    }
+    
+    fetch(`/admin/employees/${employeeId}/update-details`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ 
+            joining_date: joiningDate,
+            current_ctc: currentCtc,
+            in_hand_salary: inHandSalary
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('✅ Employee details saved successfully!');
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Error saving employee details');
+        console.error(error);
+    });
+}
+
+function sendDirectWelcomeLetter(employeeId) {
+    const joiningDate = document.getElementById(`emp_joining_date_${employeeId}`).value;
+    const currentCtc = document.getElementById(`emp_current_ctc_${employeeId}`).value;
+    const inHandSalary = document.getElementById(`emp_in_hand_salary_${employeeId}`).value;
+    
+    if (!joiningDate || !currentCtc || !inHandSalary) {
+        alert('⚠️ Please save employment details first!\n\nYou need to:\n1. Fill Joining Date, CTC, and In Hand Salary\n2. Click "Save Details" button\n3. Then send welcome letter');
+        return;
+    }
+    
+    // Check if values are actually saved (not just filled)
+    fetch(`/admin/employees/${employeeId}/check-details`, {
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(checkData => {
+        if (!checkData.details_saved) {
+            alert('⚠️ Please click "Save Details" button first before sending welcome letter!');
+            return;
+        }
+        
+        if (!confirm('Send welcome letter to this employee?')) {
+            return;
+        }
+        
+        const loadingModal = document.createElement('div');
+        loadingModal.innerHTML = `
+            <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1001; display: flex; align-items: center; justify-content: center;">
+                <div style="background: white; padding: 30px; border-radius: 10px; text-align: center;">
+                    <div style="margin-bottom: 15px;">📧</div>
+                    <h4 style="margin-bottom: 10px;">Sending Welcome Letter...</h4>
+                    <p style="color: #666;">Please wait while we send the welcome letter.</p>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(loadingModal);
+        
+        fetch(`/admin/employees/${employeeId}/send-welcome`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ 
+                joining_date: joiningDate,
+                current_ctc: currentCtc,
+                in_hand_salary: inHandSalary
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            loadingModal.remove();
+            
+            if (data.success) {
+                alert('✅ Welcome letter sent successfully!');
+                window.location.href = '/admin/employees/documents';
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            loadingModal.remove();
+            alert('Error sending welcome letter');
+            console.error(error);
+        });
+    })
+    .catch(error => {
+        alert('Error checking details status');
         console.error(error);
     });
 }

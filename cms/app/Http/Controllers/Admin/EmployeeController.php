@@ -45,8 +45,7 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:employees,email',
             'father_name' => 'required|string|max:255',
             'mother_name' => 'required|string|max:255',
@@ -54,19 +53,22 @@ class EmployeeController extends Controller
             'contact_number' => 'required|string|max:20',
             'guardian_number' => 'required|string|max:20',
             'gender' => 'required|in:male,female,other',
-            'address' => 'required|string',
-            'city' => 'required|string|max:255',
-            'state' => 'required|string|max:255',
-            'pincode' => 'required|string|max:10',
-            'last_company_name' => 'required|string|max:255',
-            'last_salary_in_hand' => 'required|numeric|min:0',
-            'last_salary_ctc' => 'required|numeric|min:0',
-            'uan_number' => 'required|string|max:50',
-            'bank_name' => 'required|string|max:255',
-            'ifsc_code' => 'required|string|max:20',
+            'shift' => 'required|string',
+            'current_address' => 'required|string',
+            'current_city' => 'required|string|max:255',
+            'current_state' => 'required|string|max:255',
+            'current_pincode' => 'required|string|max:10',
+            'permanent_address' => 'required|string',
+            'permanent_city' => 'required|string|max:255',
+            'permanent_state' => 'required|string|max:255',
+            'permanent_pincode' => 'required|string|max:10',
+            'uan_number' => 'nullable|string|max:50',
+            'esic_number' => 'nullable|string|max:50',
+            'Account_Holder_Name' => 'required|string|max:255',
             'bank_account_number' => 'required|string|max:50',
-            'department' => 'required|string|max:255',
-            'selfie' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'ifsc_code' => 'required|string|max:20',
+            'bank_name' => 'required|string|max:255',
+            'designation' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -74,14 +76,19 @@ class EmployeeController extends Controller
         }
 
         try {
+            $nameParts = explode(' ', $request->full_name, 2);
+            $firstName = $nameParts[0];
+            $lastName = $nameParts[1] ?? '';
+
             Employee::create([
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'full_name' => $request->full_name,
                 'email' => $request->email,
                 'phone' => $request->contact_number,
-                'password' => Hash::make('password123'), // Default password
+                'password' => Hash::make('password123'),
                 'user_type' => 'employee',
-                'department' => $request->department,
+                'department' => $request->designation,
                 'is_approved' => true,
                 'father_name' => $request->father_name,
                 'mother_name' => $request->mother_name,
@@ -89,33 +96,33 @@ class EmployeeController extends Controller
                 'contact_number' => $request->contact_number,
                 'guardian_number' => $request->guardian_number,
                 'gender' => $request->gender,
-                'address' => $request->address,
-                'city' => $request->city,
-                'state' => $request->state,
-                'pincode' => $request->pincode,
-                'last_company_name' => $request->last_company_name,
-                'last_salary_in_hand' => $request->last_salary_in_hand,
-                'last_salary_ctc' => $request->last_salary_ctc,
+                'shift' => $request->shift,
+                'address' => $request->current_address,
+                'city' => $request->current_city,
+                'state' => $request->current_state,
+                'pincode' => $request->current_pincode,
+                'permanent_address' => $request->permanent_address,
+                'permanent_city' => $request->permanent_city,
+                'permanent_state' => $request->permanent_state,
+                'permanent_pincode' => $request->permanent_pincode,
                 'uan_number' => $request->uan_number,
-                'bank_name' => $request->bank_name,
-                'ifsc_code' => $request->ifsc_code,
+                'esic_number' => $request->esic_number,
+                'account_holder_name' => $request->Account_Holder_Name,
                 'bank_account_number' => $request->bank_account_number,
+                'ifsc_code' => $request->ifsc_code,
+                'bank_name' => $request->bank_name,
                 'joining_date' => now(),
-                'current_ctc' => $request->last_salary_ctc,
-                'in_hand_salary' => $request->last_salary_in_hand,
             ]);
 
-            // Log activity
             \App\Models\ActivityLog::log(
                 'Created Employee', 
                 'Employee Management', 
-                'Created new employee: ' . $request->first_name . ' ' . $request->last_name
+                'Created new employee: ' . $request->full_name
             );
 
-            // Create notification
-            \App\Helpers\NotificationHelper::employeeAdded($request->first_name . ' ' . $request->last_name);
+            \App\Helpers\NotificationHelper::employeeAdded($request->full_name);
 
-            return redirect()->route('admin.employees.index')->with('success', 'Employee created successfully!');
+            return redirect()->route('admin.interviews.selected')->with('success', 'Employee created successfully!');
             
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error saving employment details: ' . $e->getMessage())->withInput();
@@ -362,6 +369,103 @@ class EmployeeController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error creating employee: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function updateDetails(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'joining_date' => 'required|date',
+            'current_ctc' => 'required|numeric|min:0',
+            'in_hand_salary' => 'required|numeric|min:0'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ]);
+        }
+
+        try {
+            $employee = Employee::findOrFail($id);
+            $employee->update([
+                'joining_date' => $request->joining_date,
+                'current_ctc' => $request->current_ctc,
+                'in_hand_salary' => $request->in_hand_salary,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Employee details updated successfully!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating employee: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function checkDetails($id)
+    {
+        try {
+            $employee = Employee::findOrFail($id);
+            $detailsSaved = $employee->joining_date && $employee->current_ctc && $employee->in_hand_salary;
+            
+            return response()->json([
+                'details_saved' => $detailsSaved
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'details_saved' => false
+            ]);
+        }
+    }
+
+    public function sendWelcome(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'joining_date' => 'required|date',
+            'current_ctc' => 'required|numeric|min:0',
+            'in_hand_salary' => 'required|numeric|min:0'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ]);
+        }
+
+        try {
+            $employee = Employee::findOrFail($id);
+            
+            // Update employee details
+            $employee->update([
+                'joining_date' => $request->joining_date,
+                'current_ctc' => $request->current_ctc,
+                'in_hand_salary' => $request->in_hand_salary,
+            ]);
+
+            // Send welcome email
+            Mail::send('emails.welcome-letter', compact('employee'), function ($message) use ($employee) {
+                $message->to($employee->email, $employee->full_name ?? $employee->first_name . ' ' . $employee->last_name)
+                        ->subject('Welcome to The Kwikster - Joining Letter');
+            });
+
+            \Log::info('Welcome letter sent to: ' . $employee->email);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Welcome letter sent successfully!'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Welcome letter error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error sending welcome letter: ' . $e->getMessage()
             ]);
         }
     }
