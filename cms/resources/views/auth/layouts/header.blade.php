@@ -812,7 +812,7 @@ function showStatusPopup(type, title, message, details = null) {
 <li id="manualEntryForm" style="display: none; padding: 10px; background: #f8f9fa; border-radius: 4px; margin: 5px;">
 <input type="text" 
        id="manualName" 
-       placeholder="Enter text" 
+       placeholder="Enter Name" 
        class="form-control form-control-sm mb-2"
        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
 

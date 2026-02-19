@@ -37,23 +37,23 @@
 <div class="row">
 <div class="col-md-6 mb-3">
     <label>Full Name <span class="text-danger">*</span></label>
-    <input type="text" name="full_name" class="form-control" placeholder="Enter full name" required>
+    <input type="text" name="full_name" class="form-control" placeholder="Enter full name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="100" required>
 </div>
 
 
 
                     <div class="col-md-6 mb-3">
                         <label>Email <span class="text-danger">*</span></label>
-                        <input type="email" name="email" class="form-control" required>
+                        <input type="email" name="email" class="form-control" maxlength="100" required>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label>Father Name <span class="text-danger">*</span></label>
-                        <input type="text" name="father_name" class="form-control" required>
+                        <input type="text" name="father_name" class="form-control" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="100" required>
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label>Mother Name <span class="text-danger">*</span></label>
-                        <input type="text" name="mother_name" class="form-control" required>
+                        <input type="text" name="mother_name" class="form-control" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="100" required>
                     </div>
 
                     <div class="col-md-6 mb-3">
@@ -63,12 +63,12 @@
 
                     <div class="col-md-6 mb-3">
                         <label>Contact Number <span class="text-danger">*</span></label>
-                        <input type="text" name="contact_number" class="form-control" required>
+                        <input type="tel" name="contact_number" class="form-control" pattern="[0-9]{10}" title="Enter valid 10 digit mobile number" maxlength="10" required>
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label>Guardian Number <span class="text-danger">*</span></label>
-                        <input type="text" name="guardian_number" class="form-control" required>
+                        <label>Emergency Number <span class="text-danger">*</span></label>
+                        <input type="tel" name="guardian_number" class="form-control" pattern="[0-9]{10}" title="Enter valid 10 digit mobile number" maxlength="10" required>
                     </div>
                     <div class="col-md-6 mb-3">
     <label>Gender <span class="text-danger">*</span></label>
@@ -116,17 +116,17 @@
 
     <div class="col-md-4 mb-3">
         <label>City <span class="text-danger">*</span></label>
-        <input type="text" name="current_city" class="form-control" required>
+        <input type="text" name="current_city" class="form-control" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="50" required>
     </div>
 
     <div class="col-md-4 mb-3">
         <label>State <span class="text-danger">*</span></label>
-        <input type="text" name="current_state" class="form-control" required>
+        <input type="text" name="current_state" class="form-control" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="50" required>
     </div>
 
     <div class="col-md-4 mb-3">
         <label>Pincode <span class="text-danger">*</span></label>
-        <input type="text" name="current_pincode" class="form-control" required>
+        <input type="text" name="current_pincode" class="form-control" pattern="[0-9]{6}" title="Enter valid 6 digit pincode" maxlength="6" required>
     </div>
 
 </div>
@@ -150,17 +150,17 @@
 
     <div class="col-md-4 mb-3">
         <label>City <span class="text-danger">*</span></label>
-        <input type="text" name="permanent_city" class="form-control" required>
+        <input type="text" name="permanent_city" class="form-control" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="50" required>
     </div>
 
     <div class="col-md-4 mb-3">
         <label>State <span class="text-danger">*</span></label>
-        <input type="text" name="permanent_state" class="form-control" required>
+        <input type="text" name="permanent_state" class="form-control" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="50" required>
     </div>
 
     <div class="col-md-4 mb-3">
         <label>Pincode <span class="text-danger">*</span></label>
-        <input type="text" name="permanent_pincode" class="form-control" required>
+        <input type="text" name="permanent_pincode" class="form-control" pattern="[0-9]{6}" title="Enter valid 6 digit pincode" maxlength="6" required>
     </div>
 
 </div>
@@ -182,11 +182,11 @@
                     </div>-->
                     <div class="col-md-6 mb-3">
                         <label>UAN Number <span class="text-danger"></span></label>
-                        <input type="text" name="uan_number" class="form-control">
+                        <input type="text" name="uan_number" class="form-control" pattern="[0-9]{12}" title="Enter valid 12 digit UAN number" maxlength="12">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label>ESIC Number<span class="text-danger"></span></label>
-                        <input type="number" name="esic_number" class="form-control">
+                        <input type="text" name="esic_number" class="form-control" pattern="[0-9]{17}" title="Enter valid 17 digit ESIC number" maxlength="17">
                     </div> 
 
                    
@@ -200,20 +200,20 @@
                 <div class="row">
                 <div class="col-md-6 mb-3">
                         <label>Account Holder Name <span class="text-danger">*</span></label>
-                        <input type="text" name="Account_Holder_Name" class="form-control" required>
+                        <input type="text" name="Account_Holder_Name" class="form-control" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="100" required>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label>Bank Account Number <span class="text-danger">*</span></label>
-                        <input type="text" name="bank_account_number" class="form-control" required>
+                        <input type="text" name="bank_account_number" class="form-control" pattern="[0-9]{9,18}" title="Enter valid bank account number (9-18 digits)" maxlength="18" required>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label>IFSC Code <span class="text-danger">*</span></label>
-                        <input type="text" name="ifsc_code" class="form-control" required>
+                        <input type="text" name="ifsc_code" class="form-control" pattern="[A-Z]{4}0[A-Z0-9]{6}" title="Enter valid IFSC code (e.g., SBIN0001234)" maxlength="11" style="text-transform:uppercase" required>
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label>Bank Name <span class="text-danger">*</span></label>
-                        <input type="text" name="bank_name" class="form-control" required>
+                        <input type="text" name="bank_name" class="form-control" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="100" required>
                     </div>
 
                    
@@ -289,6 +289,55 @@
 
 
             </form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Prevent numbers in name fields
+    const nameFields = ['full_name', 'father_name', 'mother_name', 'Account_Holder_Name', 'bank_name', 'current_city', 'current_state', 'permanent_city', 'permanent_state'];
+    nameFields.forEach(field => {
+        const input = document.querySelector(`input[name="${field}"]`);
+        if(input) {
+            input.addEventListener('keypress', function(e) {
+                if(/[0-9]/.test(e.key)) e.preventDefault();
+            });
+        }
+    });
+
+    // Only numbers in phone/pincode fields
+    const numFields = ['contact_number', 'guardian_number', 'current_pincode', 'permanent_pincode', 'uan_number', 'esic_number', 'bank_account_number'];
+    numFields.forEach(field => {
+        const input = document.querySelector(`input[name="${field}"]`);
+        if(input) {
+            input.addEventListener('keypress', function(e) {
+                if(!/[0-9]/.test(e.key)) e.preventDefault();
+            });
+        }
+    });
+
+    // IFSC uppercase
+    const ifsc = document.querySelector('input[name="ifsc_code"]');
+    if(ifsc) {
+        ifsc.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+    }
+
+    // Same address checkbox
+    document.getElementById('sameAddress')?.addEventListener('change', function() {
+        if(this.checked) {
+            document.querySelector('textarea[name="permanent_address"]').value = document.querySelector('textarea[name="current_address"]').value;
+            document.querySelector('input[name="permanent_city"]').value = document.querySelector('input[name="current_city"]').value;
+            document.querySelector('input[name="permanent_state"]').value = document.querySelector('input[name="current_state"]').value;
+            document.querySelector('input[name="permanent_pincode"]').value = document.querySelector('input[name="current_pincode"]').value;
+        }
+    });
+
+    // Custom shift toggle
+    document.getElementById('shiftSelect')?.addEventListener('change', function() {
+        document.getElementById('customShiftFields').classList.toggle('d-none', this.value !== 'custom');
+    });
+});
+</script>
 
         </div>
     </div>

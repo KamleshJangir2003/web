@@ -179,7 +179,7 @@
                             <input type="text" value="{{ $employee->uan_number }}">
                         </div>
                         <div class="form-group">
-                            <label>ESI</label>
+                            <label>ESI Number</label>
                             <input type="text" value="{{ $employee->uan_number }}">
                         </div>
                     </div>
