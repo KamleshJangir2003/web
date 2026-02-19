@@ -82,42 +82,46 @@
                                             </button>
                                         </td>
                                     </tr>
-
-                            <div class="modal fade" id="letterModal{{ $letter->id }}" tabindex="-1">
-                                <div class="modal-dialog modal-xl modal-dialog-scrollable">
-                                    <div class="modal-content">
-                                        <div class="modal-header bg-light">
-                                            <div>
-                                                <h5 class="modal-title mb-1">{{ $letter->subject }}</h5>
-                                                <small class="text-muted">
-                                                    <strong>To:</strong> {{ $letter->to_email }} | 
-                                                    <strong>Sent:</strong> {{ $letter->sent_at->format('d M Y, g:i A') }} | 
-                                                    <span class="badge {{ $letter->status == 'sent' ? 'bg-success' : 'bg-warning' }}">
-                                                        {{ ucfirst($letter->status) }}
-                                                    </span>
-                                                </small>
-                                            </div>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <div class="modal-body p-0" style="background: #f4f6f9;">
-                                            <div class="letter-full-content">
-                                                {!! $letter->content !!}
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                <i class="fa-solid fa-times me-1"></i>Close
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
+                @endforeach
+
+                @foreach($groupedLetters as $email => $letters)
+                    @foreach($letters as $letter)
+                    <div class="modal fade" id="letterModal{{ $letter->id }}" tabindex="-1">
+                        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header bg-light">
+                                    <div>
+                                        <h5 class="modal-title mb-1">{{ $letter->subject }}</h5>
+                                        <small class="text-muted">
+                                            <strong>To:</strong> {{ $letter->to_email }} | 
+                                            <strong>Sent:</strong> {{ $letter->sent_at->format('d M Y, g:i A') }} | 
+                                            <span class="badge {{ $letter->status == 'sent' ? 'bg-success' : 'bg-warning' }}">
+                                                {{ ucfirst($letter->status) }}
+                                            </span>
+                                        </small>
+                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body p-0" style="background: #f4f6f9;">
+                                    <div class="letter-full-content">
+                                        {!! $letter->content !!}
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                        <i class="fa-solid fa-times me-1"></i>Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
                 @endforeach
             @else
                 <div class="text-center py-5">

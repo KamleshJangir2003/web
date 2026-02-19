@@ -118,33 +118,50 @@
                     <th>Amount (₹)</th>
                 </tr>
                 @php
-                    $netPay = $employee->in_hand_salary ?? 0;
-                    $basic = round($netPay * 0.55);
-                    $hra = round($netPay * 0.45);
-                    $employeePF = round($basic * 0.12);
-                    $employerPF = $employeePF;
-                    $ctc = $basic + $hra + $employerPF;
-                @endphp
-                <tr>
-                    <td>Basic</td>
-                    <td>{{ number_format($basic, 0) }}</td>
-                </tr>
-                <tr>
-                    <td>HRA</td>
-                    <td>{{ number_format($hra, 0) }}</td>
-                </tr>
-                <tr>
-                    <td>Employer PF</td>
-                    <td>{{ number_format($employerPF, 0) }}</td>
-                </tr>
-                <tr>
-                    <td>Employer ESIC</td>
-                    <td>0</td>
-                </tr>
-                <tr>
-                    <td><strong>CTC</strong></td>
-                    <td><strong>{{ number_format($ctc, 0) }}</strong></td>
-                </tr>
+    $netPay = $employee->in_hand_salary ?? 0;
+
+    // Reverse calculation (Basic 60%, PF 12%, ESIC 0.75%)
+    // Net = Gross - PF - ESIC
+    // PF = 12% of Basic = 7.2% of Gross
+    // ESIC = 0.75% of Gross
+    // Total deduction = 7.95%
+    // Net = 92.05% of Gross
+
+    $gross = round($netPay / 0.9205, 2);
+
+    $basic = round($gross * 0.60, 2);
+    $hra = round($gross * 0.40, 2);
+
+    $employeePF = round($basic * 0.12, 2);
+    $employeeESIC = round($gross * 0.0075, 2);
+
+    $employerPF = round($basic * 0.13, 2);
+    $employerESIC = round($gross * 0.0325, 2);
+
+    $ctc = round($gross + $employerPF + $employerESIC, 2);
+@endphp
+
+<tr>
+    <td>Basic (60%)</td>
+    <td>{{ number_format($basic, 2) }}</td>
+</tr>
+<tr>
+    <td>HRA (40%)</td>
+    <td>{{ number_format($hra, 2) }}</td>
+</tr>
+<tr>
+    <td>Employer PF (13%)</td>
+    <td>{{ number_format($employerPF, 2) }}</td>
+</tr>
+<tr>
+    <td>Employer ESIC (3.25%)</td>
+    <td>{{ number_format($employerESIC, 2) }}</td>
+</tr>
+<tr>
+    <td><strong>CTC</strong></td>
+    <td><strong>{{ number_format($ctc, 2) }}</strong></td>
+</tr>
+
             </table>
 
             <p><strong>Deductions:</strong></p>

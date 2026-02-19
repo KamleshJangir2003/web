@@ -569,7 +569,7 @@ class EmployeeDocumentController extends Controller
                 // Save email log
                 \App\Models\EmailLog::create([
                     'to_email' => $employee->email,
-                    'subject' => 'Joining Letter - Welcome to Kwikster',
+                    'subject' => 'Welcome Letter - Welcome to Kwikster',
                     'content' => $emailContent,
                     'sent_at' => now(),
                     'status' => 'sent'
