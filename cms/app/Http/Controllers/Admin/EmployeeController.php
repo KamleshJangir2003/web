@@ -180,23 +180,25 @@ class EmployeeController extends Controller
     {
         $employee = Employee::findOrFail($id);
         
-        $validator = Validator::make($request->all(), [
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:employees,email,' . $id,
-            'user_type' => 'required|in:employee,client,manager,admin',
-            'department' => 'required|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+        $data = $request->except(['_token', '_method', 'selfie']);
+        
+        // Handle empty values
+        foreach ($data as $key => $value) {
+            if ($value === null || $value === '') {
+                unset($data[$key]);
+            }
+        }
+        
+        $employee->update($data);
+        
+        if ($request->hasFile('selfie')) {
+            $file = $request->file('selfie');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/selfies'), $filename);
+            $employee->selfie = $filename;
+            $employee->save();
         }
 
-        $employee->update($request->only([
-            'first_name', 'last_name', 'email', 'user_type', 'department'
-        ]));
-
-        // Log activity
         \App\Models\ActivityLog::log(
             'Updated Employee', 
             'Employee Management', 

@@ -33,7 +33,7 @@
     @endif
 
     <div class="container">
-        <form action="{{ route('admin.interviews.store') }}" method="POST">
+        <form action="{{ route('admin.interviews.store') }}" method="POST" autocomplete="off">
             @csrf
             
             @if(isset($interview))
@@ -45,21 +45,21 @@
             <div class="section">
                 <div class="section-title">Candidate Information</div>
                 <div class="row">
-                    @if($lead || isset($interview))
-                    <input type="hidden" name="lead_id" value="{{ $lead->id ?? $interview->lead_id }}">
-                    <input type="hidden" name="candidate_name" value="{{ $lead->name ?? $interview->candidate_name }}">
+                    @if($lead || (isset($interview) && $interview))
+                    <input type="hidden" name="lead_id" value="{{ $lead->id ?? ($interview->lead_id ?? '') }}">
+                    <input type="hidden" name="candidate_name" value="{{ $lead->name ?? ($interview->candidate_name ?? '') }}">
 
                         <div class="col">
                             <label>Candidate Name</label>
-                            <input type="text" value="{{ $lead->name ?? $interview->candidate_name }}" class="readonly" readonly>
+                            <input type="text" value="{{ $lead->name ?? ($interview->candidate_name ?? '') }}" class="readonly" readonly>
                         </div>
                         <div class="col">
                             <label>Email</label>
-                            <input type="email" name="candidate_email" value="{{ $lead->email ?? $interview->candidate_email }}" required>
+                            <input type="email" name="candidate_email" value="{{ $lead->email ?? ($interview->candidate_email ?? '') }}" required autocomplete="off">
                         </div>
                         <div class="col">
                             <label>Job Role</label>
-                            <input type="text" value="{{ $lead->role ?? $interview->job_role }}" class="readonly" readonly>
+                            <input type="text" value="{{ $lead->role ?? ($interview->job_role ?? '') }}" class="readonly" readonly>
                         </div>
                     @else
                         <div class="col">
@@ -83,7 +83,7 @@
                         </div>
                         <div class="col">
                             <label>Email</label>
-                            <input type="email" name="candidate_email" id="candidate_email" required>
+                            <input type="email" name="candidate_email" id="candidate_email" required autocomplete="off">
                         </div>
                     @endif
                 </div>
@@ -104,15 +104,15 @@
                 <div class="row" style="margin-top:15px;">
                     <div class="col">
                         <label>Interview Date</label>
-                        <input type="date" name="interview_date" value="{{ isset($interview) ? $interview->interview_date->format('Y-m-d') : '' }}" required min="{{ date('Y-m-d') }}">
+                        <input type="date" name="interview_date" value="{{ isset($interview) ? $interview->interview_date->format('Y-m-d') : '' }}" required min="{{ date('Y-m-d') }}" autocomplete="off">
                     </div>
                     <div class="col">
                         <label>Start Time</label>
-                        <input type="time" name="start_time" value="{{ isset($interview) ? date('H:i', strtotime($interview->start_time)) : '' }}" required>
+                        <input type="time" name="start_time" value="{{ isset($interview) ? date('H:i', strtotime($interview->start_time)) : '' }}" required autocomplete="off">
                     </div>
                     <div class="col">
                         <label>End Time</label>
-                        <input type="time" name="end_time" value="{{ isset($interview) ? date('H:i', strtotime($interview->end_time)) : '' }}" required>
+                        <input type="time" name="end_time" value="{{ isset($interview) ? date('H:i', strtotime($interview->end_time)) : '' }}" required autocomplete="off">
                     </div>
                 </div>
 
@@ -136,11 +136,11 @@
                     
                     <div class="col">
                         <label>Interviewer Email</label>
-                        <input type="email" name="interviewer_email" required placeholder="interviewer@company.com">
+                        <input type="email" name="interviewer_email" required placeholder="interviewer@company.com" autocomplete="off">
                     </div>
                     <div class="col">
                         <label>Interviewer Phone</label>
-                        <input type="tel" name="interviewer_phone" required placeholder="+91 9876543210">
+                        <input type="tel" name="interviewer_phone" required placeholder="+91 9876543210" autocomplete="off">
                     </div>
                 </div>
 
@@ -167,7 +167,7 @@
                 </div>
 
                 <div class="meeting-box" style="margin-top:12px;">
-                    <input type="text" name="meeting_link" id="meeting_link" value="{{ isset($interview) ? $interview->meeting_link : '' }}" placeholder="Paste your meeting link here or generate one" required>
+                    <input type="text" name="meeting_link" id="meeting_link" value="{{ isset($interview) ? $interview->meeting_link : '' }}" placeholder="Paste your meeting link here or generate one" required autocomplete="off">
                     <button type="button" class="generate-btn" onclick="generateMeetingLink()">Generate Link</button>
                 </div>
                 
@@ -356,6 +356,26 @@ textarea{
 </style>
 
 <script>
+// Prevent form data restoration on page refresh/back button
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+        location.reload();
+    }
+});
+
+// Save form data to sessionStorage before unload
+window.addEventListener('beforeunload', function() {
+    const form = document.querySelector('form');
+    if (form) {
+        const formData = new FormData(form);
+        const data = {};
+        for (let [key, value] of formData.entries()) {
+            data[key] = value;
+        }
+        sessionStorage.setItem('interviewFormData', JSON.stringify(data));
+    }
+});
+
 // Load reschedule reason from sessionStorage if available
 window.addEventListener('DOMContentLoaded', function() {
     const rescheduleReason = sessionStorage.getItem('rescheduleReason');
@@ -364,6 +384,26 @@ window.addEventListener('DOMContentLoaded', function() {
         if (reasonField) {
             reasonField.value = rescheduleReason;
             sessionStorage.removeItem('rescheduleReason');
+        }
+    }
+    
+    // Restore form data after refresh
+    const savedData = sessionStorage.getItem('interviewFormData');
+    if (savedData) {
+        const data = JSON.parse(savedData);
+        const form = document.querySelector('form');
+        
+        for (let key in data) {
+            const input = form.querySelector(`[name="${key}"]`);
+            if (input) {
+                if (input.type === 'radio' || input.type === 'checkbox') {
+                    if (input.value === data[key]) {
+                        input.checked = true;
+                    }
+                } else {
+                    input.value = data[key];
+                }
+            }
         }
     }
 });
@@ -526,6 +566,12 @@ function handleFormSubmit() {
             return false;
         }
     }
+    
+    // Disable submit button to prevent double submission
+    const submitBtn = event.target;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+    
     return true;
 }
 </script>

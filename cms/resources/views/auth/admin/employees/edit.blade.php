@@ -1,5 +1,10 @@
 @extends('auth.layouts.app')
-
+<style>
+      .main-content{
+            padding-left: 130px;
+            margin-top: 70px;
+      }
+</style>
 @section('content')
 <div class="container-fluid">
 
@@ -61,7 +66,7 @@ value="{{ old('contact_number',$employee->contact_number) }}">
 </div>
 
 <div class="col-md-6 mb-3">
-<label>Guardian Number</label>
+<label>Emergency Number</label>
 <input type="text" name="guardian_number" class="form-control"
 value="{{ old('guardian_number',$employee->guardian_number) }}">
 </div>
@@ -171,7 +176,18 @@ value="{{ old('bank_account_number',$employee->bank_account_number) }}">
 
 {{-- ================= JOB DETAILS ================= --}}
 <h5 class="mb-3">Job Details</h5>
-<div class="col-md-6 mb-3">
+<div class="row">
+<div class="col-md-4 mb-3">
+<label>User Type</label>
+<select name="user_type" class="form-control">
+<option value="employee" {{ $employee->user_type=='employee'?'selected':'' }}>Employee</option>
+<option value="manager" {{ $employee->user_type=='manager'?'selected':'' }}>Manager</option>
+<option value="client" {{ $employee->user_type=='client'?'selected':'' }}>Client</option>
+<option value="admin" {{ $employee->user_type=='admin'?'selected':'' }}>Admin</option>
+</select>
+</div>
+
+<div class="col-md-4 mb-3">
 <label>Department</label>
 <select name="department" class="form-control">
 <option value="HR" {{ $employee->department=='HR'?'selected':'' }}>HR</option>
@@ -179,6 +195,20 @@ value="{{ old('bank_account_number',$employee->bank_account_number) }}">
 <option value="Sales" {{ $employee->department=='Sales'?'selected':'' }}>Sales</option>
 <option value="Accounts" {{ $employee->department=='Accounts'?'selected':'' }}>Accounts</option>
 </select>
+</div>
+
+<div class="col-md-4 mb-3">
+<label>Employee Status</label>
+<select name="employee_status" class="form-control">
+<option value="active" {{ ($employee->employee_status ?? 'active')=='active'?'selected':'' }}>Active</option>
+<option value="notice_period" {{ ($employee->employee_status ?? '')=='notice_period'?'selected':'' }}>Notice Period</option>
+<option value="resigned" {{ ($employee->employee_status ?? '')=='resigned'?'selected':'' }}>Resigned</option>
+<option value="left" {{ ($employee->employee_status ?? '')=='left'?'selected':'' }}>Left</option>
+<option value="terminated" {{ ($employee->employee_status ?? '')=='terminated'?'selected':'' }}>Terminated</option>
+<option value="absconding" {{ ($employee->employee_status ?? '')=='absconding'?'selected':'' }}>Absconding</option>
+<option value="on_hold" {{ ($employee->employee_status ?? '')=='on_hold'?'selected':'' }}>On Hold</option>
+</select>
+</div>
 </div>
 
 <hr>

@@ -100,15 +100,22 @@
 
                         <!-- STATUS -->
    <td class="text-center align-middle">
-    @if((int) $emp->is_approved === 1)
-        <span class="badge bg-success">
-            Approved
-        </span>
-    @else
-        <span class="badge bg-warning text-dark">
-            Pending
-        </span>
-    @endif
+    @php
+        $statusColors = [
+            'active' => 'success',
+            'resigned' => 'warning',
+            'terminated' => 'danger',
+            'absconding' => 'danger',
+            'notice_period' => 'info',
+            'left' => 'secondary',
+            'on_hold' => 'warning'
+        ];
+        $status = $emp->employee_status ?? 'active';
+        $color = $statusColors[$status] ?? 'secondary';
+    @endphp
+    <span class="badge bg-{{ $color }}">
+        {{ ucwords(str_replace('_', ' ', $status)) }}
+    </span>
 </td>
 
 
