@@ -510,19 +510,66 @@ class InterviewController extends Controller
     public function sendWelcomeLetter(Request $request, Interview $interview)
     {
         $request->validate([
-            'joining_date' => 'required|date|after_or_equal:today'
+            'joining_date' => 'required|date',
+            'current_ctc' => 'required|numeric',
+            'in_hand_salary' => 'required|numeric'
         ]);
 
-        // Update interview with joining date and mark welcome letter sent
-        $interview->update([
-            'welcome_letter_sent' => true,
-            'joining_date' => $request->joining_date
-        ]);
-        
-        return response()->json([
-            'success' => true, 
-            'message' => 'Welcome letter marked as sent! Candidate will appear in Documents section.'
-        ]);
+        try {
+            // Create employee record
+            $employee = Employee::where('email', $interview->candidate_email)->first();
+            
+            if (!$employee) {
+                $nameParts = explode(' ', trim($interview->candidate_name), 2);
+                $firstName = $nameParts[0] ?? '';
+                $lastName = $nameParts[1] ?? '';
+
+                $employee = Employee::create([
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'email' => $interview->candidate_email,
+                    'phone' => $interview->lead->number ?? null,
+                    'department' => $interview->job_role,
+                    'user_type' => 'employee',
+                    'is_approved' => true,
+                    'password' => Hash::make('password123'),
+                    'joining_date' => $request->joining_date,
+                    'current_ctc' => $request->current_ctc,
+                    'in_hand_salary' => $request->in_hand_salary,
+                ]);
+            } else {
+                $employee->update([
+                    'joining_date' => $request->joining_date,
+                    'current_ctc' => $request->current_ctc,
+                    'in_hand_salary' => $request->in_hand_salary,
+                ]);
+            }
+
+            // Send welcome email
+            Mail::send('emails.welcome-letter', compact('employee', 'interview'), function ($message) use ($employee) {
+                $message->to($employee->email, $employee->full_name)
+                        ->subject('Welcome to The Kwikster - Joining Letter');
+            });
+
+            // Mark welcome letter as sent
+            $interview->update([
+                'welcome_letter_sent' => true,
+                'joining_date' => $request->joining_date
+            ]);
+            
+            Log::info('Welcome letter sent to: ' . $employee->email);
+            
+            return response()->json([
+                'success' => true, 
+                'message' => 'Welcome letter sent successfully!'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Welcome letter error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false, 
+                'message' => 'Error sending welcome letter: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function completeInterview(Interview $interview)
@@ -581,44 +628,12 @@ class InterviewController extends Controller
         ]);
 
         try {
-            // Debug log
-            Log::info('Interview data:', [
-                'id' => $interview->id,
-                'candidate_name' => $interview->candidate_name,
-                'candidate_email' => $interview->candidate_email,
-                'lead_id' => $interview->lead_id
+            // Save directly to interview table
+            $interview->update([
+                'joining_date' => $request->joining_date,
+                'current_ctc' => $request->current_ctc,
+                'in_hand_salary' => $request->in_hand_salary,
             ]);
-            
-            // Find or create employee record
-            $employee = Employee::where('email', $interview->candidate_email)->first();
-            
-            if (!$employee) {
-                // Create employee if doesn't exist
-                $nameParts = explode(' ', trim($interview->candidate_name), 2);
-                $firstName = $nameParts[0] ?? '';
-                $lastName = $nameParts[1] ?? '';
-
-                $employee = Employee::create([
-                    'first_name' => $firstName,
-                    'last_name' => $lastName,
-                    'email' => $interview->candidate_email ?: ('temp_' . $interview->id . '@example.com'), // Unique fallback email
-                    'phone' => $interview->lead->number ?? null,
-                    'department' => $interview->job_role,
-                    'user_type' => 'employee',
-                    'is_approved' => true,
-                    'password' => Hash::make('password123'),
-                    'joining_date' => $request->joining_date,
-                    'current_ctc' => $request->current_ctc,
-                    'in_hand_salary' => $request->in_hand_salary,
-                ]);
-            } else {
-                // Update existing employee
-                $employee->update([
-                    'joining_date' => $request->joining_date,
-                    'current_ctc' => $request->current_ctc,
-                    'in_hand_salary' => $request->in_hand_salary,
-                ]);
-            }
             
             return response()->json([
                 'success' => true, 

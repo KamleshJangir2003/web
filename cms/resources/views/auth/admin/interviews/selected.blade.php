@@ -60,9 +60,6 @@
                 </thead>
                 <tbody>
                     @forelse($selectedInterviews as $interview)
-                        @php
-                            $employee = \App\Models\Employee::where('email', $interview->candidate_email)->first();
-                        @endphp
                         <tr>
                             <td>
                                 <div>
@@ -92,33 +89,24 @@
                                 </div>
                             </td>
                             <td>
-                                @if($employee && $employee->joining_date)
-                                    <span class="text-success" >{{ formatDate($employee->joining_date) }}</span>
-                                @else
-                                    <input type="date" class="form-control form-control-sm" 
-                                           id="joining_date_{{ $interview->id }}" 
-                                           style="width: 140px; font-size: 12px;">
-                                @endif
+                                <input type="date" class="form-control form-control-sm" 
+                                       id="joining_date_{{ $interview->id }}" 
+                                       value="{{ $interview->joining_date ?? '' }}"
+                                       style="width: 140px; font-size: 12px;">
                             </td>
                             <td>
-                                @if($employee && $employee->current_ctc)
-                                    <span class="text-success">₹{{ number_format($employee->current_ctc) }}</span>
-                                @else
-                                    <input type="number" class="form-control form-control-sm" 
-                                           id="current_ctc_{{ $interview->id }}" 
-                                           placeholder="CTC" 
-                                           style="width: 100px; font-size: 12px;">
-                                @endif
+                                <input type="number" class="form-control form-control-sm" 
+                                       id="current_ctc_{{ $interview->id }}" 
+                                       value="{{ $interview->current_ctc ?? '' }}"
+                                       placeholder="CTC" 
+                                       style="width: 100px; font-size: 12px;">
                             </td>
                             <td>
-                                @if($employee && $employee->in_hand_salary)
-                                    <span class="text-success">₹{{ number_format($employee->in_hand_salary) }}</span>
-                                @else
-                                    <input type="number" class="form-control form-control-sm" 
-                                           id="in_hand_salary_{{ $interview->id }}" 
-                                           placeholder="In Hand" 
-                                           style="width: 100px; font-size: 12px;">
-                                @endif
+                                <input type="number" class="form-control form-control-sm" 
+                                       id="in_hand_salary_{{ $interview->id }}" 
+                                       value="{{ $interview->in_hand_salary ?? '' }}"
+                                       placeholder="In Hand" 
+                                       style="width: 100px; font-size: 12px;">
                             </td>
                             <td>
     <div class="action-buttons">
@@ -133,16 +121,13 @@
             </button>
 
             <ul class="dropdown-menu dropdown-menu-end">
-                @if(!$employee || !$employee->joining_date || !$employee->current_ctc || !$employee->in_hand_salary)
-                    <li>
-                        <a class="dropdown-item"
-                           href="javascript:void(0)"
-                           onclick="saveEmploymentDetails({{ $interview->id }})">
-                            <i class="fas fa-save me-2 text-success"></i> Save Details
-                        </a>
-                    </li>
-                @endif
-
+                <li>
+                    <a class="dropdown-item"
+                       href="javascript:void(0)"
+                       onclick="saveEmploymentDetails({{ $interview->id }})">
+                        <i class="fas fa-save me-2 text-success"></i> Save Details
+                    </a>
+                </li>
                 <li>
                     <a class="dropdown-item"
                        href="javascript:void(0)"
@@ -347,37 +332,47 @@ function saveEmploymentDetails(interviewId) {
         return;
     }
     
-    if (confirm('Save employment details for this employee?')) {
-        fetch(`/admin/interviews/${interviewId}/employment-details`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ 
-                joining_date: joiningDate,
-                current_ctc: currentCtc,
-                in_hand_salary: inHandSalary
-            })
+    fetch(`/admin/interviews/${interviewId}/employment-details`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ 
+            joining_date: joiningDate,
+            current_ctc: currentCtc,
+            in_hand_salary: inHandSalary
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Employment details saved successfully!');
-                location.reload(); // Just reload current page
-            } else {
-                alert('Error: ' + data.message);
-            }
-        })
-        .catch(error => {
-            alert('Error saving employment details');
-            console.error(error);
-        });
-    }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('✅ Employment details saved successfully!');
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Error saving employment details');
+        console.error(error);
+    });
 }
 
 function sendWelcomeLetter(interviewId) {
-    // Show loading immediately
+    const joiningDate = document.getElementById(`joining_date_${interviewId}`).value;
+    const currentCtc = document.getElementById(`current_ctc_${interviewId}`).value;
+    const inHandSalary = document.getElementById(`in_hand_salary_${interviewId}`).value;
+    
+    if (!joiningDate || !currentCtc || !inHandSalary) {
+        alert('⚠️ Please save employment details first before sending welcome letter!');
+        return;
+    }
+    
+    if (!confirm('Send welcome letter to ' + document.querySelector(`#joining_date_${interviewId}`).closest('tr').querySelector('strong').textContent + '?')) {
+        return;
+    }
+    
     const loadingModal = document.createElement('div');
     loadingModal.innerHTML = `
         <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1001; display: flex; align-items: center; justify-content: center;">
@@ -389,10 +384,6 @@ function sendWelcomeLetter(interviewId) {
         </div>
     `;
     document.body.appendChild(loadingModal);
-    loadingModal.id = 'loadingModal';
-    
-    // Send with current date as joining date
-    const today = new Date().toISOString().split('T')[0];
     
     fetch(`/admin/interviews/${interviewId}/welcome-letter`, {
         method: 'POST',
@@ -400,27 +391,19 @@ function sendWelcomeLetter(interviewId) {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
-        body: JSON.stringify({ joining_date: today })
+        body: JSON.stringify({ 
+            joining_date: joiningDate,
+            current_ctc: currentCtc,
+            in_hand_salary: inHandSalary
+        })
     })
     .then(response => response.json())
     .then(data => {
         loadingModal.remove();
         
         if (data.success) {
-            // Success modal
-            const successModal = document.createElement('div');
-            successModal.innerHTML = `
-                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1001; display: flex; align-items: center; justify-content: center;">
-                    <div style="background: white; padding: 30px; border-radius: 10px; text-align: center; max-width: 400px;">
-                        <div style="font-size: 48px; margin-bottom: 15px;">✅</div>
-                        <h4 style="margin-bottom: 15px; color: #28a745;">Welcome Letter Sent!</h4>
-                        <p style="color: #666; margin-bottom: 20px;">Employee record created with Employee ID. Ready to move to Documents section.</p>
-                        <button onclick="window.location.href='/admin/employees/documents'" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;">Go to Documents</button>
-                        <button onclick="location.reload()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Stay Here</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(successModal);
+            alert('✅ Welcome letter sent successfully!');
+            window.location.href = '/admin/employees/documents';
         } else {
             alert('Error: ' + data.message);
         }

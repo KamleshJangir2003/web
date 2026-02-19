@@ -36,7 +36,8 @@ class Interview extends Model
         'offered_ctc',
         'offer_status',
         'welcome_letter_sent',
-        'joining_date'
+        'joining_date',
+        'in_hand_salary'
     ];
 
     protected $casts = [
