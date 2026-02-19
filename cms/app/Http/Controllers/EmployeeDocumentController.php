@@ -489,11 +489,7 @@ class EmployeeDocumentController extends Controller
         $hiredEmployees = Employee::where('user_type', 'employee')
             ->where('hired_status', 'hired')
             ->where(function($query) {
-                $query->where('employee_status', '!=', 'active')
-                      ->orWhereNull('employee_status');
-            })
-            ->where(function($query) {
-                $query->where('action_status', '!=', 'not_selected')
+                $query->where('action_status', '!=', 'selected')
                       ->orWhereNull('action_status');
             })
             ->orderBy('joining_date', 'desc')
@@ -608,15 +604,7 @@ class EmployeeDocumentController extends Controller
         ]);
 
         $employee = Employee::findOrFail($id);
-        
-        $updateData = ['hired_status' => $request->hired_status];
-        
-        // Reset employee_status when marking as hired so they appear in hired page
-        if ($request->hired_status === 'hired') {
-            $updateData['employee_status'] = 'hired';
-        }
-        
-        $employee->update($updateData);
+        $employee->update(['hired_status' => $request->hired_status]);
 
         if ($request->hired_status === 'hired') {
             return redirect()->route('admin.employees.hired.index')->with('success', 'Employee hired successfully');
