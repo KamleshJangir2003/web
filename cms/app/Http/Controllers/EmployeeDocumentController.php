@@ -75,17 +75,15 @@ class EmployeeDocumentController extends Controller
     public function adminDocumentsIndex()
     {
         $employees = Employee::where('user_type', 'employee')
-            ->where('is_approved', true)
-            ->where(function($query) {
-                $query->where('action_status', 'selected')
-                      ->orWhere('hired_status', 'hired');
-            })
-            ->with(['documents' => function($query) {
-                $query->select('user_id', 'document_type', 'status');
-            }])
-            ->orderBy('first_name')
-            ->get()
-            ->map(function($employee) {
+    ->where('is_approved', true)
+    ->where('action_status', 'selected')
+    ->where('hired_status', 'not_hired')
+    ->with(['documents' => function($query) {
+        $query->select('user_id', 'document_type', 'status');
+    }])
+    ->orderBy('first_name')
+    ->get()
+           ->map(function($employee) {
                 $documents = $employee->documents;
                 
                 // Calculate required documents based on actual logic
@@ -483,15 +481,12 @@ class EmployeeDocumentController extends Controller
     {
         $hiredEmployees = Employee::where('user_type', 'employee')
             ->where('hired_status', 'hired')
-            ->where(function($query) {
-                $query->where('action_status', '!=', 'selected')
-                      ->orWhereNull('action_status');
-            })
             ->orderBy('joining_date', 'desc')
             ->get();
-
+    
         return view('auth.admin.employees.hired_index', compact('hiredEmployees'));
     }
+    
 
     /* =====================================================
        UPDATE HIRED EMPLOYEE DATA
