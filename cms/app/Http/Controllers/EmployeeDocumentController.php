@@ -76,6 +76,10 @@ class EmployeeDocumentController extends Controller
     {
         $employees = Employee::where('user_type', 'employee')
             ->where(function($query) {
+                $query->where('hired_status', '!=', 'hired')
+                      ->orWhereNull('hired_status');
+            })
+            ->where(function($query) {
                 $query->where(function($q) {
                     $q->where('action_status', 'selected')
                       ->where(function($subq) {
