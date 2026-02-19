@@ -36,6 +36,7 @@
                             <th>Number</th>
                             <th>Role</th>
                             <th>Status</th>
+                            <th>Reason</th>
                             <th>Updated At</th>
                             <th>WhatsApp</th>
                             <th>Location</th>
@@ -60,6 +61,12 @@
                             </td>
                             <td>
                                 <span class="badge badge-success">✅ Interested</span>
+                            </td>
+                            <td>
+                                <span class="reason-text" data-id="{{ $lead->id }}" onclick="editReason({{ $lead->id }}, '{{ addslashes($lead->reason ?? '') }}')" style="cursor: pointer;">
+                                    <small class="text-muted">{{ $lead->reason ?: '-' }}</small>
+                                    <i class="fa-solid fa-edit" style="font-size: 10px; margin-left: 5px; color: #6c757d;"></i>
+                                </span>
                             </td>
                             <td>
     {{ $lead->updated_at->format('d M Y') }} <br>
@@ -113,6 +120,37 @@
 </div>
 
 <style>
+
+    /* Reason text hover effect */
+.reason-text {
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.reason-text small {
+    transition: color 0.3s ease;
+}
+
+.reason-text i {
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Hover effect */
+.reason-text:hover small {
+    color: #0d6efd; /* Bootstrap primary color */
+}
+
+.reason-text:hover i {
+    opacity: 1;
+    transform: scale(1.1);
+    color: #0d6efd;
+}
+
+/* Optional: underline on hover */
+
+
 .leads-card {
     max-width: 1200px;
     margin: 0 auto;
@@ -615,6 +653,51 @@ window.onclick = function(event) {
     if (event.target == modal) {
         closeUploadModal();
     }
+}
+
+// Inline reason editing
+function editReason(leadId, currentReason) {
+    const reasonSpan = document.querySelector(`.reason-text[data-id="${leadId}"]`);
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentReason;
+    input.style.cssText = 'width: 100%; padding: 4px; border: 1px solid #2eacb3; border-radius: 4px; font-size: 12px;';
+    
+    reasonSpan.innerHTML = '';
+    reasonSpan.appendChild(input);
+    input.focus();
+    
+    function saveReason() {
+        const newReason = input.value.trim();
+        
+        fetch(`/admin/leads/${leadId}/update-reason`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ reason: newReason })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                reasonSpan.innerHTML = `<small class="text-muted">${newReason || '-'}</small><i class="fa-solid fa-edit" style="font-size: 10px; margin-left: 5px; color: #6c757d;"></i>`;
+            } else {
+                alert('Failed to update reason');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating reason');
+        });
+    }
+    
+    input.addEventListener('blur', saveReason);
+    input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            saveReason();
+        }
+    });
 }
 
 // Search functionality (client-side filter for current page)

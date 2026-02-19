@@ -314,7 +314,7 @@ class LeadController extends Controller
             $isIntern = in_array($lead->role, $internRoles) || stripos($lead->role, 'intern') !== false;
             
             // Validate reason for specific statuses
-            if (in_array($status, ['Not Interested', 'Call Back', 'Rejected', 'Wrong Number']) && empty($reason)) {
+            if (in_array($status, ['Not Interested', 'Call Back', 'Rejected', 'Interested', 'Wrong Number']) && empty($reason)) {
                 return response()->json(['success' => false, 'message' => 'Reason is required for this status']);
             }
             
@@ -360,7 +360,7 @@ class LeadController extends Controller
                         Log::info('Lead moved to callbacks', ['lead_id' => $id]);
                         return response()->json(['success' => true, 'message' => 'Lead moved to callbacks']);
                     }
-                } elseif ($status === 'Intrested') {
+                } elseif ($status === 'Interested') {
                     if ($isIntern) {
                         // Move to interns table for intern roles
                         \App\Models\Intern::create([
@@ -371,6 +371,7 @@ class LeadController extends Controller
                             'platform' => $lead->platform,
                             'resume' => $lead->resume,
                             'condition_status' => 'Interested',
+                            'reason' => $reason,
                             'final_result' => 'Pending'
                         ]);
                         
@@ -395,8 +396,9 @@ class LeadController extends Controller
                             ]
                         );
                         
-                        // Update status in leads table
+                        // Update status and reason in leads table
                         $lead->condition_status = $status;
+                        $lead->reason = $reason;
                         $lead->save();
                         
                         \DB::commit();
@@ -483,7 +485,7 @@ class LeadController extends Controller
 
     public function interested(Request $request)
     {
-        $query = Lead::where('condition_status', 'Intrested');
+        $query = Lead::where('condition_status', 'Interested');
         
         // Search functionality
         if ($request->has('search') && !empty($request->search)) {
@@ -693,6 +695,20 @@ class LeadController extends Controller
         ];
         
         return $statusMap[$callbackStatus] ?? $callbackStatus;
+    }
+
+    public function updateReason(Request $request, $id)
+    {
+        try {
+            $lead = Lead::findOrFail($id);
+            $lead->reason = $request->reason;
+            $lead->save();
+            
+            return response()->json(['success' => true, 'message' => 'Reason updated successfully']);
+        } catch (\Exception $e) {
+            Log::error('Reason update failed', ['lead_id' => $id, 'error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Error updating reason']);
+        }
     }
 
     public function saveManualLead(Request $request)

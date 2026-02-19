@@ -224,7 +224,7 @@
                                     <option value="Not Interested">Not Interested</option>
                                     <option value="Call Back">Call Back</option>
                                     <!-- <option value="Picked">Pickup</option> -->
-                                    <option value="Intrested">Interested</option>
+                                    <option value="Interested">Interested</option>
                                     <option value="Rejected">Rejected</option>
                                     <option value="Wrong Number">Wrong Number</option>
                                 </select>
@@ -427,8 +427,8 @@ document.addEventListener('DOMContentLoaded', function() {
             currentStatus = status;
             currentRow = row;
             
-            // Show modal for statuses that require reason
-            if (['Not Interested', 'Call Back', 'Rejected', 'Wrong Number'].includes(status)) {
+            // Show modal for all statuses that require reason
+            if (['Not Interested', 'Call Back', 'Rejected', 'Interested', 'Wrong Number'].includes(status)) {
                 statusText.textContent = status;
                 reasonText.value = '';
                 modal.style.display = 'flex';
