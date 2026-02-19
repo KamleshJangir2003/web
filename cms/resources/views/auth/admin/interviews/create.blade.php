@@ -441,8 +441,12 @@ function generateMeetingLink() {
             break;
             
         case 'Zoom':
-            alert('For Zoom:\n1. Go to zoom.us and sign in\n2. Click "Schedule a Meeting"\n3. Copy the meeting link\n4. Paste it here');
-            window.open('https://zoom.us', '_blank');
+            // Set fixed Zoom meeting link
+            const fixedZoomLink = 'https://us05web.zoom.us/j/86861179844?pwd=ZOog4VIvSjpfEau5v8ssxyIgYBjhiM.1';
+            
+            document.getElementById('meeting_link').value = fixedZoomLink;
+            
+            alert('Zoom Meeting Link Added!\n\nJoin Zoom Meeting:\n' + fixedZoomLink + '\n\nMeeting ID: 868 6117 9844\nPasscode: tj77ms');
             break;
             
         case 'Teams':
@@ -475,6 +479,25 @@ function generateGoogleMeetId() {
     }
     
     return result;
+}
+
+function generateZoomMeetingId() {
+    // Generate 11-digit Zoom meeting ID
+    let id = '';
+    for (let i = 0; i < 11; i++) {
+        id += Math.floor(Math.random() * 10);
+    }
+    return id;
+}
+
+function generateZoomPassword() {
+    // Generate Zoom password (alphanumeric string)
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let password = '';
+    for (let i = 0; i < 32; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
 }
 
 function handleFormSubmit() {
@@ -510,33 +533,6 @@ function toggleMeetingSection(mode) {
     } else {
         meetingSection.style.display = 'block';
     }
-}
-
-function generateMeetingLink() {
-    const platform = document.querySelector('input[name="meeting_platform"]:checked');
-    if (!platform) {
-        alert('Please select a meeting platform first');
-        return;
-    }
-    
-    fetch('{{ route("admin.interviews.generate-link") }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({
-            platform: platform.value
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('meeting_link').value = data.link;
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error generating meeting link');
-    });
 }
 
 function handleFormSubmit() {
