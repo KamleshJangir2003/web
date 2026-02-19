@@ -24,12 +24,14 @@ class AttendanceController extends Controller
 
         // Get departments for filter
         $departments = Employee::where('user_type', 'employee')
+            ->where('action_status', 'selected')
             ->distinct()
             ->pluck('department')
             ->filter();
 
         // Build employee query with filters
-        $query = Employee::where('user_type', 'employee');
+        $query = Employee::where('user_type', 'employee')
+                        ->where('action_status', 'selected');
 
         if ($department_filter) {
             $query->where('department', $department_filter);
@@ -176,6 +178,7 @@ class AttendanceController extends Controller
     private function generateMonthlySalary($month, $year)
     {
         $employees = Employee::where('user_type', 'employee')
+            ->where('action_status', 'selected')
             ->whereNotNull('in_hand_salary')
             ->where('in_hand_salary', '>', 0)
             ->get();

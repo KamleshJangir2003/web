@@ -414,6 +414,7 @@
        
         <li><a href="{{ route('admin.birthdays.index') }}"><i class="fa-solid fa-birthday-cake"></i> Birthday</a></li>
         <li><a href="{{ route('admin.employees.all') }}"><i class="fa-solid fa-envelope"></i> All Emails</a></li>
+        <li><a href="{{ route('admin.letters.index') }}"><i class="fa-solid fa-file-contract"></i> Employee Letters</a></li>
         <li><a href="{{ route('admin.bills.index') }}"><i class="fa-solid fa-file-invoice"></i> Bill Management</a></li>
         <li><a href="{{ route('admin.expenses.index') }}"><i class="fa-solid fa-money-bill-wave"></i> Expenses</a></li>
         <li><a href="{{ route('admin.tickets.index') }}"><i class="fa-solid fa-ticket-alt"></i> Employee Tickets</a></li>

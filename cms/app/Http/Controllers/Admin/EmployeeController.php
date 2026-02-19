@@ -15,7 +15,8 @@ class EmployeeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Employee::where('user_type', '!=', 'admin');
+        $query = Employee::where('user_type', '!=', 'admin')
+                        ->where('action_status', 'selected');
         
         // Combined role and platform filtering
         if ($request->has('role') && $request->role) {
@@ -133,6 +134,7 @@ class EmployeeController extends Controller
     {
         $employees = Employee::where('user_type', '!=', 'admin')
                         ->where('is_approved', 1)
+                        ->where('action_status', 'selected')
                         ->orderBy('first_name')
                         ->get();
         
@@ -223,6 +225,7 @@ class EmployeeController extends Controller
     public function getEmployeesData()
     {
         $employees = Employee::where('user_type', '!=', 'admin')
+                        ->where('action_status', 'selected')
                         ->orderBy('first_name')
                         ->get();
         
@@ -237,7 +240,8 @@ class EmployeeController extends Controller
 
     public function profiles(Request $request)
     {
-        $query = Employee::where('user_type', '!=', 'admin');
+        $query = Employee::where('user_type', '!=', 'admin')
+                        ->where('action_status', 'selected');
         
         if ($request->has('search') && $request->search) {
             $search = $request->search;
@@ -258,6 +262,7 @@ class EmployeeController extends Controller
     public function employeeList()
     {
         $employees = Employee::where('user_type', '!=', 'admin')
+                        ->where('action_status', 'selected')
                         ->orderBy('first_name')
                         ->get();
         
@@ -267,6 +272,7 @@ class EmployeeController extends Controller
     public function employeeShifts()
     {
         $employees = Employee::where('user_type', '!=', 'admin')
+                        ->where('action_status', 'selected')
                         ->orderBy('first_name')
                         ->get();
         

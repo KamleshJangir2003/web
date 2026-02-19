@@ -76,8 +76,14 @@ class EmployeeDocumentController extends Controller
     {
         $employees = Employee::where('user_type', 'employee')
             ->where(function($query) {
-                $query->where('hired_status', '!=', 'hired')
-                      ->orWhereNull('hired_status');
+                $query->where(function($q) {
+                    $q->where('action_status', 'selected')
+                      ->where(function($subq) {
+                          $subq->where('hired_status', '!=', 'hired')
+                               ->orWhereNull('hired_status');
+                      });
+                })
+                ->orWhere('employee_status', 'active');
             })
             ->with(['documents' => function($query) {
                 $query->select('user_id', 'document_type', 'status');
@@ -292,7 +298,19 @@ class EmployeeDocumentController extends Controller
         }
 
         try {
+            // Generate email HTML content
+            $emailContent = view('emails.offer-letter', compact('employee', 'bankDetail'))->render();
+            
             \Mail::to($employee->email)->send(new \App\Mail\OfferLetterMail($employee, $bankDetail));
+            
+            // Save email log
+            \App\Models\EmailLog::create([
+                'to_email' => $employee->email,
+                'subject' => 'Offer Letter - ' . $employee->full_name,
+                'content' => $emailContent,
+                'sent_at' => now(),
+                'status' => 'sent'
+            ]);
             
             return redirect()->route('admin.employees.document', ['userId' => $userId])
                 ->with('success', 'Offer letter sent successfully to ' . $employee->email);
@@ -543,11 +561,24 @@ class EmployeeDocumentController extends Controller
             
             // Send joining letter email
             try {
+                // Generate email HTML content
+                $emailContent = view('emails.joining-letter', compact('employee'))->render();
+                
                 \Mail::to($employee->email)->send(new \App\Mail\JoiningLetterMail($employee));
-                return back()->with('success', 'Employee selected, activated, and joining letter sent to ' . $employee->email);
+                
+                // Save email log
+                \App\Models\EmailLog::create([
+                    'to_email' => $employee->email,
+                    'subject' => 'Joining Letter - Welcome to Kwikster',
+                    'content' => $emailContent,
+                    'sent_at' => now(),
+                    'status' => 'sent'
+                ]);
+                
+                return redirect()->route('admin.employees.documents.index')->with('success', 'Employee selected, activated, and joining letter sent to ' . $employee->email);
             } catch (\Exception $e) {
                 \Log::error('Failed to send joining letter: ' . $e->getMessage());
-                return back()->with('warning', 'Employee selected and activated, but failed to send joining letter: ' . $e->getMessage());
+                return redirect()->route('admin.employees.documents.index')->with('warning', 'Employee selected and activated, but failed to send joining letter: ' . $e->getMessage());
             }
         }
 
@@ -577,9 +608,15 @@ class EmployeeDocumentController extends Controller
         ]);
 
         $employee = Employee::findOrFail($id);
-        $employee->update([
-            'hired_status' => $request->hired_status
-        ]);
+        
+        $updateData = ['hired_status' => $request->hired_status];
+        
+        // Reset employee_status when marking as hired so they appear in hired page
+        if ($request->hired_status === 'hired') {
+            $updateData['employee_status'] = 'hired';
+        }
+        
+        $employee->update($updateData);
 
         if ($request->hired_status === 'hired') {
             return redirect()->route('admin.employees.hired.index')->with('success', 'Employee hired successfully');
