@@ -29,6 +29,7 @@
                         <th>Date & Time</th>
                         <th>Interviewer</th>
                         <th>Status</th>
+                        <th>Reason</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -60,6 +61,12 @@
                                     <span class="badge badge-primary">{{ $interview->status }}</span>
                                 @endif
                             </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" 
+                                       value="{{ $interview->reason }}" 
+                                       onchange="saveReason({{ $interview->id }}, this.value)"
+                                       placeholder="Add reason...">
+                            </td>
                             <td id="actions-{{ $interview->id }}">
                                 @if($interview->status == 'Scheduled')
                                     <button class="btn btn-sm btn-warning" onclick="window.location.href='/admin/interviews/{{ $interview->id }}/reschedule'">
@@ -82,7 +89,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center">No interviews found.</td>
+                            <td colspan="8" class="text-center">No interviews found.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -508,5 +515,26 @@ document.getElementById('rejectModal').addEventListener('click', function(e) {
 
 // Close modal with close button
 document.querySelector('.close').addEventListener('click', closeModal);
+
+function saveReason(interviewId, reason) {
+    fetch(`/admin/interviews/${interviewId}/reason`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ reason: reason })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Reason saved successfully!', 'success');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Error saving reason', 'error');
+    });
+}
 </script>
 @endsection

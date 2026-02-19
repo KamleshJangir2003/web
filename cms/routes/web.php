@@ -506,6 +506,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/interviews/{interview}/result', [App\Http\Controllers\Admin\InterviewController::class, 'updateResult'])->name('interviews.result');
             Route::post('/interviews/{interview}/offer', [App\Http\Controllers\Admin\InterviewController::class, 'makeOffer'])->name('interviews.offer');
             Route::post('/interviews/{interview}/complete', [App\Http\Controllers\Admin\InterviewController::class, 'completeInterview'])->name('interviews.complete');
+            Route::post('/interviews/{interview}/reason', [App\Http\Controllers\Admin\InterviewController::class, 'saveReason'])->name('interviews.reason');
             Route::post('/interviews/{interview}/welcome-letter', [App\Http\Controllers\Admin\InterviewController::class, 'sendWelcomeLetter'])->name('interviews.welcome-letter');
             Route::post('/interviews/{interview}/employment-details', [App\Http\Controllers\Admin\InterviewController::class, 'saveEmploymentDetails'])->name('interviews.employment-details');
             

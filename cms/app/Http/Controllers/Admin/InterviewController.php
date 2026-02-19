@@ -586,6 +586,12 @@ class InterviewController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function saveReason(Request $request, Interview $interview)
+    {
+        $interview->update(['reason' => $request->reason]);
+        return response()->json(['success' => true]);
+    }
+
     public function reschedule(Interview $interview)
     {
         $lead = $interview->lead;

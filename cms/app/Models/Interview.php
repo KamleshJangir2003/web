@@ -39,7 +39,8 @@ class Interview extends Model
         'joining_date',
         'in_hand_salary',
         'rescheduled_from',
-        'reschedule_reason'
+        'reschedule_reason',
+        'reason'
     ];
 
     protected $casts = [
