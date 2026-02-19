@@ -348,15 +348,16 @@
                             <td>{{ $intern->name }}</td>
                             <td>{{ $intern->number }}</td>
                             <td>
-                                <select class="status-select" data-id="{{ $intern->id }}">
-                                    <option value="">Select Status</option>
-                                    <option value="Not Interested" {{ $intern->condition_status == 'Not Interested' ? 'selected' : '' }}>Not Interested</option>
-                                    <option value="Call Back" {{ $intern->condition_status == 'Call Back' ? 'selected' : '' }}>Call Back</option>
-                                    <option value="Interested" {{ $intern->condition_status == 'Interested' ? 'selected' : '' }}>Interested</option>
-                                    <option value="Rejected" {{ $intern->condition_status == 'Rejected' ? 'selected' : '' }}>Rejected</option>
-                                    <option value="Wrong Number" {{ $intern->condition_status == 'Wrong Number' ? 'selected' : '' }}>Wrong Number</option>
-                                </select>
-                            </td>
+    <select class="status-select" data-id="{{ $intern->id }}">
+        <option value="" selected>Select Status</option>
+        <option value="Not Interested">Not Interested</option>
+        <option value="Call Back">Call Back</option>
+        <option value="Interested">Interested</option>
+        <option value="Rejected">Rejected</option>
+        <option value="Wrong Number">Wrong Number</option>
+    </select>
+</td>
+
                             <td>{{ $intern->role }}</td>
                             <td>
                             @php
@@ -423,7 +424,7 @@ $message = "We are pleased to inform you about our Internship Training Program o
                     <input type="number" name="internship_duration" min="1" max="12" required>
                 </div>
                 <div class="form-group">
-                    <label>Monthly Stipend (₹)</label>
+                    <label>Monthly Fees (₹)</label>
                     <input type="number" name="stipend" min="0" step="100">
                 </div>
                 <div class="form-group">
@@ -440,22 +441,150 @@ $message = "We are pleased to inform you about our Internship Training Program o
 </div>
 
 <!-- Reason Modal -->
-<div id="reasonModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <div class="modal-header">
+<div id="reasonModal" class="custom-modal">
+    <div class="custom-modal-content">
+
+        <div class="custom-modal-header">
             <h5>Status Change Reason</h5>
-            <span class="close" onclick="closeReasonModal()">&times;</span>
+            <span class="close-btn" onclick="closeReasonModal()">&times;</span>
         </div>
-        <div class="modal-body">
-            <p>Please provide a reason for changing status to <strong id="statusText"></strong>:</p>
+
+        <div class="custom-modal-body">
+            <p>
+                Please provide a reason for changing status to 
+                <strong id="statusText"></strong>
+            </p>
+
             <textarea id="reasonText" placeholder="Enter reason..." rows="4"></textarea>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeReasonModal()">Cancel</button>
-            <button type="button" class="btn btn-primary" onclick="saveStatusWithReason()">Save</button>
+
+        <div class="custom-modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeReasonModal()">Cancel</button>
+            <button type="button" class="btn-save" onclick="saveStatusWithReason()">Save</button>
         </div>
+
     </div>
 </div>
+<style>
+    /* Overlay */
+.custom-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Modal Box */
+.custom-modal-content {
+    background: #ffffff;
+    width: 420px;
+    max-width: 95%;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: slideDown 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+/* Header */
+.custom-modal-header {
+    background: linear-gradient(135deg, #4e73df, #224abe);
+    color: #fff;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-modal-header h5 {
+    margin: 0;
+    font-size: 16px;
+}
+
+/* Close button */
+.close-btn {
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/* Body */
+.custom-modal-body {
+    padding: 20px;
+}
+
+.custom-modal-body p {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.custom-modal-body textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    resize: none;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.custom-modal-body textarea:focus {
+    border-color: #4e73df;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(78,115,223,0.2);
+}
+
+/* Footer */
+.custom-modal-footer {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background: #f8f9fc;
+}
+
+/* Buttons */
+.btn-cancel {
+    padding: 8px 15px;
+    border-radius: 6px;
+    border: none;
+    background: #858796;
+    color: white;
+    cursor: pointer;
+}
+
+.btn-save {
+    padding: 8px 15px;
+    border-radius: 6px;
+    border: none;
+    background: #4e73df;
+    color: white;
+    cursor: pointer;
+}
+
+.btn-save:hover {
+    background: #2e59d9;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+</style>
 
 <script>
 let currentInternId = null;

@@ -142,7 +142,7 @@
                                     'not_started' => 'Not Started',
                                     'pending' => 'Pending Review',
                                     'completed' => 'All Verified',
-                                    'in_progress' => 'In Progress',
+                                    'in_progress' => 'Uploaded',
                                     default => 'Unknown'
                                 };
                             @endphp
@@ -151,8 +151,8 @@
                                 @if($stats['verified'] > 0)
                                     <span class="text-success">✓ {{ $stats['verified'] }} Verified</span>
                                 @endif
-                                @if($stats['pending'] > 0)
-                                    <span class="text-warning">⏳ {{ $stats['pending'] }} Pending</span>
+                                @if($stats['uploaded'] > 0 && $stats['status'] == 'in_progress')
+                                    <span class="text-info">📄 {{ $stats['uploaded'] }} Uploaded</span>
                                 @endif
                                 @if($stats['missing'] > 0)
                                     <span class="text-danger">❌ {{ $stats['missing'] }} Missing</span>

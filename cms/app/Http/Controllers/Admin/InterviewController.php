@@ -513,33 +513,16 @@ class InterviewController extends Controller
             'joining_date' => 'required|date|after_or_equal:today'
         ]);
 
-        try {
-            Mail::send('emails.welcome-letter', [
-                'candidateName' => $interview->candidate_name,
-                'joiningDate' => date('d M Y', strtotime($request->joining_date))
-            ], function ($message) use ($interview) {
-                $message->to($interview->candidate_email, $interview->candidate_name)
-                        ->subject('Welcome to Kwikster Innovative Optimisations Pvt. Ltd.')
-                        ->from('hr@thekwikster.com', 'Kwikster HR Team');
-            });
-
-            // Update interview with joining date and mark welcome letter sent
-            $interview->update([
-                'welcome_letter_sent' => true,
-                'joining_date' => $request->joining_date
-            ]);
-            
-            return response()->json([
-                'success' => true, 
-                'message' => 'Welcome letter sent successfully! Candidate will appear in Documents section.'
-            ]);
-        } catch (\Exception $e) {
-            \Log::error('Welcome letter error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false, 
-                'message' => 'Failed to send email: ' . $e->getMessage()
-            ]);
-        }
+        // Update interview with joining date and mark welcome letter sent
+        $interview->update([
+            'welcome_letter_sent' => true,
+            'joining_date' => $request->joining_date
+        ]);
+        
+        return response()->json([
+            'success' => true, 
+            'message' => 'Welcome letter marked as sent! Candidate will appear in Documents section.'
+        ]);
     }
 
     public function completeInterview(Interview $interview)

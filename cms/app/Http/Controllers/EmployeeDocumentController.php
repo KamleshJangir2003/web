@@ -142,7 +142,7 @@ class EmployeeDocumentController extends Controller
                     'status' => $uploadedCount == 0 ? 'not_started' : 
                                ($allRequiredUploaded && $verifiedCount >= 6 ? 'completed' : 
                                ($submittedCount > 0 ? 'submitted' : 
-                               ($pendingCount > 0 ? 'pending' : 'in_progress')))
+                               ($uploadedCount > 0 ? 'in_progress' : 'pending')))
                 ];
                 
                 return $employee;
@@ -165,7 +165,7 @@ class EmployeeDocumentController extends Controller
         $uploadedCount = $documents->unique('document_type')->count();
         $verifiedCount = $documents->where('status', 'verified')->unique('document_type')->count();
         $submittedCount = $documents->where('status', 'submitted')->unique('document_type')->count();
-        $pendingCount  = $documents->whereIn('status', ['pending', 'uploaded'])->unique('document_type')->count();
+        $pendingCount  = $documents->where('status', 'pending')->unique('document_type')->count();
 
         $isAdminView = true;
 
@@ -529,6 +529,7 @@ class EmployeeDocumentController extends Controller
         // If selected, move to next step (make them active employee)
         if ($request->action_status === 'selected') {
             $employee->update(['employee_status' => 'active']);
+            return back()->with('success', 'Employee selected and activated successfully');
         }
 
         return back()->with('success', 'Employee data updated successfully');
@@ -560,6 +561,10 @@ class EmployeeDocumentController extends Controller
         $employee->update([
             'hired_status' => $request->hired_status
         ]);
+
+        if ($request->hired_status === 'hired') {
+            return redirect()->route('admin.employees.hired.index')->with('success', 'Employee hired successfully');
+        }
 
         return back()->with('success', 'Hired status updated successfully');
     }

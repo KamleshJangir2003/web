@@ -171,13 +171,13 @@ body {
                                                 </select>
                                             </td>
                                             <td>
-                                                <input type="time" name="employees[{{ $emp->id }}][in_time]" class="form-control form-control-sm" value="{{ $att->in_time ?? '' }}">
+                                                <input type="time" name="employees[{{ $emp->id }}][in_time]" class="form-control form-control-sm" value="{{ isset($att->in_time) ? $att->in_time : '' }}">
                                             </td>
                                             <td>
-                                                <input type="time" name="employees[{{ $emp->id }}][out_time]" class="form-control form-control-sm" value="{{ $att->out_time ?? '' }}">
+                                                <input type="time" name="employees[{{ $emp->id }}][out_time]" class="form-control form-control-sm" value="{{ isset($att->out_time) ? $att->out_time : '' }}">
                                             </td>
                                             <td>
-                                                <input type="text" name="employees[{{ $emp->id }}][reason]" class="form-control form-control-sm" placeholder="Reason" value="{{ $att->reason ?? '' }}">
+                                                <input type="text" name="employees[{{ $emp->id }}][reason]" class="form-control form-control-sm" placeholder="Reason" value="{{ isset($att->reason) ? $att->reason : '' }}">
                                             </td>
                                         </tr>
                                     @empty
@@ -281,9 +281,9 @@ body {
                                                         {{ $att->status }}
                                                     </span>
                                                 </td>
-                                                <td>{{ $att->in_time ? date('h:i A', strtotime($att->in_time)) : '-' }}</td>
-                                                <td>{{ $att->out_time ? date('h:i A', strtotime($att->out_time)) : '-' }}</td>
-                                                <td>{{ $att->reason ?: '-' }}</td>
+                                                <td>{{ isset($att->in_time) && $att->in_time ? date('h:i A', strtotime($att->in_time)) : '-' }}</td>
+                                                <td>{{ isset($att->out_time) && $att->out_time ? date('h:i A', strtotime($att->out_time)) : '-' }}</td>
+                                                <td>{{ isset($att->reason) && $att->reason ? $att->reason : '-' }}</td>
                                             </tr>
                                         @endif
                                     @endforeach

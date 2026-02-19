@@ -355,6 +355,51 @@ window.onclick = function(event) {
         closeEditModal();
     }
 }
+
+// Status change handler
+document.querySelectorAll('.status-select').forEach(select => {
+    select.addEventListener('change', function() {
+        const callbackId = this.dataset.id;
+        const status = this.value;
+        const row = this.closest('tr');
+        
+        if (!status) return;
+        
+        const reason = prompt('Please provide a reason for status change:');
+        if (!reason) {
+            this.value = '';
+            return;
+        }
+        
+        fetch(`/admin/interns/callbacks/${callbackId}/status`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status, reason })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Status updated successfully!');
+                if (data.redirect) {
+                    window.location.href = data.redirect;
+                } else {
+                    row.remove();
+                }
+            } else {
+                alert('Error updating status');
+                this.value = '';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Network error occurred');
+            this.value = '';
+        });
+    });
+});
 </script>
 
 @endsection

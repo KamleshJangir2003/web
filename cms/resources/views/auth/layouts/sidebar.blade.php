@@ -345,7 +345,7 @@
             <a href="#">
             <i class="fa-solid fa-graduation-cap"></i> Interns</a>
             <ul class="submenu">
-                <a href="{{ route('admin.interns.index') }}">All Interns</a>
+                <a href="{{ route('admin.interns.index') }}">Leads</a>
                 <a href="{{ route('admin.interns.callbacks') }}">Intern Callbacks</a>
                 <a href="{{ route('admin.interns.interested') }}">Interested Interns</a>
                 <a href="{{ route('admin.interns.ongoing-list') }}">Ongoing Interns</a>

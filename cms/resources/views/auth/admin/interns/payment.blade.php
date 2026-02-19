@@ -1,14 +1,33 @@
 @extends('auth.layouts.app')
-
+<style>
+    .main-content{
+        margin-top: 70px;
+    }
+    .card-header{
+        display: flex;
+    }
+   
+</style>
 @section('title', 'Intern Payment')
 
 @section('content')
 <div class="main-content">
     <div class="card">
-        <div class="card-header">
-            <h4>Payment Management - {{ $intern->name }}</h4>
-            <a href="{{ route('admin.interns.ongoing-list') }}" class="btn btn-secondary">Back to Ongoing Interns</a>
-        </div>
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+<!-- Left Side Heading -->
+<h4 class="mb-0">
+    Payment Management - {{ $intern->name }}
+</h4>
+
+<!-- Right Side Button -->
+<a href="{{ route('admin.interns.ongoing-list') }}" 
+   class="btn btn-secondary">
+    Back to Ongoing Interns →
+</a>
+
+</div>
+
 
         <div class="card-body">
             <!-- Intern Details -->
@@ -30,7 +49,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5>Payment Info</h5>
-                            <p><strong>Monthly Stipend:</strong> {{ $intern->stipend ? '₹' . number_format($intern->stipend) : 'Not Set' }}</p>
+                            <p><strong>Monthly Fees:</strong> {{ $intern->stipend ? '₹' . number_format($intern->stipend) : 'Not Set' }}</p>
                             <p><strong>Total Paid:</strong> <span class="text-success">₹{{ number_format($intern->total_paid ?? 0) }}</span></p>
                             <p><strong>Pending Amount:</strong> <span class="text-danger">₹{{ $intern->stipend ? number_format($intern->stipend - ($intern->total_paid ?? 0)) : '0' }}</span></p>
                             <p><strong>HR Commission:</strong> {{ $intern->hr->full_name ?? 'Not Assigned' }}</p>
