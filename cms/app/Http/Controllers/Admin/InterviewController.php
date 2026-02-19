@@ -540,6 +540,7 @@ class InterviewController extends Controller
                     'platform' => $interview->lead->platform ?? null,
                     'user_type' => 'employee',
                     'is_approved' => true,
+                    'action_status' => 'selected',
                     'password' => Hash::make('password123'),
                     'joining_date' => $request->joining_date,
                     'current_ctc' => $request->current_ctc,
@@ -547,6 +548,7 @@ class InterviewController extends Controller
                 ]);
             } else {
                 $employee->update([
+                    'action_status' => 'selected',
                     'joining_date' => $request->joining_date,
                     'current_ctc' => $request->current_ctc,
                     'in_hand_salary' => $request->in_hand_salary,
@@ -569,7 +571,8 @@ class InterviewController extends Controller
             
             return response()->json([
                 'success' => true, 
-                'message' => 'Welcome letter sent successfully!'
+                'message' => 'Welcome letter sent successfully!',
+                'redirect' => route('admin.employees.documents.index')
             ]);
         } catch (\Exception $e) {
             Log::error('Welcome letter error: ' . $e->getMessage());

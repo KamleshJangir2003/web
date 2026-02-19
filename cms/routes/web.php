@@ -291,6 +291,8 @@ Route::middleware(['auth'])->group(function () {
                 // Get all approved employees for the table
                 $allEmployees = Employee::where('user_type', 'employee')
                     ->where('is_approved', true)
+                    ->where('action_status', 'selected')
+                    ->where('employee_status', 'active')
                     ->select('id', 'first_name', 'last_name', 'email', 'phone', 'department', 'platform')
                     ->orderBy('first_name')
                     ->get();
@@ -850,3 +852,4 @@ include __DIR__ . '/debug.php';
 Route::fallback(function () {
     return view('errors.404');
 });
+

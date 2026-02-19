@@ -599,7 +599,11 @@ function sendWelcomeLetter(interviewId) {
         
         if (data.success) {
             alert('✅ Welcome letter sent successfully!');
-            window.location.href = '/admin/employees/documents';
+            if (data.redirect) {
+                window.location.href = data.redirect;
+            } else {
+                window.location.href = '/admin/employees/documents';
+            }
         } else {
             alert('Error: ' + data.message);
         }

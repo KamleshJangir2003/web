@@ -124,12 +124,12 @@
                             @if(isset($emp->is_interview_candidate) && $emp->is_interview_candidate)
                                 <span class="badge bg-warning text-dark">Pending Documents</span>
                             @else
-                                <form method="POST" action="{{ route('admin.employees.update-hired-status', $emp->id) }}" class="d-inline">
+                                <form method="POST" action="{{ route('admin.employees.update-hired-status', $emp->id) }}?t={{ time() }}" class="d-inline">
                                     @csrf
                                     @method('PATCH')
                                     <select name="hired_status" class="form-select form-select-sm" style="width: 120px;" onchange="this.form.submit()">
                                         <option value="not_hired" {{ ($emp->hired_status ?? 'not_hired') == 'not_hired' ? 'selected' : '' }}>Not Hired</option>
-                                        <option value="hired" {{ ($emp->hired_status ?? 'not_hired') == 'hired' ? 'selected' : '' }} {{ $emp->document_stats['uploaded'] != $emp->document_stats['total_required'] ? 'disabled' : '' }}>Hired</option>
+                                        <option value="hired" {{ ($emp->hired_status ?? 'not_hired') == 'hired' ? 'selected' : '' }}>Hired</option>
                                     </select>
                                 </form>
                             @endif

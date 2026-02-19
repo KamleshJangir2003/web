@@ -75,19 +75,10 @@ class EmployeeDocumentController extends Controller
     public function adminDocumentsIndex()
     {
         $employees = Employee::where('user_type', 'employee')
+            ->where('is_approved', true)
             ->where(function($query) {
-                $query->where('hired_status', '!=', 'hired')
-                      ->orWhereNull('hired_status');
-            })
-            ->where(function($query) {
-                $query->where(function($q) {
-                    $q->where('action_status', 'selected')
-                      ->where(function($subq) {
-                          $subq->where('hired_status', '!=', 'hired')
-                               ->orWhereNull('hired_status');
-                      });
-                })
-                ->orWhere('employee_status', 'active');
+                $query->where('action_status', 'selected')
+                      ->orWhere('hired_status', 'hired');
             })
             ->with(['documents' => function($query) {
                 $query->select('user_id', 'document_type', 'status');
@@ -555,31 +546,19 @@ class EmployeeDocumentController extends Controller
         
         $employee->update($updateData);
 
-        // If selected, move to next step (make them active employee) and send joining letter
+        // If selected, move to All Employees and Attendance
         if ($request->action_status === 'selected') {
-            $employee->update(['employee_status' => 'active']);
+            $employee->update([
+                'employee_status' => 'active',
+                'is_approved' => true
+            ]);
             
-            // Send joining letter email
-            try {
-                // Generate email HTML content
-                $emailContent = view('emails.joining-letter', compact('employee'))->render();
-                
-                \Mail::to($employee->email)->send(new \App\Mail\JoiningLetterMail($employee));
-                
-                // Save email log
-                \App\Models\EmailLog::create([
-                    'to_email' => $employee->email,
-                    'subject' => 'Welcome Letter - Welcome to Kwikster',
-                    'content' => $emailContent,
-                    'sent_at' => now(),
-                    'status' => 'sent'
-                ]);
-                
-                return redirect()->route('admin.employees.documents.index')->with('success', 'Employee selected, activated, and joining letter sent to ' . $employee->email);
-            } catch (\Exception $e) {
-                \Log::error('Failed to send joining letter: ' . $e->getMessage());
-                return redirect()->route('admin.employees.documents.index')->with('warning', 'Employee selected and activated, but failed to send joining letter: ' . $e->getMessage());
-            }
+            return redirect()->route('admin.employees.hired.index')->with('success', 'Employee selected and moved to All Employees & Attendance');
+        }
+        
+        // If not selected, move to Not Selected page
+        if ($request->action_status === 'not_selected') {
+            return redirect()->route('admin.employees.not-selected.index')->with('success', 'Employee moved to Not Selected page');
         }
 
         return back()->with('success', 'Employee data updated successfully');
@@ -608,12 +587,11 @@ class EmployeeDocumentController extends Controller
         ]);
 
         $employee = Employee::findOrFail($id);
-        $employee->update(['hired_status' => $request->hired_status]);
+        $employee->update([
+            'hired_status' => $request->hired_status,
+            'joining_date' => $request->hired_status === 'hired' ? ($employee->joining_date ?? now()) : $employee->joining_date
+        ]);
 
-        if ($request->hired_status === 'hired') {
-            return redirect()->route('admin.employees.hired.index')->with('success', 'Employee hired successfully');
-        }
-
-        return back()->with('success', 'Hired status updated successfully');
+        return redirect()->route('admin.employees.hired.index')->with('success', 'Employee hired successfully');
     }
 }
