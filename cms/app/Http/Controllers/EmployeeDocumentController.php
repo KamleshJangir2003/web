@@ -537,10 +537,18 @@ class EmployeeDocumentController extends Controller
         
         $employee->update($updateData);
 
-        // If selected, move to next step (make them active employee)
+        // If selected, move to next step (make them active employee) and send joining letter
         if ($request->action_status === 'selected') {
             $employee->update(['employee_status' => 'active']);
-            return back()->with('success', 'Employee selected and activated successfully');
+            
+            // Send joining letter email
+            try {
+                \Mail::to($employee->email)->send(new \App\Mail\JoiningLetterMail($employee));
+                return back()->with('success', 'Employee selected, activated, and joining letter sent to ' . $employee->email);
+            } catch (\Exception $e) {
+                \Log::error('Failed to send joining letter: ' . $e->getMessage());
+                return back()->with('warning', 'Employee selected and activated, but failed to send joining letter: ' . $e->getMessage());
+            }
         }
 
         return back()->with('success', 'Employee data updated successfully');
