@@ -985,13 +985,16 @@
                             {{ $employee->department ?? 'N/A' }}
                         </td>
 
-                        <td>
-                            @if($employee->platform)
-                                <span class="badge bg-info">{{ $employee->platform }}</span>
-                            @else
-                                <span class="text-muted">N/A</span>
-                            @endif
-                        </td>
+                       <td>
+    @if($employee->platform)
+        <span class="badge bg-info">
+            {{ ucfirst(str_replace('_', ' ', $employee->platform)) }}
+        </span>
+    @else
+        <span class="text-muted">N/A</span>
+    @endif
+</td>
+
 
                         <td class="text-center">
                             

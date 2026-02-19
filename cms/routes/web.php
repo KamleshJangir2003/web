@@ -291,7 +291,7 @@ Route::middleware(['auth'])->group(function () {
                 // Get all approved employees for the table
                 $allEmployees = Employee::where('user_type', 'employee')
                     ->where('is_approved', true)
-                    ->select('id', 'first_name', 'last_name', 'email', 'phone', 'department')
+                    ->select('id', 'first_name', 'last_name', 'email', 'phone', 'department', 'platform')
                     ->orderBy('first_name')
                     ->get();
                     
