@@ -176,7 +176,7 @@
                     <strong>📅 Date:</strong> {{ date('d M Y', strtotime($interview->interview_date)) }}
                 </div>
                 <div class="detail-item">
-                    <strong>⏰ Time:</strong> {{ $interview->start_time }} - {{ $interview->end_time }}
+                    <strong>⏰ Time:</strong> {{ date('g:i A', strtotime($interview->start_time)) }} - {{ date('g:i A', strtotime($interview->end_time)) }}
                 </div>
                 <div class="detail-item">
                     <strong>👤 Interviewer:</strong> {{ $interview->interviewer }}

@@ -62,6 +62,9 @@
                             </td>
                             <td id="actions-{{ $interview->id }}">
                                 @if($interview->status == 'Scheduled')
+                                    <button class="btn btn-sm btn-warning" onclick="window.location.href='/admin/interviews/{{ $interview->id }}/reschedule'">
+                                        <i class="fas fa-calendar-alt"></i> Reschedule
+                                    </button>
                                     <button class="btn btn-sm btn-primary complete-btn" onclick="markCompleted({{ $interview->id }})">
                                         <i class="fas fa-check-circle"></i> Complete
                                     </button>
@@ -205,6 +208,16 @@
 .btn-sm {
     padding: 6px 12px;
     font-size: 12px;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+    transform: translateY(-1px);
 }
 
 .btn-success {

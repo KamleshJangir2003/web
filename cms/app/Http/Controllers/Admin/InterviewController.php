@@ -18,6 +18,7 @@ class InterviewController extends Controller
     {
         $interviews = Interview::with('lead')
             ->where('result', '!=', 'Selected')
+            ->where('status', '!=', 'Rescheduled')
             ->orderBy('interview_date', 'desc')
             ->paginate(10);
         return view('auth.admin.interviews.index', compact('interviews'));
@@ -108,19 +109,6 @@ class InterviewController extends Controller
             'instructions' => 'nullable|string',
         ]);
 
-        // Add new interviewer to permanent list if not exists
-        $interviewers = [
-            
-            'Harish (Team Leader)',
-            'Vishwash Agarwal',
-            'Ajay Singh(Manager)'
-        ];
-        
-        if (!in_array($request->interviewer, $interviewers)) {
-            // You can save to config file or database table here
-            // For now, it will work for current session
-        }
-
         $lead = Lead::findOrFail($request->lead_id);
         
         $interview = Interview::create([
@@ -142,7 +130,14 @@ class InterviewController extends Controller
             'email_candidate' => $request->has('email_candidate'),
             'email_interviewer' => $request->has('email_interviewer'),
             'whatsapp_notification' => $request->has('whatsapp_notification'),
+            'rescheduled_from' => $request->rescheduled_from,
+            'reschedule_reason' => $request->reschedule_reason
         ]);
+
+        // If rescheduling, mark old interview as rescheduled
+        if ($request->rescheduled_from) {
+            Interview::find($request->rescheduled_from)->update(['status' => 'Rescheduled']);
+        }
 
         // Send notifications
         $this->sendNotifications($interview, $lead);
@@ -589,6 +584,22 @@ class InterviewController extends Controller
     {
         $interview->update(['status' => 'Completed']);
         return response()->json(['success' => true]);
+    }
+
+    public function reschedule(Interview $interview)
+    {
+        $lead = $interview->lead;
+        $leads = Lead::all();
+        $defaultInterviewers = [
+            ['name' => 'Harish (Team Leader)', 'email' => 'harish@thekwikster.com', 'phone' => '+91 7300077942'],
+            ['name' => 'Vishwash Agarwal', 'email' => 'vishwashagarwal20@gmail.com', 'phone' => '+91 9119156553'],
+            ['name' => 'Ajay Singh(Manager)', 'email' => 'manager@thekwikster.com', 'phone' => '+91 8619089315']
+        ];
+        
+        $interviewers = $defaultInterviewers;
+        $nextRound = null;
+        
+        return view('auth.admin.interviews.create', compact('interview', 'lead', 'leads', 'interviewers', 'nextRound'));
     }
 
     /**

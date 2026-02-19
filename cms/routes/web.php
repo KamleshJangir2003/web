@@ -499,6 +499,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/interviews', [App\Http\Controllers\Admin\InterviewController::class, 'store'])->name('interviews.store');
             Route::get('/interviews/{interview}', [App\Http\Controllers\Admin\InterviewController::class, 'show'])->name('interviews.show');
             Route::get('/interviews/{interview}/edit', [App\Http\Controllers\Admin\InterviewController::class, 'edit'])->name('interviews.edit');
+            Route::get('/interviews/{interview}/reschedule', [App\Http\Controllers\Admin\InterviewController::class, 'reschedule'])->name('interviews.reschedule');
             Route::put('/interviews/{interview}', [App\Http\Controllers\Admin\InterviewController::class, 'update'])->name('interviews.update');
             Route::delete('/interviews/{interview}', [App\Http\Controllers\Admin\InterviewController::class, 'destroy'])->name('interviews.destroy');
             Route::post('/interviews/generate-link', [App\Http\Controllers\Admin\InterviewController::class, 'generateMeetingLink'])->name('interviews.generate-link');

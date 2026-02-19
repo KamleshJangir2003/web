@@ -36,25 +36,30 @@
         <form action="{{ route('admin.interviews.store') }}" method="POST">
             @csrf
             
+            @if(isset($interview))
+                <input type="hidden" name="rescheduled_from" value="{{ $interview->id }}">
+                <input type="hidden" name="reschedule_reason" id="reschedule_reason_field">
+            @endif
+            
             <!-- Candidate Info -->
             <div class="section">
                 <div class="section-title">Candidate Information</div>
                 <div class="row">
-                    @if($lead)
-                    <input type="hidden" name="lead_id" value="{{ $lead->id }}">
-                    <input type="hidden" name="candidate_name" value="{{ $lead->name }}">
+                    @if($lead || isset($interview))
+                    <input type="hidden" name="lead_id" value="{{ $lead->id ?? $interview->lead_id }}">
+                    <input type="hidden" name="candidate_name" value="{{ $lead->name ?? $interview->candidate_name }}">
 
                         <div class="col">
                             <label>Candidate Name</label>
-                            <input type="text" value="{{ $lead->name }}" class="readonly" readonly>
+                            <input type="text" value="{{ $lead->name ?? $interview->candidate_name }}" class="readonly" readonly>
                         </div>
                         <div class="col">
                             <label>Email</label>
-                            <input type="email" name="candidate_email" value="{{ $lead->email }}" required>
+                            <input type="email" name="candidate_email" value="{{ $lead->email ?? $interview->candidate_email }}" required>
                         </div>
                         <div class="col">
                             <label>Job Role</label>
-                            <input type="text" value="{{ $lead->role }}" class="readonly" readonly>
+                            <input type="text" value="{{ $lead->role ?? $interview->job_role }}" class="readonly" readonly>
                         </div>
                     @else
                         <div class="col">
@@ -90,24 +95,24 @@
 
                 <label>Interview Round</label>
                 <div class="radio-group">
-                    <label><input type="radio" name="interview_round" value="HR" {{ $nextRound == 'HR' ? 'checked' : '' }} required> HR</label>
-                    <label><input type="radio" name="interview_round" value="Technical" {{ $nextRound == 'Technical' ? 'checked' : '' }} required> Technical</label>
-                    <label><input type="radio" name="interview_round" value="Manager" {{ $nextRound == 'Manager' ? 'checked' : '' }} required> Manager</label>
-                    <label><input type="radio" name="interview_round" value="Final" {{ $nextRound == 'Final' ? 'checked' : '' }} required> Final</label>
+                    <label><input type="radio" name="interview_round" value="HR" {{ ($nextRound == 'HR' || (isset($interview) && $interview->interview_round == 'HR')) ? 'checked' : '' }} required> HR</label>
+                    <label><input type="radio" name="interview_round" value="Technical" {{ ($nextRound == 'Technical' || (isset($interview) && $interview->interview_round == 'Technical')) ? 'checked' : '' }} required> Technical</label>
+                    <label><input type="radio" name="interview_round" value="Manager" {{ ($nextRound == 'Manager' || (isset($interview) && $interview->interview_round == 'Manager')) ? 'checked' : '' }} required> Manager</label>
+                    <label><input type="radio" name="interview_round" value="Final" {{ ($nextRound == 'Final' || (isset($interview) && $interview->interview_round == 'Final')) ? 'checked' : '' }} required> Final</label>
                 </div>
 
                 <div class="row" style="margin-top:15px;">
                     <div class="col">
                         <label>Interview Date</label>
-                        <input type="date" name="interview_date" required min="{{ date('Y-m-d') }}">
+                        <input type="date" name="interview_date" value="{{ isset($interview) ? $interview->interview_date->format('Y-m-d') : '' }}" required min="{{ date('Y-m-d') }}">
                     </div>
                     <div class="col">
                         <label>Start Time</label>
-                        <input type="time" name="start_time" required>
+                        <input type="time" name="start_time" value="{{ isset($interview) ? date('H:i', strtotime($interview->start_time)) : '' }}" required>
                     </div>
                     <div class="col">
                         <label>End Time</label>
-                        <input type="time" name="end_time" required>
+                        <input type="time" name="end_time" value="{{ isset($interview) ? date('H:i', strtotime($interview->end_time)) : '' }}" required>
                     </div>
                 </div>
 
@@ -143,8 +148,8 @@
                     <div class="col">
                         <label>Interview Mode</label>
                         <select name="interview_mode" required onchange="toggleMeetingSection(this.value)">
-                            <option value="Online">Online</option>
-                            <option value="Offline">Offline</option>
+                            <option value="Online" {{ (isset($interview) && $interview->interview_mode == 'Online') ? 'selected' : '' }}>Online</option>
+                            <option value="Offline" {{ (isset($interview) && $interview->interview_mode == 'Offline') ? 'selected' : '' }}>Offline</option>
                         </select>
                     </div>
                 </div>
@@ -156,13 +161,13 @@
 
                 <label>Meeting Platform</label>
                 <div class="radio-group">
-                    <label><input type="radio" name="meeting_platform" value="Google Meet" onchange="toggleLinkInput()"> Google Meet</label>
-                    <label><input type="radio" name="meeting_platform" value="Zoom" onchange="toggleLinkInput()"> Zoom</label>
-                    <label><input type="radio" name="meeting_platform" value="Teams" onchange="toggleLinkInput()"> Teams</label>
+                    <label><input type="radio" name="meeting_platform" value="Google Meet" {{ (isset($interview) && $interview->meeting_platform == 'Google Meet') ? 'checked' : '' }} onchange="toggleLinkInput()"> Google Meet</label>
+                    <label><input type="radio" name="meeting_platform" value="Zoom" {{ (isset($interview) && $interview->meeting_platform == 'Zoom') ? 'checked' : '' }} onchange="toggleLinkInput()"> Zoom</label>
+                    <label><input type="radio" name="meeting_platform" value="Teams" {{ (isset($interview) && $interview->meeting_platform == 'Teams') ? 'checked' : '' }} onchange="toggleLinkInput()"> Teams</label>
                 </div>
 
                 <div class="meeting-box" style="margin-top:12px;">
-                    <input type="text" name="meeting_link" id="meeting_link" placeholder="Paste your meeting link here or generate one" required>
+                    <input type="text" name="meeting_link" id="meeting_link" value="{{ isset($interview) ? $interview->meeting_link : '' }}" placeholder="Paste your meeting link here or generate one" required>
                     <button type="button" class="generate-btn" onclick="generateMeetingLink()">Generate Link</button>
                 </div>
                 
@@ -185,7 +190,7 @@
             <!-- Notes -->
             <div class="section">
                 <div class="section-title">Instructions / Notes</div>
-                <textarea name="instructions" placeholder="Please join 10 minutes early. Keep portfolio ready."></textarea>
+                <textarea name="instructions" placeholder="Please join 10 minutes early. Keep portfolio ready.">{{ isset($interview) ? $interview->instructions : '' }}</textarea>
             </div>
 
             <!-- Notifications -->
@@ -201,7 +206,7 @@
             <!-- Actions -->
             <div class="actions">
                 <a href="{{ route('admin.interviews.index') }}" class="btn-secondary">Cancel</a>
-                <button type="submit" class="btn-primary" onclick="return handleFormSubmit()">Schedule Interview</button>
+                <button type="submit" class="btn-primary" onclick="return handleFormSubmit()">{{ isset($interview) ? 'Reschedule Interview' : 'Schedule Interview' }}</button>
             </div>
         </form>
     </div>
@@ -351,6 +356,18 @@ textarea{
 </style>
 
 <script>
+// Load reschedule reason from sessionStorage if available
+window.addEventListener('DOMContentLoaded', function() {
+    const rescheduleReason = sessionStorage.getItem('rescheduleReason');
+    if (rescheduleReason) {
+        const reasonField = document.getElementById('reschedule_reason_field');
+        if (reasonField) {
+            reasonField.value = rescheduleReason;
+            sessionStorage.removeItem('rescheduleReason');
+        }
+    }
+});
+
 function updateCandidateInfo(select) {
     const option = select.options[select.selectedIndex];
     if (option.value) {
