@@ -188,7 +188,7 @@ class EmployeeDocumentController extends Controller
     public function adminUploadDocument(Request $request, $userId)
     {
         $request->validate([
-            'document_type' => 'required|in:aadhar_card,pan_card,photo,marksheet_10th,marksheet_12th,graduation,diploma,post_graduation,passbook,cheque,bank_statement,experience_letter',
+            'document_type' => 'required|in:aadhar_card,pan_card,photo,marksheet_10th,marksheet_12th,graduation,diploma,post_graduation,passbook,cheque,pf_esi,bank_statement,experience_letter',
             'document'      => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
@@ -302,12 +302,23 @@ class EmployeeDocumentController extends Controller
     }
 
     /* =====================================================
+       GENERATE OFFER LETTER
+    ===================================================== */
+    public function generateOfferLetter($userId)
+    {
+        $employee = Employee::findOrFail($userId);
+        $bankDetail = EmployeeBankDetail::where('user_id', $userId)->first();
+        
+        return view('auth.admin.employees.offer-letter', compact('employee', 'bankDetail'));
+    }
+
+    /* =====================================================
        EMPLOYEE UPLOAD DOCUMENT
     ===================================================== */
     public function uploadDocument(Request $request)
     {
         $request->validate([
-            'document_type' => 'required|in:aadhar_card,pan_card,photo,marksheet_10th,marksheet_12th,graduation,diploma,post_graduation,passbook,cheque,bank_statement,experience_letter',
+            'document_type' => 'required|in:aadhar_card,pan_card,photo,marksheet_10th,marksheet_12th,graduation,diploma,post_graduation,passbook,cheque,pf_esi,bank_statement,experience_letter',
             'document'      => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 

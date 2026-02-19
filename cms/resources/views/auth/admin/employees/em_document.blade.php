@@ -374,6 +374,54 @@ $submitRoute = $isAdminView ? route('admin.employees.document.submit', ['userId'
                 </div>
             </div>
 
+            <div class="card mb-3">
+    <div class="card-header">
+        <strong>PF / ESI Document (PDF Required) *</strong>
+    </div>
+    <div class="card-body">
+
+        @php
+            $pfEsi = $documents->where('document_type','pf_esi')->first();
+        @endphp
+
+        <div class="row">
+            <div class="col-md-6">
+                <strong>PF / ESI PDF</strong>
+
+                <span class="badge bg-{{ $pfEsi?->status === 'verified' ? 'success' : ($pfEsi?->status === 'submitted' ? 'info' : ($pfEsi?->status === 'uploaded' ? 'secondary' : 'warning')) }} float-end">
+                    {{ $pfEsi->status ?? 'not uploaded' }}
+                </span>
+
+                @if($pfEsi)
+                    <div class="mt-2">
+                        <a href="{{ route('employee.documents.view',$pfEsi->id) }}" class="btn btn-sm btn-primary">View</a>
+                        <a href="{{ route('employee.documents.download',$pfEsi->id) }}" class="btn btn-sm btn-secondary">Download</a>
+                        <button onclick="printDocument('{{ route('employee.documents.view',$pfEsi->id) }}')" class="btn btn-sm btn-info">Print</button>
+                    </div>
+                @else
+                    <form method="POST" action="{{ $uploadRoute }}" enctype="multipart/form-data" class="mt-2">
+                        @csrf
+                        <input type="hidden" name="document_type" value="pf_esi">
+
+                        <input type="file" 
+                               name="document" 
+                               class="form-control mb-2" 
+                               accept=".pdf" 
+                               required>
+
+
+                        <button type="submit" class="btn btn-primary btn-sm mt-2">
+                            Upload
+                        </button>
+                    </form>
+                @endif
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
             <!-- Bank Statement (Optional) -->
             @php $bankStatement = $documents->where('document_type','bank_statement')->first(); @endphp
             <div class="card mb-3">

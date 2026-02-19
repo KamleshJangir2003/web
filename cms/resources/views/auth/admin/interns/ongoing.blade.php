@@ -122,8 +122,8 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label class="form-label">Training Amount (₹)</label>
-                            <input type="number" name="stipend" class="form-control" min="0" placeholder="Enter stipend amount">
+                            <label class="form-label">Total Training Amount (₹)</label>
+                            <input type="number" name="stipend" class="form-control" min="0" placeholder="Enter Amount">
                         </div>
                     </div>
                 </div>
@@ -229,7 +229,7 @@
                         <label class="form-label">Phone *</label>
                         <input type="text" name="phone" class="form-control" required>
                     </div>
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label class="form-label">Department *</label>
                         <select name="department" class="form-control" required>
                             <option value="">Select Department</option>
@@ -239,7 +239,7 @@
                             <option value="Training">Training</option>
                             <option value="Technical">Technical</option>
                         </select>
-                    </div>
+                    </div> -->
                     <input type="hidden" name="user_type" value="employee">
                 </form>
             </div>

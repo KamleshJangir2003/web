@@ -79,7 +79,7 @@
 
         @if($employee->current_ctc)
         <p class="ctc-highlight">
-            Your Annual Total CTC will be ₹{{ number_format($employee->current_ctc, 0) }}.
+            Your Annual Total CTC will be ₹{{ number_format($employee->current_ctc * 12, 0) }}.
         </p>
         @endif
 

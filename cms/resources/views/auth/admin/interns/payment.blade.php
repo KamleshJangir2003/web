@@ -66,9 +66,9 @@
                             <h5>Payment Actions</h5>
                             <div class="btn-group" role="group">
                                 <button type="button" class="btn btn-success" onclick="addPayment()">Add Payment</button>
-                                <button type="button" class="btn btn-warning" onclick="updateStipend()">Update Stipend</button>
+                                <button type="button" class="btn btn-warning" onclick="updateStipend()">Update Payment</button>
                                 <button type="button" class="btn btn-info" onclick="viewPaymentHistory()">Payment History</button>
-                                <button type="button" class="btn btn-primary" onclick="generatePayslip()">Generate Payslip</button>
+                                <button type="button" class="btn btn-primary" onclick="generatePayslip()">Generate Receipt</button>
                             </div>
                         </div>
                     </div>
