@@ -542,6 +542,7 @@ class InterviewController extends Controller
                     'email' => $interview->candidate_email,
                     'phone' => $interview->lead->number ?? null,
                     'department' => $interview->job_role,
+                    'platform' => $interview->lead->platform ?? null,
                     'user_type' => 'employee',
                     'is_approved' => true,
                     'password' => Hash::make('password123'),
@@ -619,6 +620,7 @@ class InterviewController extends Controller
             'email' => $interview->candidate_email,
             'phone' => $interview->lead->number ?? null,
             'department' => $interview->job_role,
+            'platform' => $interview->lead->platform ?? null,
             'user_type' => 'employee',
             'is_approved' => true, // Auto-approve since they passed interview
             'password' => Hash::make('password123'), // Default password

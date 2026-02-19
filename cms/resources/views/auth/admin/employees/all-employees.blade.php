@@ -115,6 +115,9 @@
 
                     <p class="text-muted mb-1">{{ $employee->email }}</p>
                     <p class="text-muted mb-1">{{ $employee->department ?? 'N/A' }}</p>
+                    @if($employee->platform)
+                        <span class="badge bg-info me-1">{{ $employee->platform }}</span>
+                    @endif
                     <span class="badge bg-primary">
                         {{ ucfirst($employee->user_type) }}
                     </span>

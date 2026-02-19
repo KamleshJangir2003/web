@@ -967,6 +967,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Department</th>
+                        <th>Platform</th>
                         <th class="text-center">Contact</th>
                     </tr>
                 </thead>
@@ -982,6 +983,14 @@
 
                         <td>
                             {{ $employee->department ?? 'N/A' }}
+                        </td>
+
+                        <td>
+                            @if($employee->platform)
+                                <span class="badge bg-info">{{ $employee->platform }}</span>
+                            @else
+                                <span class="text-muted">N/A</span>
+                            @endif
                         </td>
 
                         <td class="text-center">
@@ -1033,8 +1042,9 @@ document.getElementById("employeeSearch").addEventListener("keyup", function () 
 
         let name = row.cells[0].innerText.toLowerCase();
         let department = row.cells[1].innerText.toLowerCase();
+        let platform = row.cells[2].innerText.toLowerCase();
 
-        if (name.includes(value) || department.includes(value)) {
+        if (name.includes(value) || department.includes(value) || platform.includes(value)) {
             row.style.display = "";
         } else {
             row.style.display = "none";
