@@ -61,27 +61,27 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label>First Name *</label>
-                            <input type="text" name="first_name" value="{{ $employee->first_name }}" required>
+                            <input type="text" name="first_name" value="{{ $employee->first_name }}" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="50" required>
                         </div>
                         <div class="form-group">
                             <label>Last Name *</label>
-                            <input type="text" name="last_name" value="{{ $employee->last_name }}" required>
+                            <input type="text" name="last_name" value="{{ $employee->last_name }}" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="50" required>
                         </div>
                         <div class="form-group">
                             <label>Email *</label>
-                            <input type="email" name="email" value="{{ $employee->email }}" required>
+                            <input type="email" name="email" value="{{ $employee->email }}" maxlength="100" required>
                         </div>
                         <div class="form-group">
                             <label>Contact Number *</label>
-                            <input type="text" name="contact_number" value="{{ $employee->contact_number ?? $employee->phone }}" required>
+                            <input type="tel" name="contact_number" value="{{ $employee->contact_number ?? $employee->phone }}" pattern="[0-9]{10}" title="Enter valid 10 digit mobile number" maxlength="10" required>
                         </div>
                         <div class="form-group">
                             <label>Father's Name</label>
-                            <input type="text" name="father_name" value="{{ $employee->father_name }}">
+                            <input type="text" name="father_name" value="{{ $employee->father_name }}" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="100">
                         </div>
                         <div class="form-group">
                             <label>Mother's Name</label>
-                            <input type="text" name="mother_name" value="{{ $employee->mother_name }}">
+                            <input type="text" name="mother_name" value="{{ $employee->mother_name }}" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="100">
                         </div>
                         <div class="form-group">
                             <label>Date of Birth</label>
@@ -98,11 +98,27 @@
                         </div>
                         <div class="form-group">
                             <label>Guardian Number</label>
-                            <input type="text" name="guardian_number" value="{{ $employee->guardian_number }}">
+                            <input type="tel" name="guardian_number" value="{{ $employee->guardian_number }}" pattern="[0-9]{10}" title="Enter valid 10 digit mobile number" maxlength="10">
                         </div>
                         <div class="form-group">
                             <label>Department *</label>
-                            <input type="text" name="department" value="{{ $employee->department }}" required>
+                            <input type="text" name="department" value="{{ $employee->department }}" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Shift</label>
+                            <select name="shift" id="shiftSelect">
+                                <option value="">Select Shift</option>
+                                <option value="day" {{ $employee->shift == 'day' ? 'selected' : '' }}>Day Shift (9:30AM - 6:30PM)</option>
+                                <option value="night1" {{ $employee->shift == 'night1' ? 'selected' : '' }}>Night Shift 1 (7:30PM - 4:30AM)</option>
+                                <option value="night2" {{ $employee->shift == 'night2' ? 'selected' : '' }}>Night Shift 2 (8PM - 5:10AM)</option>
+                                <option value="custom" {{ $employee->shift == 'custom' ? 'selected' : '' }}>Custom Shift</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="customShiftFields" style="display: {{ $employee->shift == 'custom' ? 'flex' : 'none' }};">
+                            <label>Start Time</label>
+                            <input type="time" name="start_time" value="{{ $employee->start_time }}">
+                            <label style="margin-top: 10px;">End Time</label>
+                            <input type="time" name="end_time" value="{{ $employee->end_time }}">
                         </div>
                     </div>
                 </div>
@@ -117,15 +133,15 @@
                         </div>
                         <div class="form-group">
                             <label>City</label>
-                            <input type="text" name="city" value="{{ $employee->city }}">
+                            <input type="text" name="city" value="{{ $employee->city }}" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="50">
                         </div>
                         <div class="form-group">
                             <label>State</label>
-                            <input type="text" name="state" value="{{ $employee->state }}">
+                            <input type="text" name="state" value="{{ $employee->state }}" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="50">
                         </div>
                         <div class="form-group">
                             <label>Pincode</label>
-                            <input type="text" name="pincode" value="{{ $employee->pincode }}">
+                            <input type="text" name="pincode" value="{{ $employee->pincode }}" pattern="[0-9]{6}" title="Enter valid 6 digit pincode" maxlength="6">
                         </div>
                     </div>
                 </div>
@@ -136,15 +152,15 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label>Bank Name</label>
-                            <input type="text" name="bank_name" value="{{ $employee->bank_name }}">
+                            <input type="text" name="bank_name" value="{{ $employee->bank_name }}" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="100">
                         </div>
                         <div class="form-group">
                             <label>IFSC Code</label>
-                            <input type="text" name="ifsc_code" value="{{ $employee->ifsc_code }}">
+                            <input type="text" name="ifsc_code" value="{{ $employee->ifsc_code }}" pattern="[A-Z]{4}0[A-Z0-9]{6}" title="Enter valid IFSC code" maxlength="11" style="text-transform:uppercase">
                         </div>
                         <div class="form-group">
                             <label>Account Number</label>
-                            <input type="text" name="bank_account_number" value="{{ $employee->bank_account_number }}">
+                            <input type="text" name="bank_account_number" value="{{ $employee->bank_account_number }}" pattern="[0-9]{9,18}" title="Enter valid bank account number" maxlength="18">
                         </div>
                         <div class="form-group">
                             <label>Holder Name</label>
@@ -365,4 +381,32 @@
     padding-left: 20px;
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nameFields = ['first_name', 'last_name', 'father_name', 'mother_name', 'department', 'city', 'state', 'bank_name'];
+    nameFields.forEach(field => {
+        const input = document.querySelector(`input[name="${field}"]`);
+        if(input) input.addEventListener('keypress', e => { if(/[0-9]/.test(e.key)) e.preventDefault(); });
+    });
+
+    const numFields = ['contact_number', 'guardian_number', 'pincode', 'bank_account_number'];
+    numFields.forEach(field => {
+        const input = document.querySelector(`input[name="${field}"]`);
+        if(input) input.addEventListener('keypress', e => { if(!/[0-9]/.test(e.key)) e.preventDefault(); });
+    });
+
+    const ifsc = document.querySelector('input[name="ifsc_code"]');
+    if(ifsc) ifsc.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
+
+    // Shift toggle
+    const shiftSelect = document.getElementById('shiftSelect');
+    const customFields = document.getElementById('customShiftFields');
+    if(shiftSelect && customFields) {
+        shiftSelect.addEventListener('change', function() {
+            customFields.style.display = this.value === 'custom' ? 'flex' : 'none';
+        });
+    }
+});
+</script>
 @endsection
