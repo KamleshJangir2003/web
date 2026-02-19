@@ -8,6 +8,8 @@ use App\Models\Employee;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\InternsImport;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
 
 class InternController extends Controller
 {
@@ -397,6 +399,63 @@ class InternController extends Controller
     {
         $intern = Intern::with(['mentor', 'hr', 'payments'])->findOrFail($id);
         return view('auth.admin.interns.payslip', compact('intern'));
+    }
+    
+    public function sendPayslipWhatsApp($id)
+    {
+        $intern = Intern::with(['mentor', 'hr', 'payments'])->findOrFail($id);
+        
+        if (!$intern->number) {
+            return response()->json(['success' => false, 'message' => 'Phone number not available']);
+        }
+        
+        $pdf = Pdf::loadView('auth.admin.interns.payslip-pdf', compact('intern'));
+        $filename = 'payslip_' . $intern->id . '_' . time() . '.pdf';
+        $path = public_path('uploads/payslips/' . $filename);
+        
+        if (!file_exists(public_path('uploads/payslips'))) {
+            mkdir(public_path('uploads/payslips'), 0777, true);
+        }
+        
+        $pdf->save($path);
+        
+        $pdfUrl = url('uploads/payslips/' . $filename);
+        $message = "Hi {$intern->name}, your training receipt from KWIKSTER is ready. Download: {$pdfUrl}";
+        
+        return response()->json([
+            'success' => true,
+            'phone' => $intern->number,
+            'message' => $message,
+            'pdf_url' => $pdfUrl
+        ]);
+    }
+    
+    public function sendPayslipEmail(Request $request, $id)
+    {
+        try {
+            $intern = Intern::with(['mentor', 'hr', 'payments'])->findOrFail($id);
+            
+            $email = $request->input('email') ?: $intern->email;
+            
+            if (!$email) {
+                return response()->json(['success' => false, 'message' => 'Email not available']);
+            }
+            
+            $pdf = Pdf::loadView('auth.admin.interns.payslip-pdf', compact('intern'));
+            
+            Mail::send('emails.payslip', ['intern' => $intern], function($message) use ($email, $intern, $pdf) {
+                $message->to($email)
+                        ->subject('Your Training Receipt - KWIKSTER')
+                        ->attachData($pdf->output(), 'payslip_' . $intern->name . '.pdf');
+            });
+            
+            \Log::info('Payslip email sent to: ' . $email);
+            
+            return response()->json(['success' => true, 'message' => 'Email sent successfully to ' . $email]);
+        } catch (\Exception $e) {
+            \Log::error('Email send failed: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to send email. Please check mail configuration.']);
+        }
     }
     
     public function setupOngoing(Request $request, $id)

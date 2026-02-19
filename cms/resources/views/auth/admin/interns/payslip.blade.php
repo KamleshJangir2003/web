@@ -128,6 +128,16 @@
             text-decoration: none;
         }
 
+        .btn-success {
+            background: #25D366;
+            color: #fff;
+        }
+
+        .btn-info {
+            background: #0088cc;
+            color: #fff;
+        }
+
         @media print {
             body { background: #fff; }
             .btn-area { display: none; }
@@ -144,8 +154,22 @@
 <div class="container">
 
     <div class="btn-area">
+        <button onclick="sendWhatsApp()" class="btn btn-success">📱 Send WhatsApp</button>
+        <button onclick="showEmailModal()" class="btn btn-info">📧 Send Email</button>
         <button onclick="window.print()" class="btn btn-primary">Print</button>
         <a href="{{ route('admin.interns.payment', $intern->id) }}" class="btn btn-secondary">Back</a>
+    </div>
+
+    <!-- Email Modal -->
+    <div id="emailModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999;">
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:#fff; padding:30px; border-radius:10px; width:400px; box-shadow:0 5px 20px rgba(0,0,0,0.3);">
+            <h3 style="margin-top:0; color:#333;">Send Payslip via Email</h3>
+            <input type="email" id="emailInput" placeholder="Enter email address" value="{{ $intern->email ?? '' }}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; margin-bottom:15px; font-size:14px;">
+            <div style="text-align:right;">
+                <button onclick="closeEmailModal()" style="padding:8px 16px; background:#777; color:#fff; border:none; border-radius:5px; cursor:pointer; margin-right:10px;">Cancel</button>
+                <button onclick="sendEmailWithPDF()" style="padding:8px 16px; background:#0088cc; color:#fff; border:none; border-radius:5px; cursor:pointer;">Send</button>
+            </div>
+        </div>
     </div>
 
     <div class="header">
@@ -223,6 +247,86 @@
     </div>
 
 </div>
+
+<script>
+function sendWhatsApp() {
+    const phone = '{{ $intern->number ?? "" }}';
+    if (!phone) {
+        alert('Intern phone number not available');
+        return;
+    }
+    
+    fetch('{{ route("admin.interns.send-payslip-whatsapp", $intern->id) }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            window.open(`https://wa.me/${data.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(data.message)}`, '_blank');
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(err => alert('Error sending WhatsApp'));
+}
+
+function showEmailModal() {
+    document.getElementById('emailModal').style.display = 'block';
+}
+
+function closeEmailModal() {
+    document.getElementById('emailModal').style.display = 'none';
+}
+
+function sendEmailWithPDF() {
+    const email = document.getElementById('emailInput').value;
+    if (!email) {
+        alert('Please enter email address');
+        return;
+    }
+    
+    if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+        alert('Please enter valid email address');
+        return;
+    }
+    
+    // Show loading
+    const sendBtn = event.target;
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending...';
+    
+    fetch('{{ route("admin.interns.send-payslip-email", $intern->id) }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ email: email })
+    })
+    .then(res => res.json())
+    .then(data => {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send';
+        
+        if (data.success) {
+            alert('✅ ' + data.message);
+            closeEmailModal();
+        } else {
+            alert('❌ ' + (data.message || 'Error sending email'));
+        }
+    })
+    .catch(err => {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send';
+        console.error('Error:', err);
+        alert('❌ Network error. Please check your connection and try again.');
+    });
+}
+</script>
 
 </body>
 </html>

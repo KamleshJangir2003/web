@@ -460,6 +460,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/interns/{id}/payment', [App\Http\Controllers\Admin\InternController::class, 'payment'])->name('interns.payment');
             Route::post('/interns/{id}/add-payment', [App\Http\Controllers\Admin\InternController::class, 'addPayment'])->name('interns.add-payment');
             Route::get('/interns/{id}/generate-payslip', [App\Http\Controllers\Admin\InternController::class, 'generatePayslip'])->name('interns.generate-payslip');
+            Route::post('/interns/{id}/send-payslip-whatsapp', [App\Http\Controllers\Admin\InternController::class, 'sendPayslipWhatsApp'])->name('interns.send-payslip-whatsapp');
+            Route::post('/interns/{id}/send-payslip-email', [App\Http\Controllers\Admin\InternController::class, 'sendPayslipEmail'])->name('interns.send-payslip-email');
             Route::post('/interns/{id}/update-stipend', [App\Http\Controllers\Admin\InternController::class, 'updateStipend'])->name('interns.update-stipend');
             Route::post('/interns/{id}/setup-ongoing', [App\Http\Controllers\Admin\InternController::class, 'setupOngoing'])->name('interns.setup-ongoing');
             

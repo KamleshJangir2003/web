@@ -49,7 +49,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5>Payment Info</h5>
-                            <p><strong>Monthly Fees:</strong> {{ $intern->stipend ? '₹' . number_format($intern->stipend) : 'Not Set' }}</p>
+                            <p><strong>Total Fees:</strong> {{ $intern->stipend ? '₹' . number_format($intern->stipend) : 'Not Set' }}</p>
                             <p><strong>Total Paid:</strong> <span class="text-success">₹{{ number_format($intern->total_paid ?? 0) }}</span></p>
                             <p><strong>Pending Amount:</strong> <span class="text-danger">₹{{ $intern->stipend ? number_format($intern->stipend - ($intern->total_paid ?? 0)) : '0' }}</span></p>
                             <p><strong>HR Commission:</strong> {{ $intern->hr->full_name ?? 'Not Assigned' }}</p>
