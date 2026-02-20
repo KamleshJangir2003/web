@@ -541,6 +541,7 @@ class InterviewController extends Controller
                     'user_type' => 'employee',
                     'is_approved' => true,
                     'action_status' => 'selected',
+                    'hired_status' => 'not_hired',
                     'password' => Hash::make('password123'),
                     'joining_date' => $request->joining_date,
                     'current_ctc' => $request->current_ctc,
@@ -549,6 +550,7 @@ class InterviewController extends Controller
             } else {
                 $employee->update([
                     'action_status' => 'selected',
+                    'hired_status' => 'not_hired',
                     'joining_date' => $request->joining_date,
                     'current_ctc' => $request->current_ctc,
                     'in_hand_salary' => $request->in_hand_salary,

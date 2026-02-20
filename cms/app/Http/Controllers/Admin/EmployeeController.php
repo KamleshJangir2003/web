@@ -91,6 +91,8 @@ class EmployeeController extends Controller
                 'user_type' => 'employee',
                 'department' => $request->designation,
                 'is_approved' => true,
+                'action_status' => 'selected',
+                'hired_status' => 'not_hired',
                 'father_name' => $request->father_name,
                 'mother_name' => $request->mother_name,
                 'dob' => $request->dob,
@@ -360,8 +362,10 @@ class EmployeeController extends Controller
                 'phone' => $request->phone,
                 'department' => $request->department,
                 'user_type' => $request->user_type,
-                'password' => Hash::make('password123'), // Default password
+                'password' => Hash::make('password123'),
                 'is_approved' => true,
+                'action_status' => 'selected',
+                'hired_status' => 'not_hired',
                 'joining_date' => now(),
                 'current_ctc' => 0,
                 'in_hand_salary' => 0,
@@ -452,6 +456,8 @@ class EmployeeController extends Controller
             
             // Update employee details
             $employee->update([
+                'action_status' => 'selected',
+                'hired_status' => 'not_hired',
                 'joining_date' => $request->joining_date,
                 'current_ctc' => $request->current_ctc,
                 'in_hand_salary' => $request->in_hand_salary,
