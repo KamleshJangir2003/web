@@ -213,12 +213,8 @@ function toggleReasonField(select) {
     const existingReasonDiv = form.querySelector('.mt-2');
     
     if (select.value === 'selected') {
-        // First submit the form to update the status
+        // Submit the form to update the status
         form.submit();
-        // Then redirect to attendance page after a short delay
-        setTimeout(() => {
-            window.location.href = '/admin/attendance';
-        }, 500);
         return;
     }
     

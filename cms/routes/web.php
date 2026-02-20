@@ -234,15 +234,18 @@ Route::middleware(['auth'])->group(function () {
                 // Gender statistics for hired employees
                 $totalHired = Employee::where('user_type', 'employee')
                     ->where('is_approved', true)
+                    ->where('action_status', 'selected')
                     ->count();
                 
                 $maleCount = Employee::where('user_type', 'employee')
                     ->where('is_approved', true)
+                    ->where('action_status', 'selected')
                     ->whereRaw('LOWER(gender) = ?', ['male'])
                     ->count();
                     
                 $femaleCount = Employee::where('user_type', 'employee')
                     ->where('is_approved', true)
+                    ->where('action_status', 'selected')
                     ->whereRaw('LOWER(gender) = ?', ['female'])
                     ->count();
                 
@@ -250,7 +253,10 @@ Route::middleware(['auth'])->group(function () {
                 $femalePercentage = $totalHired > 0 ? round(($femaleCount / $totalHired) * 100) : 0;
 
                 $stats = [
-                    'totalEmployees' => Employee::where('user_type', 'employee')->count(),
+                    'totalEmployees' => Employee::where('user_type', 'employee')
+                        ->where('is_approved', true)
+                        ->where('action_status', 'selected')
+                        ->count(),
                     'pendingApprovals' => Employee::where('is_approved', false)->count(),
                     'totalAdmins' => Employee::where('user_type', 'admin')->count(),
                     'totalClients' => Employee::where('user_type', 'client')->count(),

@@ -481,6 +481,10 @@ class EmployeeDocumentController extends Controller
     {
         $hiredEmployees = Employee::where('user_type', 'employee')
             ->where('hired_status', 'hired')
+            ->where(function($query) {
+                $query->whereNull('action_status')
+                      ->orWhere('action_status', '!=', 'selected');
+            })
             ->orderBy('joining_date', 'desc')
             ->get();
     
@@ -544,7 +548,7 @@ class EmployeeDocumentController extends Controller
         // If selected, move to All Employees and Attendance
         if ($request->action_status === 'selected') {
             $employee->update([
-                'hired_status' => 'hired',
+                'action_status' => 'selected',
                 'employee_status' => 'active',
                 'is_approved' => true
             ]);
@@ -588,6 +592,10 @@ class EmployeeDocumentController extends Controller
             'joining_date' => $request->hired_status === 'hired' ? ($employee->joining_date ?? now()) : $employee->joining_date
         ]);
 
-        return redirect()->route('admin.employees.hired.index')->with('success', 'Employee hired successfully');
+        if ($request->hired_status === 'hired') {
+            return redirect()->route('admin.employees.documents.index')->with('success', 'Employee moved to hired list');
+        }
+
+        return redirect()->route('admin.employees.documents.index')->with('success', 'Status updated successfully');
     }
 }

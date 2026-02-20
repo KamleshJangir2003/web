@@ -503,7 +503,6 @@ class InterviewController extends Controller
         // Get directly added employees (not from interviews) where hired_status is not_hired
         $directEmployees = Employee::where('user_type', 'employee')
             ->where('is_approved', true)
-            ->where('action_status', 'selected')
             ->where('hired_status', 'not_hired')
             ->whereNotIn('email', function($query) {
                 $query->select('candidate_email')
@@ -542,7 +541,7 @@ class InterviewController extends Controller
                     'platform' => $interview->lead->platform ?? null,
                     'user_type' => 'employee',
                     'is_approved' => true,
-                    'action_status' => 'selected',
+                    'action_status' => null,
                     'hired_status' => 'not_hired',
                     'password' => Hash::make('password123'),
                     'joining_date' => $request->joining_date,
@@ -551,7 +550,7 @@ class InterviewController extends Controller
                 ]);
             } else {
                 $employee->update([
-                    'action_status' => 'selected',
+                    'action_status' => null,
                     'hired_status' => 'not_hired',
                     'joining_date' => $request->joining_date,
                     'current_ctc' => $request->current_ctc,
@@ -564,6 +563,9 @@ class InterviewController extends Controller
                 $message->to($employee->email, $employee->full_name)
                         ->subject('Welcome to The Kwikster - Joining Letter');
             });
+
+            // Update employee hired_status to 'hired' so they appear on documents page
+            $employee->update(['hired_status' => 'hired']);
 
             // Mark welcome letter as sent
             $interview->update([
