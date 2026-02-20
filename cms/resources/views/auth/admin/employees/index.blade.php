@@ -40,6 +40,7 @@
                         <th width="40">
                             <input type="checkbox">
                         </th>
+                        <th>Employee ID</th>
                         <th>Name</th>
                         <th>Role</th>
                         <th>Department</th>
@@ -60,6 +61,9 @@
                         <td>
                             <input type="checkbox">
                         </td>
+
+                        <!-- EMPLOYEE ID -->
+                        <td>{{ $emp->employee_id ?? 'N/A' }}</td>
 
                         <!-- NAME -->
                         <td>
@@ -152,7 +156,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="text-center text-muted py-4">
+                        <td colspan="9" class="text-center text-muted py-4">
                             No employees found
                         </td>
                     </tr>

@@ -60,7 +60,7 @@
             <table class="table table-hover align-middle mb-0">
                 <thead>
                     <tr>
-                    <th>Number</th>
+                        <th>Employee ID</th>
                         <th>Name</th>
                         <th>Joining Date</th>
                         <th>Induction Round</th>
@@ -72,6 +72,7 @@
                 <tbody>
                     @forelse($hiredEmployees as $employee)
                     <tr>
+                        <td>{{ $employee->employee_id ?? 'N/A' }}</td>
                         <td>
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/40?u={{ $employee->id }}"
@@ -83,7 +84,6 @@
                                 </div>
                             </div>
                         </td>
-                        <td>{{ $employee->phone ?? 'N/A' }}</td>
                         <td>
                             <form method="POST" action="{{ route('admin.employees.hired.update', $employee->id) }}" class="d-inline">
                                 @csrf

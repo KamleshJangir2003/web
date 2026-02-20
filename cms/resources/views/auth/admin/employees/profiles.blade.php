@@ -95,6 +95,7 @@
                 <thead>
                     <tr>
                         <th>Photo</th>
+                        <th>Employee ID</th>
                         <th>Name</th>
                         <th>Email</th>
                         <th>Department</th>
@@ -113,6 +114,7 @@
                                     <div class="no-photo">No Photo</div>
                                 @endif
                             </td>
+                            <td>{{ $employee->employee_id ?? 'N/A' }}</td>
                             <td>{{ $employee->first_name }} {{ $employee->last_name }}</td>
                             <td>{{ $employee->email }}</td>
                             <td>{{ $employee->department }}</td>
@@ -124,7 +126,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center">No employees found</td>
+                            <td colspan="7" class="text-center">No employees found</td>
                         </tr>
                     @endforelse
                 </tbody>

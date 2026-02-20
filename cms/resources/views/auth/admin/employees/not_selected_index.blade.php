@@ -44,6 +44,7 @@
             <table class="table table-hover align-middle mb-0">
                 <thead>
                     <tr>
+                        <th>Employee ID</th>
                         <th>Name</th>
                         <th>Phone</th>
                         <th>Joining Date</th>
@@ -54,6 +55,7 @@
                 <tbody>
                     @forelse($notSelectedEmployees as $employee)
                     <tr>
+                        <td>{{ $employee->employee_id ?? 'N/A' }}</td>
                         <td>
                             <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/40?u={{ $employee->id }}"
@@ -82,7 +84,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="text-center text-muted py-4">
+                        <td colspan="6" class="text-center text-muted py-4">
                             No rejected employees found
                         </td>
                     </tr>
