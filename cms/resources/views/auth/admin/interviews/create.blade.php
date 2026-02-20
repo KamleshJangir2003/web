@@ -120,7 +120,7 @@
                     <div class="col">
                         <label>Interviewer</label>
                         <div style="display: flex; gap: 5px;">
-                            <select name="interviewer" id="interviewer_select" required style="flex: 1;" onchange="updateInterviewerInfo(this)">
+                            <select name="interviewer" id="interviewer_select" required style="flex: 1;" onchange="updateInterviewerInfo(this)" autocomplete="off">
                                 <option value="">Select Interviewer</option>
                                 @foreach($interviewers as $interviewer)
                                     <option value="{{ $interviewer['name'] }}" data-email="{{ $interviewer['email'] }}" data-phone="{{ $interviewer['phone'] }}">{{ $interviewer['name'] }}</option>
@@ -646,29 +646,28 @@ function saveNewInterviewer() {
     const email = emailInput.value.trim();
     const phone = phoneInput.value.trim();
     
-    console.log('Saving - Name:', name, 'Email:', email, 'Phone:', phone);
-    
     if (name && email && phone) {
-        // Remove any existing duplicate options first
-        for (let i = select.options.length - 1; i >= 0; i--) {
+        // Check if interviewer already exists
+        let exists = false;
+        for (let i = 0; i < select.options.length; i++) {
             if (select.options[i].value === name) {
-                select.remove(i);
+                exists = true;
+                select.value = name;
+                break;
             }
         }
         
-        // Add the new interviewer with email and phone data
-        const newOption = new Option(name, name);
-        newOption.setAttribute('data-email', email);
-        newOption.setAttribute('data-phone', phone);
-        select.add(newOption);
-        select.value = name;
+        // Only add if doesn't exist
+        if (!exists) {
+            const newOption = new Option(name, name);
+            newOption.setAttribute('data-email', email);
+            newOption.setAttribute('data-phone', phone);
+            select.add(newOption);
+            select.value = name;
+        }
         
-        console.log('Added interviewer:', name);
-        
-        // Auto-fill email and phone fields
         updateInterviewerInfo(select);
         
-        // Hide inputs and clear them
         input.style.display = 'none';
         emailInput.style.display = 'none';
         phoneInput.style.display = 'none';
@@ -677,7 +676,7 @@ function saveNewInterviewer() {
         emailInput.value = '';
         phoneInput.value = '';
         
-        alert('Interviewer added successfully!');
+        alert(exists ? 'Interviewer selected!' : 'Interviewer added successfully!');
     } else {
         if (!name) {
             alert('Please enter interviewer name');

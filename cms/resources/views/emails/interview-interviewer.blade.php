@@ -12,8 +12,10 @@
             color: #2c3e50;
             background: #f4f6f9;
             padding: 20px;
+            overflow-x: hidden;
         }
         .email-container {
+            width: 100% !important;
             max-width: 650px;
             margin: 0 auto;
             background: #ffffff;
@@ -93,16 +95,37 @@
             gap: 8px;
         }
         .detail-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            font-size: 16px;
-        }
-        .detail-item strong {
-            min-width: 140px;
-            color: #2c3e50;
-            font-weight: 600;
-        }
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    font-size: 16px;
+    word-break: break-word;
+}
+
+.detail-item strong {
+    flex: 0 0 140px; /* fixed label width */
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.detail-item a {
+    word-break: break-all;
+}
+
+@media (max-width: 600px) {
+
+    .detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .detail-item strong {
+        flex: 0 0 auto;
+        margin-bottom: 4px;
+    }
+
+}
+
         .meeting-link a {
             color: #16a34a;
             text-decoration: none;

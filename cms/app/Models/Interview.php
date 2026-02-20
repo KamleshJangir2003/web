@@ -45,8 +45,6 @@ class Interview extends Model
 
     protected $casts = [
         'interview_date' => 'date',
-        'start_time' => 'datetime:H:i',
-        'end_time' => 'datetime:H:i',
         'email_candidate' => 'boolean',
         'email_interviewer' => 'boolean',
         'whatsapp_notification' => 'boolean',

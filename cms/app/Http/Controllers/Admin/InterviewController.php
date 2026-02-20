@@ -76,6 +76,7 @@ class InterviewController extends Controller
                 }
                 return true;
             })
+            ->unique('interviewer')
             ->map(function($interview) {
                 return [
                     'name' => $interview->interviewer,
@@ -83,11 +84,13 @@ class InterviewController extends Controller
                     'phone' => $interview->interviewer_phone
                 ];
             })
-            ->unique('name')
             ->values()
             ->toArray();
         
-        $interviewers = array_merge($defaultInterviewers, $dbInterviewers);
+            $interviewers = collect(array_merge($defaultInterviewers, $dbInterviewers))
+            ->unique('email')
+            ->values()
+            ->toArray();
         
         return view('auth.admin.interviews.create', compact('lead', 'leads', 'interviewers', 'nextRound'));
     }
@@ -183,6 +186,7 @@ class InterviewController extends Controller
                 }
                 return true;
             })
+            ->unique('interviewer')
             ->map(function($interview) {
                 return [
                     'name' => $interview->interviewer,
@@ -190,11 +194,13 @@ class InterviewController extends Controller
                     'phone' => $interview->interviewer_phone
                 ];
             })
-            ->unique('name')
             ->values()
             ->toArray();
         
-        $interviewers = array_merge($defaultInterviewers, $dbInterviewers);
+            $interviewers = collect(array_merge($defaultInterviewers, $dbInterviewers))
+            ->unique('email')
+            ->values()
+            ->toArray();
         
         return view('auth.admin.interviews.edit', compact('interview', 'leads', 'interviewers'));
     }

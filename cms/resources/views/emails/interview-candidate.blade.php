@@ -14,7 +14,7 @@
             padding: 20px;
         }
         .email-container {
-            max-width: 650px;
+            max-width: 100%;
             margin: 0 auto;
             background: #ffffff;
             border-radius: 16px;
@@ -78,16 +78,33 @@
             gap: 8px;
         }
         .detail-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            font-size: 16px;
-        }
-        .detail-item strong {
-            min-width: 140px;
-            color: #2c3e50;
-            font-weight: 600;
-        }
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+.detail-item strong {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+.detail-item span {
+    flex: 1;
+    word-break: break-word;
+}
+
+@media (max-width: 600px) {
+    .detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .detail-item strong {
+        margin-bottom: 4px;
+    }
+}
         .meeting-link {
             background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
             padding: 25px;
@@ -176,7 +193,7 @@
                     <strong>📅 Date:</strong> {{ date('d M Y', strtotime($interview->interview_date)) }}
                 </div>
                 <div class="detail-item">
-                    <strong>⏰ Time:</strong> {{ date('g:i A', strtotime($interview->start_time)) }} - {{ date('g:i A', strtotime($interview->end_time)) }}
+                    <strong>⏰ Time:</strong> {{ \Carbon\Carbon::parse($interview->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($interview->end_time)->format('g:i A') }}
                 </div>
                 <div class="detail-item">
                     <strong>👤 Interviewer:</strong> {{ $interview->interviewer }}
