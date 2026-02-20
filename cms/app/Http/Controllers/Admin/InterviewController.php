@@ -493,16 +493,18 @@ class InterviewController extends Controller
 
     public function selectedEmployees()
     {
-        // Get selected interviews
+        // Get selected interviews where welcome letter NOT sent
         $selectedInterviews = Interview::with('lead')
             ->where('result', 'Selected')
             ->where('welcome_letter_sent', false)
             ->orderBy('updated_at', 'desc')
             ->get();
         
-        // Get directly added employees (not from interviews)
+        // Get directly added employees (not from interviews) where hired_status is not_hired
         $directEmployees = Employee::where('user_type', 'employee')
             ->where('is_approved', true)
+            ->where('action_status', 'selected')
+            ->where('hired_status', 'not_hired')
             ->whereNotIn('email', function($query) {
                 $query->select('candidate_email')
                     ->from('interviews')

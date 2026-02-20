@@ -25,6 +25,7 @@ class AttendanceController extends Controller
         // Get departments for filter
         $departments = Employee::where('user_type', 'employee')
             ->where('action_status', 'selected')
+            ->where('hired_status', 'hired')
             ->where('employee_status', 'active')
             ->distinct()
             ->pluck('department')
@@ -33,6 +34,7 @@ class AttendanceController extends Controller
         // Build employee query with filters
         $query = Employee::where('user_type', 'employee')
                         ->where('action_status', 'selected')
+                        ->where('hired_status', 'hired')
                         ->where('employee_status', 'active');
 
         if ($department_filter) {
@@ -181,6 +183,7 @@ class AttendanceController extends Controller
     {
         $employees = Employee::where('user_type', 'employee')
             ->where('action_status', 'selected')
+            ->where('hired_status', 'hired')
             ->where('employee_status', 'active')
             ->whereNotNull('in_hand_salary')
             ->where('in_hand_salary', '>', 0)

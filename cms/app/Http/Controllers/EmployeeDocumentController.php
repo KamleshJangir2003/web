@@ -544,6 +544,7 @@ class EmployeeDocumentController extends Controller
         // If selected, move to All Employees and Attendance
         if ($request->action_status === 'selected') {
             $employee->update([
+                'hired_status' => 'hired',
                 'employee_status' => 'active',
                 'is_approved' => true
             ]);
