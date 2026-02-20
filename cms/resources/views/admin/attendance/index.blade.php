@@ -142,7 +142,7 @@ body {
                                     @forelse($employees as $emp)
                                         @php $att = $attendance_data[$emp->id] ?? null; @endphp
                                         <tr>
-                                            <td>{{ $emp->id }}</td>
+                                        <td>{{ $emp->employee_id ?? 'N/A' }}</td>
                                             <td>{{ $emp->full_name ?: ($emp->first_name . ' ' . $emp->last_name) }}</td>
                                             <td>{{ $emp->email }}</td>
                                             <td>{{ $emp->department ?? 'N/A' }}</td>

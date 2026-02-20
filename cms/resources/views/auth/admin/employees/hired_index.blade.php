@@ -156,10 +156,19 @@
                                 <form method="POST" action="{{ route('admin.employees.hired.update', $employee->id) }}" class="d-inline">
                                     @csrf
                                     <select name="action_status" class="form-select form-select-sm" onchange="toggleReasonField(this)" style="min-width: 120px;">
-                                        <option value="" disabled {{ !($employee->action_status ?? '') ? 'selected' : '' }}>Select Status</option>
-                                        <option value="selected" {{ ($employee->action_status ?? '') == 'selected' ? 'selected' : '' }}>Selected</option>
-                                        <option value="not_selected" {{ ($employee->action_status ?? '') == 'not_selected' ? 'selected' : '' }}>Not Selected</option>
-                                    </select>
+    <option value="" {{ empty($employee->action_status) ? 'selected' : '' }} disabled>
+        Select Status
+    </option>
+
+    <option value="selected" {{ ($employee->action_status ?? '') === 'selected' ? 'selected' : '' }}>
+        Selected
+    </option>
+
+    <option value="not_selected" {{ ($employee->action_status ?? '') === 'not_selected' ? 'selected' : '' }}>
+        Not Selected
+    </option>
+</select>
+
                                     <input type="hidden" name="induction_round" value="{{ $employee->induction_round ?? 'yes' }}">
                                     <input type="hidden" name="training" value="{{ $employee->training ?? 'yes' }}">
                                     <input type="hidden" name="certification_period" value="{{ $employee->certification_period ?? 5 }}">
