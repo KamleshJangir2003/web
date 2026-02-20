@@ -15,14 +15,17 @@ $verifiedCount = $verifiedCount ?? 0;
 $submittedCount = $submittedCount ?? 0;
 $pendingCount  = $pendingCount ?? 0;
 
+// Use $employee if admin view, otherwise use $user
+$currentUser = $isAdminView ? ($employee ?? $user) : $user;
+
 $progress = $totalRequired > 0
     ? min(100, round(($uploadedCount / $totalRequired) * 100))
     : 0;
 
 // Routes based on context
-$uploadRoute = $isAdminView ? route('admin.employees.document.upload', ['userId' => $user->id]) : route('employee.documents.upload');
-$bankRoute = $isAdminView ? route('admin.employees.document.bank-details', ['userId' => $user->id]) : route('employee.bank.details');
-$submitRoute = $isAdminView ? route('admin.employees.document.submit', ['userId' => $user->id]) : route('employee.documents.submit');
+$uploadRoute = $isAdminView ? route('admin.employees.document.upload', ['userId' => $currentUser->id]) : route('employee.documents.upload');
+$bankRoute = $isAdminView ? route('admin.employees.document.bank-details', ['userId' => $currentUser->id]) : route('employee.bank.details');
+$submitRoute = $isAdminView ? route('admin.employees.document.submit', ['userId' => $currentUser->id]) : route('employee.documents.submit');
 @endphp
 
 <div class="container-fluid">
@@ -42,10 +45,10 @@ $submitRoute = $isAdminView ? route('admin.employees.document.submit', ['userId'
         <div class="card-body d-flex justify-content-between align-items-center">
             <div>
             <strong>
-    {{ $user->full_name ?: ($user->name ?: 'N/A') }}
+    {{ $currentUser->full_name ?: ($currentUser->name ?: 'N/A') }}
 </strong>
 <br>
-                <small>EMP ID: {{ $user->employee_id }}</small>
+                <small>EMP ID: {{ $currentUser->employee_id }}</small>
             </div>
 
             <div style="width:150px">
@@ -570,7 +573,7 @@ $submitRoute = $isAdminView ? route('admin.employees.document.submit', ['userId'
                     
                     @if($isAdminView)
                         @if($allRequiredUploaded)
-                        <form method="POST" action="{{ route('admin.employees.document.generate-offer-letter', ['userId' => $user->id]) }}">
+                        <form method="POST" action="{{ route('admin.employees.document.generate-offer-letter', ['userId' => $currentUser->id]) }}">
                             @csrf
                             <button type="submit" class="btn btn-primary w-100">
                                 <i class="fa-solid fa-file-pdf me-1"></i> Generate Offer Letter

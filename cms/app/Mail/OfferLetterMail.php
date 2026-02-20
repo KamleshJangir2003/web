@@ -24,13 +24,16 @@ class OfferLetterMail extends Mailable
 
     public function build()
     {
-        // Generate PDF
+        // Refresh employee data to ensure latest information
+        $this->employee->refresh();
+        
+        // Generate PDF with timestamp to prevent caching
         $pdf = Pdf::loadView('auth.admin.employees.offer-letter', [
             'employee' => $this->employee,
             'bankDetail' => $this->bankDetail
         ]);
         
-        $fileName = 'Offer_Letter_' . str_replace(' ', '_', $this->employee->full_name) . '_' . date('Y-m-d') . '.pdf';
+        $fileName = 'Offer_Letter_' . str_replace(' ', '_', $this->employee->full_name) . '_' . time() . '.pdf';
 
         return $this->subject('Offer Letter - ' . $this->employee->full_name)
                     ->view('emails.offer-letter')

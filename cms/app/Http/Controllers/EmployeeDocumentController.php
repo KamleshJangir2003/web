@@ -18,7 +18,6 @@ class EmployeeDocumentController extends Controller
         'aadhar_card',
         'pan_card',
         'photo',
-        'passbook', // or cheque (any one)
     ];
 
     const OPTIONAL_GROUPS = [
@@ -49,24 +48,28 @@ class EmployeeDocumentController extends Controller
         $documents = EmployeeDocument::where('user_id', $user->id)->get();
         $bankDetail = EmployeeBankDetail::where('user_id', $user->id)->first();
 
-        $totalRequired  = count(self::REQUIRED_DOCUMENTS);
+        $totalRequired  = count(self::REQUIRED_DOCUMENTS) + count(self::OPTIONAL_GROUPS);
         $uploadedCount  = $documents->unique('document_type')->count();
         $verifiedCount  = $documents->where('status', 'verified')->unique('document_type')->count();
         $submittedCount = $documents->where('status', 'submitted')->unique('document_type')->count();
         $pendingCount   = $documents->whereIn('status', ['pending', 'uploaded'])->unique('document_type')->count();
         $isAdminView    = false;
 
-        return view('auth.admin.employees.em_document', compact(
-            'user',
-            'documents',
-            'bankDetail',
-            'totalRequired',
-            'uploadedCount',
-            'verifiedCount',
-            'submittedCount',
-            'pendingCount',
-            'isAdminView'
-        ));
+        return response()
+            ->view('auth.admin.employees.em_document', compact(
+                'user',
+                'documents',
+                'bankDetail',
+                'totalRequired',
+                'uploadedCount',
+                'verifiedCount',
+                'submittedCount',
+                'pendingCount',
+                'isAdminView'
+            ))
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     /* =====================================================
@@ -75,15 +78,15 @@ class EmployeeDocumentController extends Controller
     public function adminDocumentsIndex()
     {
         $employees = Employee::where('user_type', 'employee')
-    ->where('is_approved', true)
-    ->where('action_status', 'selected')
-    ->where('hired_status', 'not_hired')
-    ->with(['documents' => function($query) {
-        $query->select('user_id', 'document_type', 'status');
-    }])
-    ->orderBy('first_name')
-    ->get()
-           ->map(function($employee) {
+            ->where('is_approved', true)
+            ->where('action_status', 'selected')
+            ->where('hired_status', 'not_hired')
+            ->with(['documents' => function($query) {
+                $query->select('user_id', 'document_type', 'status');
+            }])
+            ->orderBy('first_name')
+            ->get()
+            ->map(function($employee) {
                 $documents = $employee->documents;
                 
                 // Calculate required documents based on actual logic
@@ -147,7 +150,11 @@ class EmployeeDocumentController extends Controller
                 return $employee;
             });
 
-        return view('auth.admin.employees.documents_index', compact('employees'));
+        return response()
+            ->view('auth.admin.employees.documents_index', compact('employees'))
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     /* =====================================================
@@ -155,12 +162,12 @@ class EmployeeDocumentController extends Controller
     ===================================================== */
     public function adminView($userId)
     {
-        $user = Employee::findOrFail($userId);
+        $employee = Employee::findOrFail($userId);
 
         $documents = EmployeeDocument::where('user_id', $userId)->get();
         $bankDetail = EmployeeBankDetail::where('user_id', $userId)->first();
 
-        $totalRequired  = count(self::REQUIRED_DOCUMENTS);
+        $totalRequired  = count(self::REQUIRED_DOCUMENTS) + count(self::OPTIONAL_GROUPS);
         $uploadedCount = $documents->unique('document_type')->count();
         $verifiedCount = $documents->where('status', 'verified')->unique('document_type')->count();
         $submittedCount = $documents->where('status', 'submitted')->unique('document_type')->count();
@@ -168,17 +175,21 @@ class EmployeeDocumentController extends Controller
 
         $isAdminView = true;
 
-        return view('auth.admin.employees.em_document', compact(
-            'user',
-            'documents',
-            'bankDetail',
-            'totalRequired',
-            'uploadedCount',
-            'verifiedCount',
-            'submittedCount',
-            'pendingCount',
-            'isAdminView'
-        ));
+        return response()
+            ->view('auth.admin.employees.em_document', compact(
+                'employee',
+                'documents',
+                'bankDetail',
+                'totalRequired',
+                'uploadedCount',
+                'verifiedCount',
+                'submittedCount',
+                'pendingCount',
+                'isAdminView'
+            ))
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     /* =====================================================
@@ -275,6 +286,7 @@ class EmployeeDocumentController extends Controller
     public function sendOfferLetterEmail($userId)
     {
         $employee = Employee::findOrFail($userId);
+        $employee->refresh(); // Force fresh data from database
         $bankDetail = EmployeeBankDetail::where('user_id', $userId)->first();
         
         // Check if all required documents are uploaded
@@ -318,9 +330,15 @@ class EmployeeDocumentController extends Controller
     public function generateOfferLetter($userId)
     {
         $employee = Employee::findOrFail($userId);
+        $employee->refresh(); // Force fresh data from database
         $bankDetail = EmployeeBankDetail::where('user_id', $userId)->first();
         
-        return view('auth.admin.employees.offer-letter', compact('employee', 'bankDetail'));
+        // Add cache busting headers
+        return response()
+            ->view('auth.admin.employees.offer-letter', compact('employee', 'bankDetail'))
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     /* =====================================================
@@ -483,7 +501,7 @@ class EmployeeDocumentController extends Controller
             ->where('hired_status', 'hired')
             ->where(function($query) {
                 $query->whereNull('action_status')
-                      ->orWhere('action_status', '!=', 'selected');
+                      ->orWhereIn('action_status', ['', 'pending']);
             })
             ->orderBy('joining_date', 'desc')
             ->get();
@@ -550,7 +568,8 @@ class EmployeeDocumentController extends Controller
             $employee->update([
                 'action_status' => 'selected',
                 'employee_status' => 'active',
-                'is_approved' => true
+                'is_approved' => true,
+                'hired_status' => 'not_hired'
             ]);
             
             return redirect()->route('admin.employees.hired.index')->with('success', 'Employee selected and moved to All Employees & Attendance');
@@ -589,7 +608,8 @@ class EmployeeDocumentController extends Controller
         $employee = Employee::findOrFail($id);
         $employee->update([
             'hired_status' => $request->hired_status,
-            'joining_date' => $request->hired_status === 'hired' ? ($employee->joining_date ?? now()) : $employee->joining_date
+            'joining_date' => $request->hired_status === 'hired' ? ($employee->joining_date ?? now()) : $employee->joining_date,
+            'action_status' => $request->hired_status === 'hired' ? null : $employee->action_status
         ]);
 
         if ($request->hired_status === 'hired') {

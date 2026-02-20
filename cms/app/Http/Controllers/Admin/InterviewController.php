@@ -570,8 +570,12 @@ class InterviewController extends Controller
                         ->subject('Welcome to The Kwikster - Joining Letter');
             });
 
-            // Update employee hired_status to 'hired' so they appear on documents page
-            $employee->update(['hired_status' => 'hired']);
+            // Keep hired_status as 'not_hired' so they appear on documents page
+            // Will be changed to 'hired' after documents are verified
+            $employee->update([
+                'hired_status' => 'not_hired',
+                'action_status' => 'selected'
+            ]);
 
             // Mark welcome letter as sent
             $interview->update([
