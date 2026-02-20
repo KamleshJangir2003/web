@@ -45,7 +45,7 @@ $submitRoute = $isAdminView ? route('admin.employees.document.submit', ['userId'
     {{ $user->full_name ?: ($user->name ?: 'N/A') }}
 </strong>
 <br>
-                <small>EMP ID: {{ $user->id }}</small>
+                <small>EMP ID: {{ $user->employee_id }}</small>
             </div>
 
             <div style="width:150px">
