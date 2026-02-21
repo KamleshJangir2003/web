@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Cache;
 
 class EmployeeDocumentController extends Controller
 {
@@ -214,15 +215,21 @@ class EmployeeDocumentController extends Controller
             }
 
             if ($existing) {
-                Storage::disk('public')->delete($existing->file_path);
+                // Delete old file asynchronously
+                if (Storage::disk('public')->exists($existing->file_path)) {
+                    Storage::disk('public')->delete($existing->file_path);
+                }
                 $existing->delete();
             }
         }
 
         $file = $request->file('document');
-        $path = "documents/{$userId}/" . time() . '_' . $file->getClientOriginalName();
+        // Use hash for unique filename instead of timestamp
+        $filename = md5($userId . $request->document_type . time()) . '.' . $file->getClientOriginalExtension();
+        $path = "documents/{$userId}/" . $filename;
 
-        Storage::disk('public')->put($path, file_get_contents($file));
+        // Store file directly without reading into memory
+        Storage::disk('public')->putFileAs("documents/{$userId}", $file, $filename);
 
         EmployeeDocument::create([
             'user_id'        => $userId,
@@ -234,6 +241,9 @@ class EmployeeDocumentController extends Controller
             'status'         => 'uploaded',
             'uploaded_at'    => now(),
         ]);
+
+        // Clear cache
+        Cache::forget('dashboard_stats');
 
         return redirect()->route('admin.employees.document', ['userId' => $userId])
             ->with('success', 'Document uploaded successfully');
@@ -363,15 +373,19 @@ class EmployeeDocumentController extends Controller
             }
 
             if ($existing) {
-                Storage::disk('public')->delete($existing->file_path);
+                if (Storage::disk('public')->exists($existing->file_path)) {
+                    Storage::disk('public')->delete($existing->file_path);
+                }
                 $existing->delete();
             }
         }
 
         $file = $request->file('document');
-        $path = "documents/{$user->id}/" . time() . '_' . $file->getClientOriginalName();
+        $filename = md5($user->id . $request->document_type . time()) . '.' . $file->getClientOriginalExtension();
+        $path = "documents/{$user->id}/" . $filename;
 
-        Storage::disk('public')->put($path, file_get_contents($file));
+        // Store file directly
+        Storage::disk('public')->putFileAs("documents/{$user->id}", $file, $filename);
 
         EmployeeDocument::create([
             'user_id'        => $user->id,
