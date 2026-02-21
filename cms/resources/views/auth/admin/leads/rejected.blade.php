@@ -1,5 +1,112 @@
 @extends('auth.layouts.app')
 <style>
+/* ================= REASON MODAL ================= */
+.reason-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.reason-modal-content {
+    background: #fff;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.reason-modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.reason-modal-header h5 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.reason-modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #999;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.reason-modal-close:hover { background: #f0f0f0; color: #333; }
+
+.reason-modal-body { padding: 20px; }
+.reason-modal-body p { margin: 0 0 15px 0; color: #555; font-size: 14px; }
+.reason-modal-body label { display: block; margin-bottom: 8px; font-weight: 500; color: #333; font-size: 14px; }
+.required { color: #dc3545; }
+
+.reason-modal-body textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.2s;
+}
+
+.reason-modal-body textarea:focus {
+    outline: none;
+    border-color: #2eacb3;
+    box-shadow: 0 0 0 3px rgba(46,172,179,0.1);
+}
+
+.reason-modal-body small { display: block; margin-top: 5px; color: #999; font-size: 12px; }
+
+.reason-modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-cancel, .btn-submit {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cancel { background: #f0f0f0; color: #666; }
+.btn-cancel:hover { background: #e0e0e0; }
+.btn-submit { background: #2eacb3; color: #fff; }
+.btn-submit:hover { background: #268a8f; }
+
     /* ===============================
    STATUS POPUP NOTIFICATION
 ================================ */
@@ -229,6 +336,26 @@
 
 </style>
 @section('content')
+<!-- Reason Modal -->
+<div id="reasonModal" class="reason-modal">
+    <div class="reason-modal-content">
+        <div class="reason-modal-header">
+            <h5>Change Status</h5>
+            <button class="reason-modal-close" onclick="closeReasonModal()">&times;</button>
+        </div>
+        <div class="reason-modal-body">
+            <p id="statusChangeText"></p>
+            <label for="reasonInput">Reason <span class="required">*</span></label>
+            <textarea id="reasonInput" rows="4" placeholder="Please provide a reason for this status change..."></textarea>
+            <small class="text-muted">Minimum 10 characters required</small>
+        </div>
+        <div class="reason-modal-footer">
+            <button class="btn-cancel" onclick="closeReasonModal()">Cancel</button>
+            <button class="btn-submit" onclick="submitStatusChange()">Submit</button>
+        </div>
+    </div>
+</div>
+
 <div class="main-content">
     <div class="card leads-card">
         <div class="card-header">
@@ -295,7 +422,13 @@
                                 </div>
                             </td>
                             <td>
-                                <span class="badge badge-danger">{{ $lead->condition_status }}</span>
+                                <select class="callback-status-select" data-id="{{ $lead->id }}" data-status="rejected">
+                                    <option value="rejected" selected>Rejected</option>
+                                    <option value="call_backs">Call Backs</option>
+                                    <option value="not_interested">Not Interested</option>
+                                    <option value="wrong_number">Wrong Number</option>
+                                    <option value="interested">Interested</option>
+                                </select>
                             </td>
                             <td>{{ $lead->reason ?? 'No reason provided' }}</td>
                             <td>{{ $lead->updated_at->format('d M Y, h:i A') }}</td>
@@ -591,6 +724,69 @@
 </style>
 
 <script>
+let currentSelect = null;
+let currentLeadId = null;
+let currentNewStatus = null;
+let currentOldStatus = null;
+let currentStatusText = null;
+let currentCandidateName = null;
+
+function closeReasonModal() {
+    document.getElementById('reasonModal').style.display = 'none';
+    document.getElementById('reasonInput').value = '';
+    if (currentSelect) {
+        currentSelect.value = currentOldStatus;
+        currentSelect.setAttribute('data-status', currentOldStatus);
+    }
+}
+
+function submitStatusChange() {
+    const reason = document.getElementById('reasonInput').value.trim();
+    
+    if (!reason || reason.length < 10) {
+        showStatusPopup('Please provide a reason (minimum 10 characters)', 'error');
+        return;
+    }
+    
+    closeReasonModal();
+    
+    fetch(`/admin/leads/${currentLeadId}/status`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ 
+            condition_status: currentNewStatus === 'call_backs' ? 'Call Back' : 
+                             currentNewStatus === 'rejected' ? 'Rejected' : 
+                             currentNewStatus === 'not_interested' ? 'Not Interested' : 
+                             currentNewStatus === 'wrong_number' ? 'Wrong Number' : 
+                             currentNewStatus === 'interested' ? 'Interested' : currentNewStatus,
+            reason: reason
+        })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response.json();
+    })
+    .then(data => {
+        if(data.success) {
+            currentSelect.setAttribute('data-status', currentNewStatus);
+            showStatusPopup(currentCandidateName + '\'s status changed to ' + currentStatusText, 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            currentSelect.value = currentOldStatus;
+            currentSelect.setAttribute('data-status', currentOldStatus);
+            showStatusPopup(data.message || 'Failed to update status', 'error');
+        }
+    })
+    .catch(error => {
+        currentSelect.value = currentOldStatus;
+        currentSelect.setAttribute('data-status', currentOldStatus);
+        showStatusPopup('Error: ' + error.message, 'error');
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     const tableBody = document.getElementById('tableBody');
@@ -656,6 +852,39 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial search if there's a value
     if (searchInput.value) {
         performSearch();
+    }
+    
+    // Status change functionality
+    document.querySelectorAll('.callback-status-select').forEach(select => {
+        select.setAttribute('data-status', select.value);
+        
+        select.addEventListener('change', function() {
+            currentSelect = this;
+            currentLeadId = this.dataset.id;
+            currentNewStatus = this.value;
+            currentOldStatus = 'rejected';
+            currentStatusText = this.options[this.selectedIndex].text;
+            const row = this.closest('tr');
+            currentCandidateName = row.querySelector('td:first-child').textContent;
+            
+            document.getElementById('statusChangeText').textContent = 
+                `You are changing ${currentCandidateName}'s status to "${currentStatusText}"`;
+            document.getElementById('reasonModal').style.display = 'flex';
+            document.getElementById('reasonInput').focus();
+        });
+    });
+    
+    function showStatusPopup(message, type) {
+        const popup = document.createElement('div');
+        popup.className = 'status-popup ' + type;
+        popup.innerHTML = '<div class="status-popup-header"><div class="status-popup-title">' + message + '</div></div>';
+        document.body.appendChild(popup);
+        
+        setTimeout(() => popup.classList.add('show'), 100);
+        setTimeout(() => {
+            popup.classList.remove('show');
+            setTimeout(() => popup.remove(), 400);
+        }, 3000);
     }
 });
 </script>
