@@ -18,6 +18,7 @@ class InterviewController extends Controller
     {
         $interviews = Interview::with('lead')
             ->where('result', '!=', 'Selected')
+            ->where('result', '!=', 'Rejected')
             ->where('status', '!=', 'Rescheduled')
             ->orderBy('interview_date', 'desc')
             ->paginate(10);
@@ -696,5 +697,17 @@ class InterviewController extends Controller
                 'message' => 'Error saving employment details: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function rejectedInterviews()
+    {
+        $interviews = Interview::with('lead')
+            ->where('result', 'Rejected')
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10);
+        
+        \Log::info('Rejected Interviews Count: ' . $interviews->total());
+        
+        return view('auth.admin.interviews.rejected', compact('interviews'));
     }
 }

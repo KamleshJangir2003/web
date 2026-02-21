@@ -336,7 +336,7 @@
                 <a href="{{ route('admin.employees.profiles') }}">Employee Profile</a>
                 <a href="{{ route('admin.employees.list') }}">All Employee Details</a>
                 <a href="{{ route('admin.employee.credentials') }}">Employee Login</a>
-                <a href="#">Rejected Interview</a>
+                <a href="{{ route('admin.interviews.rejected') }}">Rejected Interview</a>
                 <!-- <a href="#">Employee Exit / Offboarding</a> -->
             </ul>
         </li>

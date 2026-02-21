@@ -503,6 +503,7 @@ Route::middleware(['auth'])->group(function () {
             */
             Route::get('/interviews', [App\Http\Controllers\Admin\InterviewController::class, 'index'])->name('interviews.index');
             Route::get('/interviews/selected', [App\Http\Controllers\Admin\InterviewController::class, 'selectedEmployees'])->name('interviews.selected');
+            Route::get('/interviews/rejected-list', [App\Http\Controllers\Admin\InterviewController::class, 'rejectedInterviews'])->name('interviews.rejected');
             Route::get('/interviews/create', [App\Http\Controllers\Admin\InterviewController::class, 'create'])->name('interviews.create');
             Route::post('/interviews', [App\Http\Controllers\Admin\InterviewController::class, 'store'])->name('interviews.store');
             Route::get('/interviews/{interview}', [App\Http\Controllers\Admin\InterviewController::class, 'show'])->name('interviews.show');
