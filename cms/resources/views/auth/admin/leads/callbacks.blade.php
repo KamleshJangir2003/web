@@ -414,17 +414,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const notesTextarea = row.querySelector('.callback-notes');
             let reason = notesTextarea ? notesTextarea.value.trim() : '';
             
-            // If status changed from call_backs to something else, remove from this page
+            // If status changed from call_backs to something else
             if (newStatus !== 'call_backs') {
-                // Prompt for reason if not already provided
-                if (!reason) {
+                // Prompt for reason if not already provided (except for interested)
+                if (!reason && newStatus !== 'interested') {
                     reason = prompt(`Please provide a reason for marking this as ${statusText}:`);
                     if (!reason) {
-                        // If user cancels or provides empty reason, revert the selection
                         this.value = 'call_backs';
                         return;
                     }
-                    // Update the textarea with the new reason
                     if (notesTextarea) {
                         notesTextarea.value = reason;
                     }
@@ -438,37 +436,36 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     body: JSON.stringify({ 
                         status: newStatus,
-                        reason: reason
+                        reason: reason || notesTextarea.value
                     })
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Show success popup
-                        showStatusPopup('success', statusText, candidateName);
+                        showStatusPopup('success', `Moved to ${statusText}`, `${candidateName} has been moved to ${statusText}`);
                         
-                        // Remove row with animation
                         row.style.transition = 'opacity 0.3s ease';
                         row.style.opacity = '0';
                         setTimeout(() => {
                             row.remove();
-                            // Update results count
                             const remainingRows = tableBody.querySelectorAll('.callback-row').length;
                             resultsCount.textContent = `${remainingRows} results`;
+                            
+                            // Redirect to interested page if status is interested
+                            if (newStatus === 'interested') {
+                                setTimeout(() => {
+                                    window.location.href = '/admin/leads/interested';
+                                }, 1500);
+                            }
                         }, 300);
                     } else {
-                        // Show error popup
-                        showStatusPopup('error', 'Update Failed', 
-                            'Failed to update status. Please try again.');
+                        showStatusPopup('error', 'Update Failed', 'Failed to update status. Please try again.');
                         this.value = 'call_backs';
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    // Show error popup
-                    showStatusPopup('error', 'Network Error', 
-                        'Unable to connect to server. Please check your connection.');
-                    // Revert select to original value on error
+                    showStatusPopup('error', 'Network Error', 'Unable to connect to server. Please check your connection.');
                     this.value = 'call_backs';
                 });
             }

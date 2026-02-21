@@ -266,7 +266,7 @@ Route::middleware(['auth'])->group(function () {
                     'rejectedInterviews' => \DB::table('interviews')->where('result', 'Rejected')->count(),
                     'newTickets' => \App\Models\Ticket::where('viewed_at', null)->count(),
                     'totalTickets' => \App\Models\Ticket::count(),
-                    'interested' => \DB::table('leads')->where('condition_status', 'Intrested')->count(),
+                    'interested' => Lead::where('condition_status', 'Interested')->whereDoesntHave('interviews')->count(),
                     'scheduledInterviews' => \DB::table('interviews')->where('status', 'Scheduled')->count(),
                     'employeeHired' => $totalHired,
                     'selectedEmployee' => \DB::table('interviews')->where('result', 'Selected')->count(),

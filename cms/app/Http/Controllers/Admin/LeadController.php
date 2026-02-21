@@ -692,7 +692,7 @@ class LeadController extends Controller
             'rejected' => 'Rejected',
             'not_interested' => 'Not Interested',
             'wrong_number' => 'Wrong Number',
-            'interested' => 'Intrested'
+            'interested' => 'Interested'
         ];
         
         return $statusMap[$callbackStatus] ?? $callbackStatus;
