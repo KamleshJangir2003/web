@@ -506,6 +506,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/interviews/rejected-list', [App\Http\Controllers\Admin\InterviewController::class, 'rejectedInterviews'])->name('interviews.rejected');
             Route::get('/interviews/create', [App\Http\Controllers\Admin\InterviewController::class, 'create'])->name('interviews.create');
             Route::post('/interviews', [App\Http\Controllers\Admin\InterviewController::class, 'store'])->name('interviews.store');
+            Route::post('/interviews/check-duplicate', [App\Http\Controllers\Admin\InterviewController::class, 'checkDuplicate'])->name('interviews.check-duplicate');
             Route::get('/interviews/{interview}', [App\Http\Controllers\Admin\InterviewController::class, 'show'])->name('interviews.show');
             Route::get('/interviews/{interview}/edit', [App\Http\Controllers\Admin\InterviewController::class, 'edit'])->name('interviews.edit');
             Route::get('/interviews/{interview}/reschedule', [App\Http\Controllers\Admin\InterviewController::class, 'reschedule'])->name('interviews.reschedule');

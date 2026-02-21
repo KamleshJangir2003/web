@@ -191,9 +191,16 @@
                         <input type="email" name="email" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Phone *</label>
-                        <input type="text" name="phone" class="form-control" required>
-                    </div>
+    <label class="form-label">Phone *</label>
+    <input type="tel" 
+           name="phone" 
+           class="form-control" 
+           maxlength="10"
+           pattern="[0-9]{10}"
+           inputmode="numeric"
+           oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10);"
+           required>
+</div>
                     <input type="hidden" name="department" value="HR">
                     <input type="hidden" name="user_type" value="employee">
                 </form>

@@ -113,6 +113,17 @@ class InterviewController extends Controller
             'instructions' => 'nullable|string',
         ]);
 
+        // Check for duplicate interview at same date and time
+        $duplicate = Interview::where('interview_date', $request->interview_date)
+            ->where('start_time', $request->start_time)
+            ->where('status', '!=', 'Rescheduled')
+            ->where('status', '!=', 'Completed')
+            ->first();
+
+        if ($duplicate) {
+            return back()->withErrors(['interview_date' => 'An interview is already scheduled at this date and time.'])->withInput();
+        }
+
         $lead = Lead::findOrFail($request->lead_id);
         
         $interview = Interview::create([
@@ -709,5 +720,16 @@ class InterviewController extends Controller
         \Log::info('Rejected Interviews Count: ' . $interviews->total());
         
         return view('auth.admin.interviews.rejected', compact('interviews'));
+    }
+
+    public function checkDuplicate(Request $request)
+    {
+        $duplicate = Interview::where('interview_date', $request->interview_date)
+            ->where('start_time', $request->start_time)
+            ->where('status', '!=', 'Rescheduled')
+            ->where('status', '!=', 'Completed')
+            ->exists();
+
+        return response()->json(['duplicate' => $duplicate]);
     }
 }

@@ -87,6 +87,12 @@
 <body>
     <div class="container">
         <div class="header">
+              <!-- Company Logo -->
+    <div style="margin-bottom:15px;">
+        <img src="{{ public_path('Kwikster.jpeg') }}" 
+             alt="Kwikster Logo" 
+             style="height:80px;">
+    </div>
             <h2>KWIKSTER INNOVATIVE OPTIMISATIONS PVT LTD</h2>
             <p>21/281, Kaveri Path, Madhyam Marg Road</p>
             <p>Mansarovar, Jaipur, Rajasthan – 302020</p>
@@ -102,7 +108,9 @@
             <p><strong>To,</strong><br>
             {{ $employee->gender == 'male' ? 'Mr.' : ($employee->gender == 'female' ? 'Ms.' : '') }} {{ $employee->full_name ?? $employee->first_name . ' ' . $employee->last_name }}</p>
 
-            <p>Dear {{ $employee->first_name }},</p>
+            <p>
+    Dear {{ explode(' ', $employee->full_name ?? $employee->first_name)[0] }},
+</p>
 
             <p>We are pleased to confirm your appointment as <strong>{{ $employee->department ?? 'Employee' }}</strong> at Kwikster Innovative Optimisations Pvt Ltd, effective from <strong>{{ $employee->joining_date ? $employee->joining_date->format('d F Y') : now()->format('d F Y') }}</strong>. This is a Full-Time employment position.</p>
 

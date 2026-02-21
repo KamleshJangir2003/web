@@ -44,6 +44,12 @@
     </style>
 </head>
 <body>
+     <!-- Company Logo -->
+     <div style="text-align:center; margin-bottom:30px;">
+        <img src="{{ public_path('Kwikster.jpeg') }}" 
+             alt="Kwikster Logo" 
+             style="height:100px;">
+    </div>
 
     <!-- Company Info -->
     <div class="company-info">

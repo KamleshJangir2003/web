@@ -580,10 +580,45 @@ function handleFormSubmit() {
         }
     }
     
-    // Disable submit button to prevent double submission
-    const submitBtn = event.target;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting...';
+    // Check for duplicate interview time via AJAX
+    const date = document.querySelector('input[name="interview_date"]').value;
+    const time = document.querySelector('input[name="start_time"]').value;
+    
+    if (date && time) {
+        // Disable submit button to prevent double submission
+        const submitBtn = event.target;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Checking...';
+        
+        // Make synchronous check (for simplicity)
+        let isDuplicate = false;
+        
+        fetch('/admin/interviews/check-duplicate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+            },
+            body: JSON.stringify({ interview_date: date, start_time: time })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.duplicate) {
+                alert('An interview is already scheduled at this date and time. Please choose a different time.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '{{ isset($interview) ? "Reschedule Interview" : "Schedule Interview" }}';
+            } else {
+                submitBtn.textContent = 'Submitting...';
+                document.querySelector('form').submit();
+            }
+        })
+        .catch(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = '{{ isset($interview) ? "Reschedule Interview" : "Schedule Interview" }}';
+        });
+        
+        return false;
+    }
     
     return true;
 }
