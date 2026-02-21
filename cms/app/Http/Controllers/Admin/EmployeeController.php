@@ -343,7 +343,7 @@ class EmployeeController extends Controller
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:employees,email',
             'phone' => 'required|string|max:20',
-            'department' => 'required|string|max:255',
+            'department' => 'nullable|string|max:255',
             'user_type' => 'required|string'
         ]);
 
@@ -366,7 +366,7 @@ class EmployeeController extends Controller
                 'full_name' => $request->full_name,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'department' => $request->department,
+                'department' => $request->department ?? 'Training',
                 'user_type' => $request->user_type,
                 'password' => Hash::make('password123'),
                 'is_approved' => true,

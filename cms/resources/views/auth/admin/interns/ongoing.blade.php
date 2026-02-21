@@ -229,17 +229,6 @@
                         <label class="form-label">Phone *</label>
                         <input type="text" name="phone" class="form-control" required>
                     </div>
-                    <!-- <div class="mb-3">
-                        <label class="form-label">Department *</label>
-                        <select name="department" class="form-control" required>
-                            <option value="">Select Department</option>
-                            <option value="Development">Development</option>
-                            <option value="Design">Design</option>
-                            <option value="Marketing">Marketing</option>
-                            <option value="Training">Training</option>
-                            <option value="Technical">Technical</option>
-                        </select>
-                    </div> -->
                     <input type="hidden" name="user_type" value="employee">
                 </form>
             </div>
@@ -304,7 +293,8 @@ function addMentor() {
         if (data.success) {
             // Add new option to Mentor select
             const mentorSelect = document.getElementById('mentor_select');
-            const newOption = new Option(data.employee.full_name + ' (' + data.employee.department + ')', data.employee.id);
+            const department = data.employee.department || 'Training';
+            const newOption = new Option(data.employee.full_name + ' (' + department + ')', data.employee.id);
             mentorSelect.add(newOption);
             mentorSelect.value = data.employee.id;
             

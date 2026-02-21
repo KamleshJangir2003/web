@@ -477,8 +477,9 @@ function generateMeetingLink() {
                 return;
             }
             
-            // Generate Google Meet style link
+            // Generate Google Meet style link and PIN
             const meetingId = generateGoogleMeetId();
+            const meetingPin = generateGoogleMeetPin();
             const link = `https://meet.google.com/${meetingId}`;
             
             // Format the meeting info
@@ -489,7 +490,7 @@ function generateMeetingLink() {
                 year: 'numeric' 
             });
             
-            const meetingInfo = `Kwikster Interview\n${formattedDate}\nTime: ${startTime} - ${endTime}\nTime zone: Asia/Kolkata\nGoogle Meet joining info\nVideo call link: ${link}`;
+            const meetingInfo = `Kwikster Interview\n${formattedDate}\nTime: ${startTime} - ${endTime}\nTime zone: Asia/Kolkata\nGoogle Meet joining info\nVideo call link: ${link}\nPIN: ${meetingPin}`;
             
             document.getElementById('meeting_link').value = link;
             
@@ -524,7 +525,7 @@ function generateGoogleMeetId() {
     }
     result += '-';
     
-    // Second part: 4 characters
+    // Second part: 4 characters  
     for (let i = 0; i < 4; i++) {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -536,6 +537,18 @@ function generateGoogleMeetId() {
     }
     
     return result;
+}
+
+function generateGoogleMeetPin() {
+    // Generate Google Meet style PIN (XXX XXX XXX#)
+    let pin = '';
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            pin += Math.floor(Math.random() * 10);
+        }
+        if (i < 2) pin += ' ';
+    }
+    return pin + '#';
 }
 
 function generateZoomMeetingId() {
