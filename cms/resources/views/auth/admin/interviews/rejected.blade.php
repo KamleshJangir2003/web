@@ -27,6 +27,7 @@
                         <th>Interviewer</th>
                         <th>Status</th>
                         <th>Rejection Reason</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,10 +53,15 @@
                             <td>
                                 {{ $interview->rejection_reason ?? 'N/A' }}
                             </td>
+                            <td>
+                                <a href="{{ route('admin.interviews.reschedule', $interview->id) }}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-redo"></i> Re-schedule
+                                </a>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center">No rejected interviews found.</td>
+                            <td colspan="8" class="text-center">No rejected interviews found.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -158,6 +164,21 @@
 .btn-primary:hover {
     background-color: #0056b3;
     transform: translateY(-1px);
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    transform: translateY(-1px);
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
 }
 
 .alert {
