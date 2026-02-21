@@ -298,6 +298,7 @@ Route::middleware(['auth'])->group(function () {
                 $allEmployees = Employee::where('user_type', 'employee')
                     ->where('is_approved', true)
                     ->where('action_status', 'selected')
+                    ->where('hired_status', 'hired')
                     ->where('employee_status', 'active')
                     ->select('id', 'first_name', 'last_name', 'email', 'phone', 'department', 'platform')
                     ->orderBy('first_name')

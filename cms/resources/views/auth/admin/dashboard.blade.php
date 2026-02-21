@@ -1061,65 +1061,204 @@ document.getElementById("employeeSearch").addEventListener("keyup", function () 
 
     </div>
     
-    <!-- 🔹 Activity Logs Section -->
-    <div class="card table-card mb-4 shadow-sm">
-        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-semibold">
-                📋 Recent Activity Logs
-            </h5>
-            <!-- <a href="{{ url('/admin/activity-logs') }}" class="btn btn-sm btn-primary">
-                <i class="bi bi-eye"></i> View All
-            </a> -->
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>User</th>
-                            <th>Action</th>
-                            <th>Module</th>
-                            <th>Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if(isset($recentLogs) && $recentLogs->count() > 0)
-                            @foreach($recentLogs as $log)
-                            <tr>
-                                <td>
-                                    <strong>{{ $log->user_name ?? 'System' }}</strong>
-                                </td>
-                                <td>
-                                    <span class="badge 
-                                        @if(str_contains(strtolower($log->action), 'create')) bg-success
-                                        @elseif(str_contains(strtolower($log->action), 'update')) bg-warning
-                                        @elseif(str_contains(strtolower($log->action), 'delete')) bg-danger
-                                        @else bg-info
-                                        @endif">
-                                        {{ $log->action }}
-                                    </span>
-                                </td>
-                                <td>{{ $log->module ?? 'General' }}</td>
-                                <td>
-                                    <small class="text-muted">
-                                        {{ $log->created_at ? $log->created_at->diffForHumans() : 'N/A' }}
-                                    </small>
-                                </td>
-                            </tr>
-                            @endforeach
-                        @else
-                            <tr>
-                                <td colspan="4" class="text-center text-muted py-4">
-                                    <i class="bi bi-inbox"></i> No recent activity logs found
-                                </td>
-                            </tr>
-                        @endif
-                    </tbody>
-                </table>
-            </div>
-        </div>
+   <!-- 🔹 Activity Logs Section -->
+<div class="activity-card">
+    <div class="activity-header">
+        <h3>📋 Recent Activity Logs</h3>
     </div>
-    
+
+    <div class="activity-table">
+
+        <div class="activity-row activity-head">
+            <div>User</div>
+            <div>Action</div>
+            <div>Module</div>
+            <div>Time</div>
+        </div>
+
+        @if(isset($recentLogs) && $recentLogs->count() > 0)
+            @foreach($recentLogs as $log)
+            <div class="activity-row">
+                <div class="user-name">
+                    {{ $log->user_name ?? 'System' }}
+                </div>
+
+                <div>
+                    <span class="status-badge
+                        @if(str_contains(strtolower($log->action), 'create')) badge-success
+                        @elseif(str_contains(strtolower($log->action), 'update')) badge-warning
+                        @elseif(str_contains(strtolower($log->action), 'delete')) badge-danger
+                        @else badge-info
+                        @endif">
+                        {{ $log->action }}
+                    </span>
+                </div>
+
+                <div class="module-name">
+                    {{ $log->module ?? 'General' }}
+                </div>
+
+                <div class="time-text">
+                    {{ $log->created_at ? $log->created_at->diffForHumans() : 'N/A' }}
+                </div>
+            </div>
+            @endforeach
+        @else
+            <div class="no-data">
+                No recent activity logs found
+            </div>
+        @endif
+
+    </div>
+</div>
+<style>
+    /* Card */
+.activity-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    overflow: hidden;
+    margin-bottom: 25px;
+    margin-top: 30px;
+}
+
+/* Header */
+.activity-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.activity-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Table Wrapper */
+.activity-table {
+    width: 100%;
+}
+
+/* Row Layout */
+.activity-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr;
+    padding: 18px 25px;
+    align-items: center;
+    border-bottom: 1px solid #f3f3f3;
+    transition: all 0.2s ease;
+}
+
+/* Header Row */
+.activity-head {
+    background: #f8fafc;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #6c757d;
+}
+
+/* Hover */
+.activity-row:hover {
+    background: #f9fbff;
+}
+
+/* User */
+.user-name {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Module */
+.module-name {
+    color: #555;
+}
+
+/* Time */
+.time-text {
+    font-size: 13px;
+    color: #888;
+}
+
+/* Badge */
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Badge Colors */
+.badge-success {
+    background: #e6f9f0;
+    color: #0f9d58;
+}
+
+.badge-warning {
+    background: #fff4e5;
+    color: #f57c00;
+}
+
+.badge-danger {
+    background: #fdecea;
+    color: #d93025;
+}
+
+.badge-info {
+    background: #e8f0fe;
+    color: #1a73e8;
+}
+
+/* No Data */
+.no-data {
+    padding: 30px;
+    text-align: center;
+    color: #999;
+}
+</style>
+    <style>
+        /* 🔹 Activity Log Card Styling */
+.table-card {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+/* Header spacing */
+.table-card .card-header {
+    padding: 20px 24px !important;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+/* Table header */
+.table-card .table thead th {
+    padding: 18px 24px !important;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Table body cells */
+.table-card .table tbody td {
+    padding: 18px 24px !important;
+    border-bottom: 1px solid #f3f3f3;
+}
+
+/* Row hover effect */
+.table-card .table tbody tr:hover {
+    background-color: #f9fbfd !important;
+}
+
+/* Badge modern look */
+.table-card .badge {
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 12px;
+}
+    </style>
     <!-- 🔹 Pending Approvals Table -->
     @if(isset($pendingUsers) && $pendingUsers->count() > 0)
     <div class="card table-card mb-4">

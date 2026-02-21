@@ -237,7 +237,7 @@
             <a href="{{ route('admin.callbacks.index') }}">
                 <i class="fa-solid fa-phone-volume"></i>
                 
-                pending Response
+                Callback
                 <span class="callback-badge" id="callbackCount"
                     style="background:#ff6b6b;color:#fff;border-radius:12px;
                     padding:3px 8px;font-size:10px;font-weight:bold;
@@ -357,31 +357,22 @@
             </ul>
         </li>
 
-        <!-- Leave Management -->
-        <li class="has-sub">
-            <a href="#">
-            <i class="fa-solid fa-calendar-check"></i> Leave Management</a>
-            <ul class="submenu">
-                <a href="#">All Leave Request</a>
-                <a href="#">Leave Type</a>
-                <a href="{{ route('admin.attendance.index') }}">
-                    <i class="fa-solid fa-calendar-check"></i>
-                    Attendance
-                </a>
-            </ul>
-        </li>
+      
         <li class="has-sub">
             
             <a href="#">
             <i class="fa-solid fa-file-invoice-dollar"></i> Payroll</a>
             <ul class="submenu">
-                <a href="#">Overview</a>
-                <a href="#">Employee</a>
+               
                 <a href="{{ route('admin.salary.index') }}">
                     <i class="fa-solid fa-money-bill-wave"></i>
                     Salary Management
                 </a>
-                <a href="#">PaySlip</a>
+                <a href="{{ route('admin.attendance.index') }}">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    Attendance
+                </a>
+                
             </ul>
         </li>
 
