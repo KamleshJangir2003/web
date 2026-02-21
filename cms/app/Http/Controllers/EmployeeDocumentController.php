@@ -569,7 +569,7 @@ class EmployeeDocumentController extends Controller
                 'action_status' => 'selected',
                 'employee_status' => 'active',
                 'is_approved' => true,
-                'hired_status' => 'not_hired'
+                'hired_status' => 'hired'
             ]);
             
             return redirect()->route('admin.employees.hired.index')->with('success', 'Employee selected and moved to All Employees & Attendance');

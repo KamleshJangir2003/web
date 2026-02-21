@@ -225,7 +225,7 @@ function toggleReasonField(select) {
             reasonDiv.innerHTML = `
                 <input type="text" name="action_reason" class="form-control form-control-sm" 
                        placeholder="Enter reason for not selecting..." style="font-size: 11px;" required>
-                <button type="submit" class="btn btn-primary btn-sm mt-1" onclick="submitToNotSelected(this)">Update</button>
+                <button type="submit" class="btn btn-primary btn-sm mt-1">Update</button>
             `;
             select.parentNode.appendChild(reasonDiv);
         }
@@ -244,30 +244,6 @@ function toggleReasonField(select) {
         if (existingReasonDiv) {
             existingReasonDiv.remove();
         }
-    }
-}
-
-function submitToNotSelected(button) {
-    const form = button.closest('form');
-    const reasonInput = form.querySelector('input[name="action_reason"]');
-    
-    if (reasonInput.value.trim()) {
-        const redirectInput = document.createElement('input');
-        redirectInput.type = 'hidden';
-        redirectInput.name = 'redirect_to';
-        redirectInput.value = 'not_selected';
-        form.appendChild(redirectInput);
-        
-        form.submit();
-        
-        // Remove employee row after submission
-        setTimeout(() => {
-            const row = form.closest('tr');
-            row.remove();
-            window.location.href = '/admin/employees/not-selected';
-        }, 100);
-    } else {
-        alert('Please enter a reason');
     }
 }
 </script>
