@@ -28,15 +28,27 @@ class SearchController extends Controller
                 ->get();
                 
             foreach($employees as $emp) {
-                $url = ($emp->hired_status == 'hired') ? '/admin/employees/hired' : '/admin/employees/' . $emp->id . '/details';
+                // Determine page name based on status
+                $pageName = match($emp->hired_status) {
+                    'hired' => 'Hired Employees',
+                    'rejected' => 'Rejected Employees',
+                    'pending' => 'Pending Employees',
+                    default => 'All Employees'
+                };
+                
+                // Always go to detail page
+                $url = '/admin/employees/' . $emp->id . '/details';
                 
                 $results[] = [
                     'id' => $emp->id,
                     'name' => trim($emp->first_name . ' ' . $emp->last_name),
                     'number' => $emp->phone ?: $emp->contact_number,
-                    'type' => ($emp->hired_status == 'hired') ? 'Hired Employee' : 'Employee',
-                    'page' => 'Employees',
-                    'url' => $url
+                    'type' => 'Employee',
+                    'page' => $pageName,
+                    'url' => $url,
+                    'status' => $emp->hired_status ?? 'pending',
+                    'role' => $emp->role ?? 'N/A',
+                    'platform' => $emp->platform ?? 'N/A'
                 ];
             }
             
@@ -48,22 +60,26 @@ class SearchController extends Controller
                 ->get();
                 
             foreach($leads as $lead) {
-                $url = match($lead->condition_status) {
-                    'Rejected' => '/admin/leads/rejected',
-                    'Interested' => '/admin/leads/interested',
-                    'Not Interested' => '/admin/leads/not-interested', 
-                    'Wrong Number' => '/admin/leads/wrong-number',
-                    'Callback' => '/admin/callbacks',
-                    default => '/admin/leads'
+                // Determine page name and URL based on status
+                $statusData = match($lead->condition_status) {
+                    'Rejected' => ['page' => 'Rejected Leads', 'url' => '/admin/leads/rejected'],
+                    'Interested' => ['page' => 'Interested Leads', 'url' => '/admin/leads/interested'],
+                    'Not Interested' => ['page' => 'Not Interested Leads', 'url' => '/admin/leads/not-interested'],
+                    'Wrong Number' => ['page' => 'Wrong Number Leads', 'url' => '/admin/leads/wrong-number'],
+                    'Callback' => ['page' => 'Callback Leads', 'url' => '/admin/callbacks'],
+                    default => ['page' => 'All Leads', 'url' => '/admin/leads']
                 };
                 
                 $results[] = [
                     'id' => $lead->id,
                     'name' => $lead->name,
                     'number' => $lead->number,
-                    'type' => 'Lead (' . $lead->condition_status . ')',
-                    'page' => 'Leads',
-                    'url' => $url
+                    'type' => 'Lead',
+                    'page' => $statusData['page'],
+                    'url' => $statusData['url'],
+                    'status' => $lead->condition_status ?? 'pending',
+                    'role' => $lead->role ?? 'N/A',
+                    'platform' => $lead->platform ?? 'N/A'
                 ];
             }
             
@@ -81,7 +97,10 @@ class SearchController extends Controller
                     'number' => $callback->number,
                     'type' => 'Callback',
                     'page' => 'Callbacks',
-                    'url' => '/admin/callbacks'
+                    'url' => '/admin/callbacks',
+                    'status' => $callback->status ?? 'pending',
+                    'role' => $callback->role ?? 'N/A',
+                    'platform' => $callback->platform ?? 'N/A'
                 ];
             }
             
@@ -93,18 +112,26 @@ class SearchController extends Controller
                 ->get();
                 
             foreach($interviews as $interview) {
-                $url = match($interview->result) {
-                    'Selected' => '/admin/interviews/selected',
-                    default => '/admin/interviews/' . $interview->id
+                // Determine page name based on result
+                $pageName = match($interview->result) {
+                    'Selected' => 'Selected Interviews',
+                    'Rejected' => 'Rejected Interviews',
+                    'Pending' => 'Pending Interviews',
+                    default => 'All Interviews'
                 };
+                
+                $url = '/admin/interviews';
                 
                 $results[] = [
                     'id' => $interview->id,
                     'name' => $interview->candidate_name,
                     'number' => $interview->candidate_email,
-                    'type' => 'Interview (' . $interview->result . ')',
-                    'page' => 'Interviews',
-                    'url' => $url
+                    'type' => 'Interview',
+                    'page' => $pageName,
+                    'url' => $url,
+                    'status' => $interview->result ?? 'pending',
+                    'role' => $interview->position ?? 'N/A',
+                    'platform' => 'N/A'
                 ];
             }
             

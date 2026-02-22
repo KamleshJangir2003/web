@@ -44,7 +44,7 @@ class DashboardController extends Controller
         // Active job openings - cached for 30 minutes
         $activeJobOpenings = Cache::remember('active_job_openings', 1800, function () {
             return \App\Models\JobOpening::where('status', 'active')
-                ->select('id', 'title', 'department', 'status')
+                ->select('id', 'job_title', 'shift', 'salary', 'status')
                 ->get();
         });
 

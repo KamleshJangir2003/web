@@ -402,12 +402,20 @@
         <!-- <li><a href="#">Maps</a></li> -->
         <li><a href="{{ route('admin.hr-notes.index') }}">
         <i class="fa-solid fa-clipboard"></i> HR Notes</a></li>
-        <li><a href="{{ route('admin.job-openings.index') }}"><i class="fa-solid fa-briefcase"></i> Job Opening Management</a></li>
-       
-        <li><a href="{{ route('admin.birthdays.index') }}"><i class="fa-solid fa-birthday-cake"></i> Birthday</a></li>
-        <li><a href="{{ route('admin.employees.all') }}"><i class="fa-solid fa-envelope"></i> All Emails</a></li>
-        <li><a href="{{ route('admin.letters.index') }}"><i class="fa-solid fa-file-contract"></i> Employee Letters</a></li>
-        <li><a href="{{ route('admin.bills.index') }}"><i class="fa-solid fa-file-invoice"></i> Bill Management</a></li>
+        <li class="menu-item has-submenu">
+    <a href="javascript:void(0);" class="menu-toggle">
+        <i class="fa-solid fa-users"></i> HR Management
+        <i class="fa-solid fa-chevron-down float-end"></i>
+    </a>
+
+    <ul class="submenu">
+        <li><a href="{{ route('admin.job-openings.index') }}">Job Opening Management</a></li>
+        <li><a href="{{ route('admin.birthdays.index') }}">Birthday</a></li>
+        <li><a href="{{ route('admin.employees.all') }}">All Emails</a></li>
+        <li><a href="{{ route('admin.letters.index') }}">Employee Letters</a></li>
+        <li><a href="{{ route('admin.bills.index') }}">Bill Management</a></li>
+    </ul>
+</li>
         <li><a href="{{ route('admin.expenses.index') }}"><i class="fa-solid fa-money-bill-wave"></i> Expenses</a></li>
         <li><a href="{{ route('admin.tickets.index') }}"><i class="fa-solid fa-ticket-alt"></i> Employee Tickets</a></li>
         <li><a href="{{ route('admin.employee-expenses.index') }}"><i class="fa-solid fa-receipt"></i> Reimbursement</a></li>
@@ -465,7 +473,24 @@
         </ul>
     </div>
 </div>
+<style>
+    .submenu {
+    display: none;
+    padding-left: 15px;
+}
 
+.menu-item.active .submenu {
+    display: block;
+}
+</style>
+<script>
+document.querySelectorAll('.menu-toggle').forEach(function(menu) {
+    menu.addEventListener('click', function() {
+        let parent = this.closest('.menu-item');
+        parent.classList.toggle('active');
+    });
+});
+</script>
 <script>
 // Update callback count in sidebar
 window.updateCallbackCount = function() {

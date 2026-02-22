@@ -444,12 +444,12 @@
     position: absolute;
     top: 50px;
     left: 0;
-    width: 100%;
+    width: 450px;
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 12px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    max-height: 400px;
+    max-height: 500px;
     overflow-y: auto;
     display: none;
     z-index: 10005;
@@ -460,7 +460,7 @@
     cursor: pointer;
     border-bottom: 1px solid #f1f3f4;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 12px;
     transition: background 0.2s ease;
 }
@@ -484,36 +484,96 @@
     color: white;
     font-weight: 600;
     font-size: 14px;
+    flex-shrink: 0;
 }
 
 .search-result-info {
     flex: 1;
+    min-width: 0;
 }
 
 .search-result-name {
     font-weight: 600;
     color: #1a1a1a;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
+    font-size: 14px;
 }
 
 .search-result-number {
-    font-size: 13px;
+    font-size: 12px;
     color: #666;
+    margin-bottom: 6px;
 }
 
 .search-result-type {
     font-size: 11px;
     background: #e3f2fd;
     color: #1976d2;
-    padding: 2px 6px;
+    padding: 2px 8px;
     border-radius: 10px;
     font-weight: 500;
+    display: inline-block;
 }
 
 .search-result-page {
     font-size: 11px;
     color: #666;
-    margin-top: 2px;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.search-result-details {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+}
+
+.search-detail-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.status-badge {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-badge.pending {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.status-badge.rejected {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.status-badge.interested {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.status-badge.hired {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.role-badge {
+    background: #f3e5f5;
+    color: #6a1b9a;
+}
+
+.platform-badge {
+    background: #e0f2f1;
+    color: #00695c;
 }
 
 .search-no-results {
@@ -1417,12 +1477,36 @@ searchInput.addEventListener('input', function () {
                         // Get initials for avatar
                         let initials = item.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
 
+                        // Status badge with color
+                        let statusClass = 'status-badge';
+                        if (item.status) {
+                            statusClass += ' ' + item.status.toLowerCase().replace(/\s+/g, '-');
+                        }
+
+                        // Build details section
+                        let detailsHtml = '<div class="search-result-details">';
+                        
+                        if (item.status && item.status !== 'N/A') {
+                            detailsHtml += `<span class="search-detail-badge ${statusClass}">📊 ${item.status}</span>`;
+                        }
+                        
+                        if (item.role && item.role !== 'N/A') {
+                            detailsHtml += `<span class="search-detail-badge role-badge">💼 ${item.role}</span>`;
+                        }
+                        
+                        if (item.platform && item.platform !== 'N/A') {
+                            detailsHtml += `<span class="search-detail-badge platform-badge">🌐 ${item.platform}</span>`;
+                        }
+                        
+                        detailsHtml += '</div>';
+
                         div.innerHTML = `
                             <div class="search-result-avatar">${initials}</div>
                             <div class="search-result-info">
                                 <div class="search-result-name">${item.name}</div>
                                 <div class="search-result-number">${item.number || 'No number'}</div>
-                                <div class="search-result-page">📍 ${item.page} - <span class="search-result-type">${item.type}</span></div>
+                                <div class="search-result-page">📍 <strong>${item.page}</strong> - <span class="search-result-type">${item.type}</span></div>
+                                ${detailsHtml}
                             </div>
                         `;
 
