@@ -144,14 +144,10 @@ class LeadController extends Controller
                     continue;
                 }
 
-                // Check if this is an intern role
-                $internRoles = ['Web Development', 'Mobile Development', 'Data Science', 'Digital Marketing', 'UI/UX Design', 'Content Writing', 'Intern'];
-                $isIntern = in_array($role, $internRoles) || stripos($role, 'intern') !== false;
-                
-                // Save to appropriate table based on role type
+                // Check if this is python_intern or php_intern - send to Intern table
                 try {
-                    if ($isIntern) {
-                        // Save directly to interns table for intern roles
+                    if (in_array($role, ['python_intern', 'php_intern'])) {
+                        // Save directly to interns table
                         $internData = [
                             'number' => $number,
                             'name' => $name,
@@ -174,7 +170,7 @@ class LeadController extends Controller
                             \Log::error('Intern creation returned null or no ID', $internData);
                         }
                     } else {
-                        // Save to leads table for regular employee roles
+                        // All other roles including hr_intern - save to leads table
                         $leadData = [
                             'number' => $number,
                             'name' => $name,
@@ -205,7 +201,6 @@ class LeadController extends Controller
                     $errors[] = "Row {$index}: Database error - {$e->getMessage()}";
                     \Log::error('Lead creation failed', [
                         'row' => $index,
-                        'data' => $leadData,
                         'error' => $e->getMessage(),
                         'trace' => $e->getTraceAsString()
                     ]);
@@ -309,9 +304,8 @@ class LeadController extends Controller
                 'role' => $lead->role
             ]);
             
-            // Check if this is an intern role
-            $internRoles = ['Web Development', 'Mobile Development', 'Data Science', 'Digital Marketing', 'UI/UX Design', 'Content Writing', 'Intern'];
-            $isIntern = in_array($lead->role, $internRoles) || stripos($lead->role, 'intern') !== false;
+            // Check if this is python_intern or php_intern role
+            $isIntern = in_array($lead->role, ['python_intern', 'php_intern']);
             
             // Validate reason for specific statuses
             if (in_array($status, ['Not Interested', 'Call Back', 'Rejected', 'Interested', 'Wrong Number']) && empty($reason)) {
@@ -733,9 +727,8 @@ class LeadController extends Controller
                 return response()->json(['success' => false, 'message' => 'This number already exists']);
             }
 
-            // Check if this is an intern role
-            $internRoles = ['Web Development', 'Mobile Development', 'Data Science', 'Digital Marketing', 'UI/UX Design', 'Content Writing', 'Intern'];
-            $isIntern = in_array($request->role, $internRoles) || stripos($request->role, 'intern') !== false;
+            // Check if this is python_intern or php_intern role
+            $isIntern = in_array($request->role, ['python_intern', 'php_intern']);
 
             // Use database transaction
             \DB::beginTransaction();

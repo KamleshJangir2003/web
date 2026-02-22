@@ -57,13 +57,23 @@ class ExcelUploadController extends Controller
                     // Skip empty data
                     if (empty($number) || empty($name)) continue;
                     
-                    // No duplicate check - import all
-                    Lead::create([
-                        'number' => $number,
-                        'name' => $name,
-                        'role' => $role,
-                        'condition_status' => 'Not Interested'
-                    ]);
+                    // Check if role is python_intern or php_intern - send to Intern table
+                    if (in_array($role, ['python_intern', 'php_intern'])) {
+                        \App\Models\Intern::create([
+                            'number' => $number,
+                            'name' => $name,
+                            'role' => $role,
+                            'condition_status' => null
+                        ]);
+                    } else {
+                        // All other roles including hr_intern - send to Lead table
+                        Lead::create([
+                            'number' => $number,
+                            'name' => $name,
+                            'role' => $role,
+                            'condition_status' => 'Not Interested'
+                        ]);
+                    }
                     
                     $count++;
                 } catch (\Exception $e) {

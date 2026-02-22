@@ -208,7 +208,7 @@
                             <th>WhatsApp</th>
                             <th>Send Location</th>
                             <th>View Profile</th>
-                            <th>Actions</th>
+                            <!-- <th>Actions</th> -->
                         </tr>
                     </thead>
 
@@ -286,7 +286,7 @@ $message = "We have an exciting job opportunity for you.\n\n".
                                 </a>
                             </td>
 
-                            <td>
+                            <!-- <td>
                                 @if($lead->final_result == 'Pending')
                                     <a href="{{ route('admin.interviews.create', ['lead_id' => $lead->id]) }}" class="schedule-btn">
                                         <i class="fas fa-calendar-plus"></i> Schedule Interview
@@ -295,7 +295,7 @@ $message = "We have an exciting job opportunity for you.\n\n".
                                 @else
                                     <span class="text-muted">Process Complete</span>
                                 @endif
-                            </td>
+                            </td> -->
                         </tr>
                         @empty
                         <tr id="noResults">
