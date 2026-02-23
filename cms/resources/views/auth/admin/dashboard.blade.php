@@ -723,7 +723,7 @@
             <div class="card stat-card bg-primary">
                 <div class="card-body">
                     <div class="stat-title">Total Employees</div>
-                    <div class="stat-number">{{ $stats['totalEmployees'] ?? 0 }}</div>
+                    <div class="stat-number">{{ $stats['totalHiredEmployees'] ?? 0 }}</div>
                     <i class="bi bi-people-fill"></i>
                 </div>
             </div>
