@@ -591,7 +591,7 @@ class EmployeeDocumentController extends Controller
                 'employee_status' => 'active',
                 'is_approved' => true,
                 'hired_status' => 'hired',
-                'action_status' => null
+                'action_status' => 'selected'
             ]);
     
             Mail::to($employee->email)
