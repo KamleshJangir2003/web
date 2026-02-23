@@ -114,6 +114,22 @@ let currentOldStatus = null;
 let currentStatusText = null;
 let currentCandidateName = null;
 
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = 'notification ' + type;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
 function closeReasonModal() {
     document.getElementById('reasonModal').style.display = 'none';
     document.getElementById('reasonInput').value = '';
@@ -185,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentSelect = this;
             currentLeadId = this.dataset.id;
             currentNewStatus = this.value;
-            currentOldStatus = 'not_interested';
+            currentOldStatus = this.getAttribute('data-status');
             currentStatusText = this.options[this.selectedIndex].text;
             const row = this.closest('tr');
             currentCandidateName = row.querySelector('td:first-child').textContent;
@@ -196,22 +212,6 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('reasonInput').focus();
         });
     });
-    
-    function showNotification(message, type) {
-        const notification = document.createElement('div');
-        notification.className = 'notification ' + type;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.classList.add('show');
-        }, 100);
-        
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
-    }
     
     searchInput.addEventListener('input', function() {
         clearTimeout(searchTimeout);

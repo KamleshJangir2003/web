@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class InterviewController extends Controller
 {
@@ -493,11 +494,18 @@ class InterviewController extends Controller
 
     public function makeOffer(Request $request, Interview $interview)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'current_ctc' => 'nullable|numeric',
             'expected_ctc' => 'nullable|numeric',
             'offered_ctc' => 'required|numeric'
         ]);
+        
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
 
         $interview->update([
             'current_ctc' => $request->current_ctc,
@@ -535,11 +543,18 @@ class InterviewController extends Controller
 
     public function sendWelcomeLetter(Request $request, Interview $interview)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'joining_date' => 'required|date',
-            'current_ctc' => 'required|numeric',
-            'in_hand_salary' => 'required|numeric'
+            'current_ctc' => 'required|numeric|min:0',
+            'in_hand_salary' => 'required|numeric|min:0'
         ]);
+        
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
 
         try {
             // Create employee record
@@ -579,7 +594,7 @@ class InterviewController extends Controller
             // Send welcome email
             Mail::send('emails.welcome-letter', compact('employee', 'interview'), function ($message) use ($employee) {
                 $message->to($employee->email, $employee->full_name)
-                        ->subject('Welcome to The Kwikster - Joining Letter');
+                        ->subject('Welcome to The Kwikster - Welcome Letter');
             });
 
             // Keep hired_status as 'not_hired' so they appear on documents page
@@ -683,11 +698,18 @@ class InterviewController extends Controller
 
     public function saveEmploymentDetails(Request $request, Interview $interview)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'joining_date' => 'required|date',
             'current_ctc' => 'required|numeric|min:0',
             'in_hand_salary' => 'required|numeric|min:0'
         ]);
+        
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
 
         try {
             // Save directly to interview table

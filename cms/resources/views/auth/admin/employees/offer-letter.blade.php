@@ -69,7 +69,25 @@
     <div class="candidate-name">
         Dear {{ $employee->full_name }},
     </div>
+@php
+$netPay = $employee->in_hand_salary ?? 0;
 
+// Same logic as Joining Letter
+$gross = round($netPay / 0.9205, 2);
+
+$basic = round($gross * 0.60, 2);
+$hra = round($gross * 0.40, 2);
+
+$employeePF = round($basic * 0.12, 2);
+$employeeESIC = round($gross * 0.0075, 2);
+
+$employerPF = round($basic * 0.13, 2);
+$employerESIC = round($gross * 0.0325, 2);
+
+$monthlyCTC = round($gross + $employerPF + $employerESIC, 2);
+
+$annualCTC = round($monthlyCTC * 12, 2);
+@endphp
     <!-- Content -->
     <div class="content">
         <p>
@@ -83,11 +101,11 @@
             have stood out, and we are excited to have you join our team.
         </p>
 
-        @if($employee->current_ctc)
-        <p class="ctc-highlight">
-            Your Annual Total CTC will be ₹{{ number_format($employee->current_ctc, 0) }}.
-        </p>
-        @endif
+        @if($netPay > 0)
+<p class="ctc-highlight">
+    Your Annual Total CTC will be ₹{{ number_format($annualCTC, 0) }}.
+</p>
+@endif
 
         <p>
             Please note that you will be working 5.5 days per week and your base location will be Jaipur.

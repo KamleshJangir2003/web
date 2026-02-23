@@ -576,18 +576,31 @@ class EmployeeDocumentController extends Controller
         }
         
         $employee->update($updateData);
+       
+        // ✅ UPDATE SE PEHLE old status lo
+$oldStatus = $employee->action_status;
 
-        // If selected, move to All Employees and Attendance
-        if ($request->action_status === 'selected') {
-            $employee->update([
-                'action_status' => 'selected',
-                'employee_status' => 'active',
-                'is_approved' => true,
-                'hired_status' => 'hired'
-            ]);
-            
-            return redirect()->route('admin.employees.hired.index')->with('success', 'Employee selected and moved to All Employees & Attendance');
-        }
+$employee->update($updateData);
+
+// If selected
+if ($request->action_status === 'selected') {
+
+    $employee->update([
+        'action_status' => 'selected',
+        'employee_status' => 'active',
+        'is_approved' => true,
+        'hired_status' => 'hired'
+    ]);
+
+    // ✅ Ab ye sahi kaam karega
+    if ($oldStatus !== 'selected') {
+        Mail::to($employee->email)
+            ->send(new \App\Mail\JoiningLetterMail($employee));
+    }
+
+    return redirect()->route('admin.employees.hired.index')
+        ->with('success', 'Employee selected and moved to All Employees & Attendance');
+}
         
         // If not selected, move to Not Selected page
         if ($request->action_status === 'not_selected') {

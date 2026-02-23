@@ -82,7 +82,15 @@ class DashboardController extends Controller
         // Single query for employee counts
         $employeeCounts = DB::table('employees')
             ->selectRaw('
-                COUNT(CASE WHEN user_type = "employee" AND is_approved = 1 AND action_status = "selected" THEN 1 END) as totalEmployees,
+              COUNT(
+    CASE 
+        WHEN user_type = "employee"
+        AND is_approved = 1
+        AND hired_status = "hired"
+        AND employee_status = "active"
+        THEN 1 
+    END
+) as totalEmployees,
                 COUNT(CASE WHEN is_approved = 0 THEN 1 END) as pendingApprovals,
                 COUNT(CASE WHEN user_type = "admin" THEN 1 END) as totalAdmins,
                 COUNT(CASE WHEN user_type = "client" THEN 1 END) as totalClients,
