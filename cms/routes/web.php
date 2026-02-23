@@ -245,6 +245,13 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/employees', [EmployeeController::class, 'index'])
                 ->name('employees.index');
 
+            // All three URLs now point to the same combined page
+            Route::get('/employees/profiles', [EmployeeController::class, 'index'])
+                ->name('employees.profiles');
+
+            Route::get('/employees/list', [EmployeeController::class, 'index'])
+                ->name('employees.list');
+
             Route::get('/employees/{id}/edit', [EmployeeController::class, 'edit'])
                 ->name('employees.edit');
 
@@ -253,9 +260,6 @@ Route::middleware(['auth'])->group(function () {
 
             Route::delete('/employees/{id}', [EmployeeController::class, 'destroy'])
                 ->name('employees.delete');
-
-            Route::get('/employees/profiles', [EmployeeController::class, 'profiles'])
-                ->name('employees.profiles');
 
             Route::get('/employees/{id}/profile', [EmployeeController::class, 'showProfile'])
                 ->name('employees.profile.show');
@@ -268,9 +272,6 @@ Route::middleware(['auth'])->group(function () {
 
             Route::get('/employees/data', [EmployeeController::class, 'getEmployeesData'])
                 ->name('employees.data');
-
-            Route::get('/employees/list', [EmployeeController::class, 'employeeList'])
-                ->name('employees.list');
 
             Route::get('/employees/all', [EmployeeController::class, 'allEmployees'])
                 ->name('employees.all');

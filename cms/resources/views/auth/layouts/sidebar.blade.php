@@ -328,16 +328,10 @@
             <a href="#">
             <i class="fa-solid fa-users"></i> Employee</a>
             <ul class="submenu">
-                <a href="{{ route('admin.employees.index') }}">All Employee</a>
-            
-             <!-- <a href="{{ route('admin.employee.create') }}">Add Employee</a> -->
-            </li>
+                <a href="{{ route('admin.employees.index') }}">All Employees</a>
                 <a href="{{ route('admin.employee.shifts.index') }}">Employee Shift</a>
-                <a href="{{ route('admin.employees.profiles') }}">Employee Profile</a>
-                <a href="{{ route('admin.employees.list') }}">All Employee Details</a>
                 <a href="{{ route('admin.employee.credentials') }}">Employee Login</a>
                 <a href="{{ route('admin.interviews.rejected') }}">Rejected Interview</a>
-                <!-- <a href="#">Employee Exit / Offboarding</a> -->
             </ul>
         </li>
 
