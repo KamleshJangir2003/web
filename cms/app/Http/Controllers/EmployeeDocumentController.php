@@ -590,8 +590,8 @@ class EmployeeDocumentController extends Controller
             $employee->update([
                 'employee_status' => 'active',
                 'is_approved' => true,
-                'hired_status' => 'confirmed',   // 👈 status change karo
-                'action_status' => 'selected'    // 👈 null mat karo
+                'hired_status' => 'hired',
+                'action_status' => null
             ]);
     
             Mail::to($employee->email)
