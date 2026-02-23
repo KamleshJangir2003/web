@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
+use App\Models\EmailLog;
 
 class EmployeeDocumentController extends Controller
 {
@@ -596,6 +597,14 @@ class EmployeeDocumentController extends Controller
     
             Mail::to($employee->email)
                 ->send(new \App\Mail\JoiningLetterMail($employee));
+                // ✅ Add this
+EmailLog::create([
+    'to_email' => $employee->email,
+    'subject' => 'Joining Letter - ' . $employee->full_name,
+    'content' => view('emails.joining-letter', compact('employee'))->render(),
+    'sent_at' => now(),
+    'status' => 'sent'
+]);
     
             return redirect()->route('admin.employees.hired.index')
                 ->with('success', 'Employee selected & joining letter sent successfully!');

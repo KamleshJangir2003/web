@@ -10,6 +10,7 @@ use App\Mail\BulkMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Models\EmailLog;
 
 class EmployeeController extends Controller
 {
@@ -477,6 +478,14 @@ class EmployeeController extends Controller
                 $message->to($employee->email, $employee->full_name ?? $employee->first_name . ' ' . $employee->last_name)
                         ->subject('Welcome to The Kwikster - Joining Letter');
             });
+            // ✅ Add this
+EmailLog::create([
+    'to_email' => $employee->email,
+    'subject' => 'Welcome to The Kwikster - Joining Letter',
+    'content' => view('emails.welcome-letter', compact('employee'))->render(),
+    'sent_at' => now(),
+    'status' => 'sent'
+]);
 
             \Log::info('Welcome letter sent to: ' . $employee->email);
 
