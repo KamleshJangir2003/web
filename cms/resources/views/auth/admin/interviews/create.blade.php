@@ -639,10 +639,16 @@ function updateCandidateInfo(select) {
 
 function toggleMeetingSection(mode) {
     const meetingSection = document.getElementById('meeting-section');
+    const meetingLink = document.getElementById('meeting_link');
+    const meetingPlatforms = document.querySelectorAll('input[name="meeting_platform"]');
+    
     if (mode === 'Offline') {
         meetingSection.style.display = 'none';
+        meetingLink.removeAttribute('required');
+        meetingPlatforms.forEach(radio => radio.removeAttribute('required'));
     } else {
         meetingSection.style.display = 'block';
+        meetingLink.setAttribute('required', 'required');
     }
 }
 
