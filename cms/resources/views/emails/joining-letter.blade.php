@@ -89,9 +89,7 @@
         <div class="header">
               <!-- Company Logo -->
     <div style="margin-bottom:15px;">
-        <img src="{{ public_path('Kwikster.jpeg') }}" 
-             alt="Kwikster Logo" 
-             style="height:80px;">
+    <img src="{{ public_path('Kwikster.jpeg') }}" alt="Kwikster Logo" style="height:80px;">
     </div>
             <h2>KWIKSTER INNOVATIVE OPTIMISATIONS PVT LTD</h2>
             <p>21/281, Kaveri Path, Madhyam Marg Road</p>

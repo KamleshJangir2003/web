@@ -517,6 +517,7 @@ class EmployeeDocumentController extends Controller
                 $query->whereNull('action_status')
                       ->orWhereIn('action_status', ['', 'pending']);
             })
+            
             ->orderBy('joining_date', 'desc')
             ->get();
     
@@ -536,28 +537,33 @@ class EmployeeDocumentController extends Controller
             'action_status' => 'nullable|in:selected,not_selected,reason',
             'joining_date' => 'nullable|date'
         ]);
-
+    
         $employee = Employee::findOrFail($userId);
-        
-        // Check if certification period is completed before allowing action_status change
+    
+        // ✅ OLD STATUS PEHLE LO (IMPORTANT)
+        $oldStatus = $employee->action_status;
+    
+        // Certification check
         if ($request->has('action_status') && $request->action_status) {
+    
             if (!$employee->joining_date && !$request->joining_date) {
                 return back()->with('error', 'Cannot select/reject employee without joining date');
             }
-            
-            // Use new joining date if provided, otherwise use existing
-            $joiningDate = $request->joining_date ? \Carbon\Carbon::parse($request->joining_date) : $employee->joining_date;
+    
+            $joiningDate = $request->joining_date 
+                ? \Carbon\Carbon::parse($request->joining_date) 
+                : $employee->joining_date;
+    
             $certificationEndDate = $joiningDate->copy()->addDays($employee->certification_period ?? 5);
-            $today = now();
-            $daysRemaining = $today->diffInDays($certificationEndDate, false);
-            
+            $daysRemaining = now()->diffInDays($certificationEndDate, false);
+    
             if ($daysRemaining > 0) {
                 return back()->with('error', "Cannot select/reject employee. Certification period ends in {$daysRemaining} days.");
             }
         }
-
+    
         $updateData = [];
-        
+    
         if ($request->has('induction_round')) {
             $updateData['induction_round'] = $request->induction_round;
         }
@@ -574,42 +580,34 @@ class EmployeeDocumentController extends Controller
             $updateData['action_status'] = $request->action_status;
             $updateData['action_reason'] = $request->action_reason ?? null;
         }
-        
+    
+        // ✅ Single update only
         $employee->update($updateData);
-       
-        // ✅ UPDATE SE PEHLE old status lo
-$oldStatus = $employee->action_status;
-
-$employee->update($updateData);
-
-// If selected
-if ($request->action_status === 'selected') {
-
-    $employee->update([
-        'action_status' => 'selected',
-        'employee_status' => 'active',
-        'is_approved' => true,
-        'hired_status' => 'hired'
-    ]);
-
-    // ✅ Ab ye sahi kaam karega
-    if ($oldStatus !== 'selected') {
-        Mail::to($employee->email)
-            ->send(new \App\Mail\JoiningLetterMail($employee));
-    }
-
-    return redirect()->route('admin.employees.hired.index')
-        ->with('success', 'Employee selected and moved to All Employees & Attendance');
-}
-        
-        // If not selected, move to Not Selected page
-        if ($request->action_status === 'not_selected') {
-            return redirect()->route('admin.employees.not-selected.index')->with('success', 'Employee moved to Not Selected page');
+    
+        // 🔥 JOINING LETTER TRIGGER
+        if ($request->action_status === 'selected' && $oldStatus !== 'selected') {
+    
+            $employee->update([
+                'employee_status' => 'active',
+                'is_approved' => true,
+                'hired_status' => 'confirmed',   // 👈 status change karo
+                'action_status' => 'selected'    // 👈 null mat karo
+            ]);
+    
+            Mail::to($employee->email)
+                ->send(new \App\Mail\JoiningLetterMail($employee));
+    
+            return redirect()->route('admin.employees.hired.index')
+                ->with('success', 'Employee selected & joining letter sent successfully!');
         }
-
+    
+        if ($request->action_status === 'not_selected') {
+            return redirect()->route('admin.employees.not-selected.index')
+                ->with('success', 'Employee moved to Not Selected page');
+        }
+    
         return back()->with('success', 'Employee data updated successfully');
     }
-
     /* =====================================================
        NOT SELECTED EMPLOYEES INDEX
     ===================================================== */

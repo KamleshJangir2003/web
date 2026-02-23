@@ -16,9 +16,10 @@ class EmployeeController extends Controller
     public function index(Request $request)
     {
         $query = Employee::where('user_type', '!=', 'admin')
-                        ->where('action_status', 'selected')
-                        ->where('hired_status', 'hired');
-        
+        ->where('hired_status', 'hired')
+        ->where('employee_status', 'active')
+        ->whereNotNull('joining_date')
+        ->whereRaw('DATE_ADD(joining_date, INTERVAL certification_period DAY) <= CURDATE()');
         // Combined role and platform filtering
         if ($request->has('role') && $request->role) {
             $query->where('user_type', $request->role);
@@ -247,9 +248,11 @@ class EmployeeController extends Controller
 
     public function profiles(Request $request)
     {
-        $query = Employee::where('user_type', '!=', 'admin')
-                        ->where('action_status', 'selected')
-                        ->where('hired_status', 'hired');
+       $query = Employee::where('user_type', '!=', 'admin')
+        ->where('hired_status', 'hired')
+        ->where('employee_status', 'active')
+        ->whereNotNull('joining_date')
+        ->whereRaw('DATE_ADD(joining_date, INTERVAL certification_period DAY) <= CURDATE()');
         
         if ($request->has('search') && $request->search) {
             $search = $request->search;

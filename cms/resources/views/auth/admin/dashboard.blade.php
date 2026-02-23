@@ -6,7 +6,7 @@
 
 <style>
 .dashboard-wrapper{
-    padding: 25px;
+    /* padding: 25px; */
     margin-left: 130px;
     margin-top: 60px;
 }

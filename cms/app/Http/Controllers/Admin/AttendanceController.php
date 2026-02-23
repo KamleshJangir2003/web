@@ -24,18 +24,20 @@ class AttendanceController extends Controller
 
         // Get departments for filter
         $departments = Employee::where('user_type', 'employee')
-            ->where('action_status', 'selected')
-            ->where('hired_status', 'hired')
-            ->where('employee_status', 'active')
-            ->distinct()
-            ->pluck('department')
-            ->filter();
+        ->where('employee_status', 'active')
+        ->where('hired_status', 'hired')
+        ->whereNotNull('joining_date')
+        ->whereRaw('DATE_ADD(joining_date, INTERVAL certification_period DAY) <= CURDATE()')
+        ->distinct()
+        ->pluck('department')
+        ->filter();
 
         // Build employee query with filters
         $query = Employee::where('user_type', 'employee')
-                        ->where('action_status', 'selected')
-                        ->where('hired_status', 'hired')
-                        ->where('employee_status', 'active');
+    ->where('employee_status', 'active')
+    ->where('hired_status', 'hired')
+    ->whereNotNull('joining_date')
+    ->whereRaw('DATE_ADD(joining_date, INTERVAL certification_period DAY) <= CURDATE()');
 
         if ($department_filter) {
             $query->where('department', $department_filter);
@@ -182,12 +184,13 @@ class AttendanceController extends Controller
     private function generateMonthlySalary($month, $year)
     {
         $employees = Employee::where('user_type', 'employee')
-            ->where('action_status', 'selected')
-            ->where('hired_status', 'hired')
-            ->where('employee_status', 'active')
-            ->whereNotNull('in_hand_salary')
-            ->where('in_hand_salary', '>', 0)
-            ->get();
+        ->where('employee_status', 'active')
+        ->where('hired_status', 'hired')
+        ->whereNotNull('joining_date')
+        ->whereRaw('DATE_ADD(joining_date, INTERVAL certification_period DAY) <= CURDATE()')
+        ->whereNotNull('in_hand_salary')
+        ->where('in_hand_salary', '>', 0)
+        ->get();
 
         $totalDaysInMonth = Carbon::create($year, $month)->daysInMonth;
         $generatedCount = 0;
