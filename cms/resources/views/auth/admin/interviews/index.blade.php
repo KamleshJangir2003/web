@@ -37,7 +37,8 @@
                     @forelse($interviews as $interview)
                         <tr id="interview-row-{{ $interview->id }}">
                             <td>
-                                <strong>{{ $interview->candidate_name }}</strong>
+                                <strong>{{ $interview->candidate_name }}</strong><br>
+                                <small>{{ $interview->lead->number ?? 'N/A' }}</small>
                             </td>
                             <td>{{ $interview->job_role }}</td>
                             <td>

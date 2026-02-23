@@ -356,55 +356,83 @@ textarea{
 </style>
 
 <script>
-// Prevent form data restoration on page refresh/back button
-window.addEventListener('pageshow', function(event) {
-    if (event.persisted) {
-        location.reload();
-    }
-});
-
-// Save form data to sessionStorage before unload
-window.addEventListener('beforeunload', function() {
+// Auto-save form data
+function saveFormData() {
     const form = document.querySelector('form');
-    if (form) {
-        const formData = new FormData(form);
-        const data = {};
-        for (let [key, value] of formData.entries()) {
-            data[key] = value;
+    if (!form) return;
+    
+    const data = {};
+    
+    // Save all inputs
+    form.querySelectorAll('input, select, textarea').forEach(field => {
+        if (!field.name) return;
+        
+        if (field.type === 'radio') {
+            if (field.checked) data[field.name] = field.value;
+        } else if (field.type === 'checkbox') {
+            data[field.name] = field.checked;
+        } else if (field.type !== 'hidden' || field.name.includes('_token') === false) {
+            data[field.name] = field.value;
         }
-        sessionStorage.setItem('interviewFormData', JSON.stringify(data));
-    }
-});
+    });
+    
+    sessionStorage.setItem('interviewFormData', JSON.stringify(data));
+    console.log('Form data saved:', data);
+}
 
-// Load reschedule reason from sessionStorage if available
-window.addEventListener('DOMContentLoaded', function() {
-    const rescheduleReason = sessionStorage.getItem('rescheduleReason');
-    if (rescheduleReason) {
-        const reasonField = document.getElementById('reschedule_reason_field');
-        if (reasonField) {
-            reasonField.value = rescheduleReason;
-            sessionStorage.removeItem('rescheduleReason');
-        }
+// Restore form data
+function restoreFormData() {
+    const savedData = sessionStorage.getItem('interviewFormData');
+    if (!savedData) return;
+    
+    const data = JSON.parse(savedData);
+    const form = document.querySelector('form');
+    console.log('Restoring form data:', data);
+    
+    for (let key in data) {
+        const fields = form.querySelectorAll(`[name="${key}"]`);
+        
+        fields.forEach(field => {
+            if (field.type === 'radio') {
+                if (field.value === data[key]) field.checked = true;
+            } else if (field.type === 'checkbox') {
+                field.checked = data[key] === true;
+            } else if (field.type !== 'hidden' || !key.includes('_token')) {
+                field.value = data[key] || '';
+            }
+        });
     }
     
-    // Restore form data after refresh
-    const savedData = sessionStorage.getItem('interviewFormData');
-    if (savedData) {
-        const data = JSON.parse(savedData);
-        const form = document.querySelector('form');
+    // Update UI
+    setTimeout(() => {
+        const modeSelect = form.querySelector('[name="interview_mode"]');
+        if (modeSelect && modeSelect.value) toggleMeetingSection(modeSelect.value);
         
-        for (let key in data) {
-            const input = form.querySelector(`[name="${key}"]`);
-            if (input) {
-                if (input.type === 'radio' || input.type === 'checkbox') {
-                    if (input.value === data[key]) {
-                        input.checked = true;
-                    }
-                } else {
-                    input.value = data[key];
-                }
+        const platformRadio = form.querySelector('input[name="meeting_platform"]:checked');
+        if (platformRadio) toggleLinkInput();
+        
+        const interviewer = form.querySelector('[name="interviewer"]');
+        if (interviewer && interviewer.value) updateInterviewerInfo(interviewer);
+    }, 100);
+}
+
+// Initialize on page load
+window.addEventListener('DOMContentLoaded', function() {
+    restoreFormData();
+    
+    const form = document.querySelector('form');
+    if (form) {
+        // Save on every change
+        form.addEventListener('input', saveFormData);
+        form.addEventListener('change', saveFormData);
+        
+        // Clear on submit
+        form.addEventListener('submit', function(e) {
+            // Only clear if form is valid
+            if (form.checkValidity()) {
+                sessionStorage.removeItem('interviewFormData');
             }
-        }
+        });
     }
 });
 
