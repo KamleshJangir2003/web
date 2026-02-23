@@ -302,12 +302,12 @@
 .header-right li a .fa-calculator {
     color: #2eacb3;
 }
-.header-right li a[href*="salary"] {
+.header-right li a[onclick*="Salary"] {
     background: #eef5ff;
     color: #2eacb3;
     border: 1px solid #d6e4ff;
 }
-.header-right li a[href*="salary"]:hover {
+.header-right li a[onclick*="Salary"]:hover {
     background: #2eacb3;
     color: #fff;
     box-shadow: 0 6px 15px rgba(13,110,253,0.3);
@@ -951,7 +951,7 @@ function showStatusPopup(type, title, message, details = null) {
 
     <!-- SALARY CALCULATOR LINK -->
     <li>
-        <a href="{{ route('admin.salary.calculator') }}">
+        <a href="#" onclick="openSalaryCalculatorModal(event)">
             <i class="fa-solid fa-calculator"></i>
             Salary Calculator
         </a>
@@ -1542,6 +1542,269 @@ document.addEventListener('click', function (e) {
 searchInput.addEventListener('focus', function() {
     if (this.value.length >= 2 && searchResults.innerHTML) {
         searchResults.style.display = 'block';
+    }
+});
+</script>
+
+<!-- ================= SALARY CALCULATOR MODAL ================= -->
+<div id="salaryCalculatorModal" class="salary-modal" style="display: none;">
+    <div class="salary-modal-content">
+        <div class="salary-modal-header">
+            <h5>Salary Calculator</h5>
+            <button class="salary-modal-close" onclick="closeSalaryCalculatorModal()">&times;</button>
+        </div>
+        <div class="salary-modal-body">
+            <form id="salaryCalculatorForm">
+                @csrf
+                <div class="mb-3">
+                    <label class="form-label">In-Hand Salary</label>
+                    <input type="number" id="modalInHandSalary" class="form-control" placeholder="Enter in-hand salary" required>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Calculate Gross & CTC</button>
+            </form>
+
+            <div id="salaryResults" style="display: none; margin-top: 20px;">
+                <hr>
+                <table class="table table-bordered table-sm">
+                    <tr>
+                        <th>Gross Salary</th>
+                        <td id="resultGross">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <th>Basic Salary (60%)</th>
+                        <td id="resultBasic">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <th>HRA (40%)</th>
+                        <td id="resultHra">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <th>Employee PF (12% of Basic)</th>
+                        <td id="resultEmpPf">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <th>Employee ESIC (0.75% of Gross)</th>
+                        <td id="resultEmpEsic">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <th>Employer PF (13% of Basic)</th>
+                        <td id="resultEmprPf">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <th>Employer ESIC (3.25% of Gross)</th>
+                        <td id="resultEmprEsic">₹ 0.00</td>
+                    </tr>
+                    <tr class="table-success">
+                        <th>In-Hand Salary</th>
+                        <td id="resultInHand"><strong>₹ 0.00</strong></td>
+                    </tr>
+                    <tr class="table-info">
+                        <th>Total CTC</th>
+                        <td id="resultCtc"><strong>₹ 0.00</strong></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Salary Calculator Modal */
+.salary-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.salary-modal-content {
+    background: #fff;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.salary-modal-header {
+    background: linear-gradient(135deg, #2eacb3, #084298);
+    color: white;
+    padding: 16px 20px;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.salary-modal-header h5 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.salary-modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.salary-modal-close:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.salary-modal-body {
+    padding: 20px;
+}
+
+.salary-modal-body .form-label {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.salary-modal-body .form-control {
+    height: 44px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+}
+
+.salary-modal-body .btn-success {
+    height: 45px;
+    border-radius: 8px;
+    font-weight: 600;
+    background: #198754;
+    border: none;
+}
+
+.salary-modal-body .btn-success:hover {
+    background: #157347;
+}
+
+.salary-modal-body table {
+    font-size: 14px;
+}
+
+.salary-modal-body table th {
+    background: #f8f9fa;
+    width: 60%;
+    font-weight: 600;
+    padding: 10px;
+}
+
+.salary-modal-body table td {
+    font-weight: 500;
+    padding: 10px;
+}
+
+.salary-modal-body .table-success th,
+.salary-modal-body .table-success td {
+    background: #e6f4ea !important;
+    color: #146c43;
+}
+
+.salary-modal-body .table-info th,
+.salary-modal-body .table-info td {
+    background: #e7f1ff !important;
+    color: #084298;
+}
+</style>
+
+<script>
+function openSalaryCalculatorModal(e) {
+    e.preventDefault();
+    document.getElementById('salaryCalculatorModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSalaryCalculatorModal() {
+    document.getElementById('salaryCalculatorModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    document.getElementById('salaryResults').style.display = 'none';
+    document.getElementById('salaryCalculatorForm').reset();
+}
+
+// Close modal on outside click
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('salaryCalculatorModal');
+    if (e.target === modal) {
+        closeSalaryCalculatorModal();
+    }
+});
+
+// Handle form submission
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('salaryCalculatorForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const inHand = parseFloat(document.getElementById('modalInHandSalary').value);
+            
+            if (!inHand || inHand <= 0) {
+                alert('Please enter a valid salary amount');
+                return;
+            }
+            
+            // Calculate values
+            const employeePfRate = 0.12;
+            const employeeEsicRate = 0.0075;
+            const employerPfRate = 0.13;
+            const employerEsicRate = 0.0325;
+            
+            // Reverse calculation to get gross from in-hand
+            const gross = inHand / (1 - employeePfRate * 0.6 - employeeEsicRate);
+            const basic = gross * 0.6;
+            const hra = gross * 0.4;
+            const employeePf = basic * employeePfRate;
+            const employeeEsic = gross * employeeEsicRate;
+            const employerPf = basic * employerPfRate;
+            const employerEsic = gross * employerEsicRate;
+            const ctc = gross + employerPf + employerEsic;
+            
+            // Display results
+            document.getElementById('resultGross').textContent = '₹ ' + gross.toFixed(2);
+            document.getElementById('resultBasic').textContent = '₹ ' + basic.toFixed(2);
+            document.getElementById('resultHra').textContent = '₹ ' + hra.toFixed(2);
+            document.getElementById('resultEmpPf').textContent = '₹ ' + employeePf.toFixed(2);
+            document.getElementById('resultEmpEsic').textContent = '₹ ' + employeeEsic.toFixed(2);
+            document.getElementById('resultEmprPf').textContent = '₹ ' + employerPf.toFixed(2);
+            document.getElementById('resultEmprEsic').textContent = '₹ ' + employerEsic.toFixed(2);
+            document.getElementById('resultInHand').innerHTML = '<strong>₹ ' + inHand.toFixed(2) + '</strong>';
+            document.getElementById('resultCtc').innerHTML = '<strong>₹ ' + ctc.toFixed(2) + '</strong>';
+            
+            document.getElementById('salaryResults').style.display = 'block';
+        });
     }
 });
 </script>
