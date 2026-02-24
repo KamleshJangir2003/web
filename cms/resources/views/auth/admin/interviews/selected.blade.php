@@ -52,9 +52,9 @@
                         <th>Contact</th>
                         <th>Joining Date</th>
                         
-                     
-                        <th>CTC</th>
                         <th>In Hand</th>
+                        <th>CTC</th>
+                        
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -64,7 +64,7 @@
                             <td>
                                 <div>
                                     <strong>{{ $interview->candidate_name }}</strong><br>
-                                    <small class="text-muted">ID: #{{ $interview->lead_id }}</small>
+                                    <!-- <small class="text-muted">ID: #{{ $interview->lead_id }}</small> -->
                                 </div>
                             </td>
                             <td>
@@ -96,18 +96,19 @@
                             </td>
                             <td>
                                 <input type="number" class="form-control form-control-sm" 
-                                       id="current_ctc_{{ $interview->id }}" 
-                                       value="{{ $interview->current_ctc ?? '' }}"
-                                       placeholder="CTC" 
-                                       style="width: 100px; font-size: 12px;">
-                            </td>
-                            <td>
-                                <input type="number" class="form-control form-control-sm" 
                                        id="in_hand_salary_{{ $interview->id }}" 
                                        value="{{ $interview->in_hand_salary ?? '' }}"
                                        placeholder="In Hand" 
                                        style="width: 100px; font-size: 12px;">
                             </td>
+                            <td>
+                                <input type="number" class="form-control form-control-sm" 
+                                       id="current_ctc_{{ $interview->id }}" 
+                                       value="{{ $interview->current_ctc ?? '' }}"
+                                       placeholder="CTC" 
+                                       style="width: 100px; font-size: 12px;">
+                            </td>
+                            
                             <td>
     <div class="action-buttons">
         <span class="badge badge-success">✅ Selected</span>

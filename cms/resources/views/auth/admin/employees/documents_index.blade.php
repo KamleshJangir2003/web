@@ -87,11 +87,11 @@
                     @forelse($employees as $emp)
                     <tr>
                         <td>
-                            <div class="d-flex align-items-center">
+                            <!-- <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/40?u={{ $emp->id }}"
                                      class="rounded-circle me-2"
                                      width="40" height="40">
-                                <div>
+                                <div> -->
                                     <div class="fw-medium">{{ $emp->full_name ?? ($emp->first_name . ' ' . $emp->last_name) }}</div>
                                     <small class="text-muted">{{ $emp->phone ?? 'N/A' }}</small>
                                 </div>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
     <meta charset="utf-8">
     <title>Offer Letter - {{ $employee->full_name }}</title>
     <style>
