@@ -24,16 +24,21 @@
     align-items: center;
     justify-content: space-between;
 
-    padding: 0 20px;
+    padding: 0 35px;
     z-index: 9999;            /* 🔥 header upar */
     box-sizing: border-box;
 }
-
+.header-right{
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
 .header-left{
     display: flex;
     align-items: center;
     gap: 15px;
 }
+
 
 .menu-btn, .header-icon{
     background: none;
@@ -63,7 +68,7 @@
 .header-right{
     display: flex;
     align-items: center;
-    gap: 20px;
+   
 }
 
 /* DROPDOWN */
@@ -119,16 +124,54 @@
 }
 
 /* BADGE */
-.badge{
+/* ===== NOTIFICATION FIXED STYLE ===== */
+
+#notifBtn{
+    position: relative;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+}
+
+#notifBtn i {
+    font-size: 18px;
+}
+
+#notifBtn:hover {
+    background: #2eacb3;
+    color: #fff;
+}
+
+#notifBtn:hover i {
+    color: #fff;
+}
+
+#notifBtn .badge{
     position: absolute;
-    /* top: -6px;
-    right: -6px; */
-    background: red;
+    top: 2px;          /* thoda andar lao */
+    right: 15px;        /* thoda andar lao */
+    transform: translate(40%, -40%);  /* perfect corner alignment */
+    
+    background: #ff3b3b;
     color: #fff;
     font-size: 10px;
-    /* padding: 2px 6px;
-    border-radius: 50%; */
+    font-weight: 600;
+
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transform: translate(40%, -40%);
 }
+
+
 
 /* BILLS NOTIFICATION STYLES */
 .bills-btn {
@@ -149,13 +192,39 @@
 }
 
 .bills-header {
-    background: #f39c12;
+    background: linear-gradient(135deg, #f39c12, #f5b041);
     color: white;
-    font-weight: bold;
-    text-align: center;
-    padding: 10px;
-    margin: -1px;
-    border-radius: 6px 6px 0 0;
+    font-weight: 600;
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.bills-header .count-badge {
+    background: rgba(255,255,255,0.3);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+}
+
+.notif-section-header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    font-weight: 600;
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.notif-section-header .count-badge {
+    background: rgba(255,255,255,0.3);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
 }
 
 .bills-item {
@@ -213,13 +282,21 @@
 }
 
 .birthday-header {
-    background: #ff6b6b;
+    background: linear-gradient(135deg, #ff6b6b, #ff8787);
     color: white;
-    font-weight: bold;
-    text-align: center;
-    padding: 10px;
-    margin: -1px;
-    border-radius: 6px 6px 0 0;
+    font-weight: 600;
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.birthday-header .count-badge {
+    background: rgba(255,255,255,0.3);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
 }
 
 .birthday-item {
@@ -405,6 +482,129 @@
     font-size: 16px;
 }
 
+
+/* =========================
+   NOTIFICATION DROPDOWN UI
+========================= */
+
+#notifMenu{
+    width: 340px !important;
+    border-radius: 14px;
+    border: none;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+}
+
+/* Top Header */
+#notifMenu > li:first-child{
+    padding: 14px 18px !important;
+    font-size: 15px;
+    font-weight: 600;
+    background: #ffffff !important;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+/* Mark all read button */
+#notifMenu button.btn-link{
+    font-size: 12px;
+    text-decoration: none;
+    color: #2eacb3;
+    font-weight: 500;
+}
+
+#notifMenu button.btn-link:hover{
+    text-decoration: underline;
+}
+
+/* Section Headers */
+.notif-section-header,
+.birthday-header,
+.bills-header{
+    padding: 10px 16px !important;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Birthday Gradient */
+.birthday-header{
+    background: linear-gradient(135deg, #ff6b6b, #ff8787);
+    color: #fff;
+}
+
+/* Updates Gradient */
+.notif-section-header{
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+}
+
+/* Bills Gradient */
+.bills-header{
+    background: linear-gradient(135deg, #f39c12, #f5b041);
+    color: #fff;
+}
+
+/* Count Badge */
+.count-badge{
+    background: rgba(255,255,255,0.25);
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+}
+
+/* Notification Items */
+#notifMenu li{
+    padding: 12px 16px !important;
+    border-bottom: 1px solid #f1f3f4;
+    transition: all 0.2s ease;
+}
+
+#notifMenu li:last-child{
+    border-bottom: none;
+}
+
+#notifMenu li:hover{
+    background:rgb(115, 137, 158);
+}
+
+/* Birthday Item */
+.birthday-item{
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.birthday-item small{
+    margin-left: auto;
+    font-size: 12px;
+    color: #999;
+}
+
+/* Loading Text */
+#notificationsList li[style*="Loading"]{
+    text-align: center !important;
+    padding: 25px !important;
+    color: #999 !important;
+    font-style: italic;
+}
+
+/* Smooth Scroll */
+#notifMenu{
+    scrollbar-width: thin;
+}
+
+#notifMenu::-webkit-scrollbar{
+    width: 6px;
+}
+
+#notifMenu::-webkit-scrollbar-thumb{
+    background: #ddd;
+    border-radius: 10px;
+}
 
 </style>
 <style>
@@ -967,36 +1167,31 @@ function showStatusPopup(type, title, message, details = null) {
 
        
 
-        <!-- NOTIFICATION -->
+        <!-- UNIFIED NOTIFICATION -->
         <div class="dropdown">
             <button class="header-icon dropdown-btn" id="notifBtn">
                 <i class="fa-regular fa-bell"></i>
-                <span class="badge" id="notifBadge">0</span>
+                @php
+                    $totalNotifCount = 0;
+                    if(isset($todayBirthdays)) $totalNotifCount += $todayBirthdays->count();
+                @endphp
+                <span class="badge" id="notifBadge" style="{{ $totalNotifCount > 0 ? 'display: inline;' : 'display: none;' }}">{{ $totalNotifCount }}</span>
             </button>
 
-            <ul class="dropdown-menu" id="notifMenu" style="width: 300px; max-height: 400px; overflow-y: auto;">
+            <ul class="dropdown-menu" id="notifMenu" style="width: 320px; max-height: 500px; overflow-y: auto;">
                 <li style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold; background: #f8f9fa;">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span>Notifications</span>
+                        <span>All Notifications</span>
                         <button onclick="markAllAsRead()" class="btn btn-sm btn-link p-0" style="font-size: 12px;">Mark all read</button>
                     </div>
                 </li>
-                <div id="notificationsList">
-                    <li style="padding: 20px; text-align: center; color: #666;">Loading...</li>
-                </div>
-            </ul>
-        </div>
-        
-        <!-- BIRTHDAY NOTIFICATION -->
-        @if(isset($todayBirthdays) && $todayBirthdays->count() > 0)
-        <div class="dropdown">
-            <button class="header-icon dropdown-btn birthday-btn" id="birthdayBtn">
-                <i class="fa-solid fa-birthday-cake" style="color: #ff6b6b;"></i>
-                <span class="badge birthday-badge">{{ $todayBirthdays->count() }}</span>
-            </button>
-
-            <ul class="dropdown-menu birthday-menu">
-                <li class="birthday-header">🎉 Today's Birthdays</li>
+                
+                <!-- BIRTHDAYS SECTION -->
+                @if(isset($todayBirthdays) && $todayBirthdays->count() > 0)
+                <li class="birthday-header">
+                    <span>🎉 Today's Birthdays</span>
+                    <span class="count-badge">{{ $todayBirthdays->count() }}</span>
+                </li>
                 @foreach($todayBirthdays as $employee)
                 <li class="birthday-item">
                     <i class="fa-solid fa-gift" style="color: #ff6b6b;"></i>
@@ -1004,22 +1199,15 @@ function showStatusPopup(type, title, message, details = null) {
                     <small>({{ $employee->department }})</small>
                 </li>
                 @endforeach
-            </ul>
-        </div>
-        @endif
-        
-        <!-- BILLS NOTIFICATION -->
-        <div class="dropdown" id="billsDropdown" style="display: none;">
-            <button class="header-icon dropdown-btn bills-btn" id="billsBtn">
-                <i class="fa-solid fa-file-invoice" style="color: #f39c12;"></i>
-                <span class="badge bills-badge" id="billsBadge">0</span>
-            </button>
-
-            <ul class="dropdown-menu bills-menu" id="billsMenu">
-                <li class="bills-header">💰 Bills Due Today</li>
-                <div id="billsContent">
-                    <!-- Bills will be loaded here -->
-                </div>
+                @endif
+                
+                <!-- BILLS SECTION -->
+                <div id="billsContent"></div>
+                
+                <!-- REGULAR NOTIFICATIONS -->
+                <!-- <div id="notificationsList">
+                    <li style="padding: 20px; text-align: center; color: #666;">Loading...</li>
+                </div> -->
             </ul>
         </div>
 
@@ -1056,6 +1244,9 @@ function showStatusPopup(type, title, message, details = null) {
 
 
 <style>
+    .top-header{
+    overflow: visible !important;
+}
 /* User dropdown links styling */
 .dropdown-menu li a {
     display: block;
@@ -1136,18 +1327,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-/* ---------------- BIRTHDAY AUTO POPUP ---------------- */
+/* ---------------- AUTO POPUP UNIFIED NOTIFICATIONS ---------------- */
 @if(isset($todayBirthdays) && $todayBirthdays->count() > 0)
 document.addEventListener('DOMContentLoaded', function() {
-    // Auto show birthday notification after 2 seconds
     setTimeout(function() {
-        const birthdayDropdown = document.querySelector('.birthday-btn').parentElement;
-        birthdayDropdown.classList.add('open');
-        
-        // Auto hide after 5 seconds
-        setTimeout(function() {
-            birthdayDropdown.classList.remove('open');
-        }, 5000);
+        const notifDropdown = document.getElementById('notifBtn').parentElement;
+        notifDropdown.classList.add('open');
+        setTimeout(() => notifDropdown.classList.remove('open'), 5000);
     }, 2000);
 });
 @endif
@@ -1177,7 +1363,11 @@ function loadNotifications() {
     fetch('/admin/notifications/unread')
         .then(response => response.json())
         .then(data => {
-            updateNotificationBadge(data.count);
+            let totalCount = data.count;
+            @if(isset($todayBirthdays))
+            totalCount += {{ $todayBirthdays->count() }};
+            @endif
+            updateNotificationBadge(totalCount);
             displayNotifications(data.notifications);
         })
         .catch(error => console.error('Error:', error));
@@ -1193,15 +1383,23 @@ function displayNotifications(notifications) {
     const list = document.getElementById('notificationsList');
     
     if (notifications.length === 0) {
-        list.innerHTML = '<li style="padding: 20px; text-align: center; color: #666;">No new notifications</li>';
+        list.innerHTML = '';
         return;
     }
     
-    list.innerHTML = notifications.map(notif => `
-        <li style="padding: 10px; border-bottom: 1px solid #eee; cursor: pointer;" onclick="markAsRead(${notif.id})">
-            <div style="font-size: 14px; font-weight: 500;">${notif.title}</div>
+    list.innerHTML = `<li class="notif-section-header">
+        <span>📬 Recent Updates</span>
+        <span class="count-badge">${notifications.length}</span>
+    </li>` + 
+        notifications.map(notif => `
+        <li style="padding: 10px 12px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s;" 
+            onclick="markAsRead(${notif.id})" 
+        
+            <div style="font-size: 14px; font-weight: 500; color: #333;">${notif.title}</div>
             <div style="font-size: 12px; color: #666; margin-top: 2px;">${notif.message}</div>
-            <div style="font-size: 11px; color: #999; margin-top: 4px;">${formatTime(notif.created_at)}</div>
+            <div style="font-size: 11px; color: #999; margin-top: 4px;">
+                <i class="fa-regular fa-clock" style="margin-right: 4px;"></i>${formatTime(notif.created_at)}
+            </div>
         </li>
     `).join('');
 }
@@ -1247,16 +1445,14 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 function showBillsInHeader(bills) {
-    const dropdown = document.getElementById('billsDropdown');
-    const badge = document.getElementById('billsBadge');
     const content = document.getElementById('billsContent');
-    
-    // Show dropdown and set badge count
-    dropdown.style.display = 'block';
-    badge.textContent = bills.length;
+    const badge = document.getElementById('notifBadge');
     
     // Generate bills content
-    let billsHtml = '';
+    let billsHtml = `<li class="bills-header">
+        <span>💰 Bills Due Today</span>
+        <span class="count-badge">${bills.length}</span>
+    </li>`;
     bills.forEach(function(bill) {
         billsHtml += `<li class="bills-item">
             <div class="bills-item-info">
@@ -1271,15 +1467,8 @@ function showBillsInHeader(bills) {
     
     content.innerHTML = billsHtml;
     
-    // Auto show popup after 3 seconds (after birthday popup)
-    setTimeout(function() {
-        dropdown.classList.add('open');
-        
-        // Auto hide after 6 seconds
-        setTimeout(function() {
-            dropdown.classList.remove('open');
-        }, 6000);
-    }, 3000);
+    // Update badge count
+    updateNotificationBadge(parseInt(badge.textContent || 0) + bills.length);
 }
 
 function markBillAsPaidFromHeader(billId) {

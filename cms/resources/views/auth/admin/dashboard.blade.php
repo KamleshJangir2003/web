@@ -6,8 +6,8 @@
 
 <style>
 .dashboard-wrapper{
-    /* padding: 25px; */
-    margin-left: 130px;
+   padding: 0%;
+    margin-left: 65px;
     margin-top: 60px;
 }
 
@@ -112,6 +112,16 @@
         transform: translateY(0);
         opacity: 1;
     }
+}
+
+.dashboard-wrapper {
+    transform: scale(0.85);
+    transform-origin: top center;
+    width: 100%;
+}
+
+body {
+    overflow-x: hidden;
 }
 </style>
 <style>

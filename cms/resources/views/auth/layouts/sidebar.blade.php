@@ -329,7 +329,6 @@
             <i class="fa-solid fa-users"></i> Employee</a>
             <ul class="submenu">
                 <a href="{{ route('admin.employees.index') }}">All Employees</a>
-                <a href="{{ route('admin.employee.shifts.index') }}">Employee Shift</a>
                 <a href="{{ route('admin.employee.credentials') }}">Employee Login</a>
                 <a href="{{ route('admin.interviews.rejected') }}">Rejected Interview</a>
             </ul>

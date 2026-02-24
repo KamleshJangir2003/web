@@ -640,6 +640,51 @@ EmailLog::create([
         ]);
 
         $employee = Employee::findOrFail($id);
+        
+        // Check if trying to change to hired
+        if ($request->hired_status === 'hired') {
+            // Check if all documents are uploaded
+            $documents = EmployeeDocument::where('user_id', $id)
+                ->whereIn('status', ['uploaded', 'submitted', 'verified'])
+                ->get();
+            
+            $uploadedTypes = $documents->pluck('document_type')->unique()->toArray();
+            
+            // Check required documents
+            $allRequiredUploaded = true;
+            foreach (self::REQUIRED_DOCUMENTS as $docType) {
+                if (!in_array($docType, $uploadedTypes)) {
+                    $allRequiredUploaded = false;
+                    break;
+                }
+            }
+            
+            // Check optional groups
+            if ($allRequiredUploaded) {
+                foreach (self::OPTIONAL_GROUPS as $group) {
+                    $hasAnyFromGroup = !empty(array_intersect($group, $uploadedTypes));
+                    if (!$hasAnyFromGroup) {
+                        $allRequiredUploaded = false;
+                        break;
+                    }
+                }
+            }
+            
+            if (!$allRequiredUploaded) {
+                return redirect()->back()->with('error', 'Cannot hire employee. All required documents must be uploaded first.');
+            }
+            
+            // Check if welcome letter was sent
+            $welcomeLetterSent = EmailLog::where('to_email', $employee->email)
+                ->where('subject', 'like', '%Welcome%')
+                ->where('status', 'sent')
+                ->exists();
+            
+            if (!$welcomeLetterSent) {
+                return redirect()->back()->with('error', 'Cannot hire employee. Welcome letter must be sent first.');
+            }
+        }
+        
         $employee->update([
             'hired_status' => $request->hired_status,
             'joining_date' => $request->hired_status === 'hired' ? ($employee->joining_date ?? now()) : $employee->joining_date,

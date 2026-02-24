@@ -282,17 +282,6 @@ class EmployeeController extends Controller
         return view('auth.admin.employee-list', compact('employees'));
     }
 
-    public function employeeShifts()
-    {
-        $employees = Employee::where('user_type', '!=', 'admin')
-                        ->where('action_status', 'selected')
-                        ->where('hired_status', 'hired')
-                        ->orderBy('first_name')
-                        ->get();
-        
-        return view('auth.admin.employees.employee_shift', compact('employees'));
-    }
-
     public function showProfile($id)
     {
         $employee = Employee::findOrFail($id);
@@ -305,7 +294,7 @@ class EmployeeController extends Controller
         
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'last_name' => 'nullable|string|max:255',
             'email' => 'required|email|unique:employees,email,' . $id,
             'contact_number' => 'nullable|string|max:20',
             'phone' => 'nullable|string|max:20',
@@ -325,18 +314,26 @@ class EmployeeController extends Controller
             'in_hand_salary' => 'nullable|numeric|min:0',
             'current_ctc' => 'nullable|numeric|min:0',
             'joining_date' => 'nullable|date',
+            'shift' => 'nullable|string|max:50',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $employee->update($request->only([
+        $data = $request->only([
             'first_name', 'last_name', 'email', 'contact_number', 'phone', 'department',
             'father_name', 'mother_name', 'dob', 'gender', 'guardian_number',
             'address', 'city', 'state', 'pincode', 'bank_name', 'ifsc_code', 'bank_account_number',
-            'in_hand_salary', 'current_ctc', 'joining_date'
-        ]));
+            'in_hand_salary', 'current_ctc', 'joining_date', 'shift'
+        ]);
+        
+        // Set empty string if last_name is null
+        if (empty($data['last_name'])) {
+            $data['last_name'] = '';
+        }
+
+        $employee->update($data);
 
         return redirect()->back()->with('success', 'Profile updated successfully!');
     }

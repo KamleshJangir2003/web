@@ -124,14 +124,26 @@
                             @if(isset($emp->is_interview_candidate) && $emp->is_interview_candidate)
                                 <span class="badge bg-warning text-dark">Pending Documents</span>
                             @else
+                                @php
+                                    $stats = $emp->document_stats;
+                                    $allDocsUploaded = $stats['uploaded'] >= 6 && $stats['missing'] == 0;
+                                    $welcomeLetterSent = \App\Models\EmailLog::where('to_email', $emp->email)
+                                        ->where('subject', 'like', '%Welcome%')
+                                        ->where('status', 'sent')
+                                        ->exists();
+                                    $canHire = $allDocsUploaded && $welcomeLetterSent;
+                                @endphp
                                 <form method="POST" action="{{ route('admin.employees.update-hired-status', $emp->id) }}?t={{ time() }}" class="d-inline">
                                     @csrf
                                     @method('PATCH')
-                                    <select name="hired_status" class="form-select form-select-sm" style="width: 120px;" onchange="this.form.submit()">
+                                    <select name="hired_status" class="form-select form-select-sm" style="width: 120px;" onchange="this.form.submit()" {{ !$canHire && ($emp->hired_status ?? 'not_hired') == 'not_hired' ? 'disabled' : '' }}>
                                         <option value="not_hired" {{ ($emp->hired_status ?? 'not_hired') == 'not_hired' ? 'selected' : '' }}>Not Hired</option>
-                                        <option value="hired" {{ ($emp->hired_status ?? 'not_hired') == 'hired' ? 'selected' : '' }}>Hired</option>
+                                        <option value="hired" {{ ($emp->hired_status ?? 'not_hired') == 'hired' ? 'selected' : '' }} {{ !$canHire ? 'disabled' : '' }}>Hired</option>
                                     </select>
                                 </form>
+                                @if(!$canHire && ($emp->hired_status ?? 'not_hired') == 'not_hired')
+                                    <small class="text-muted d-block mt-1">{{ !$allDocsUploaded ? 'Upload docs first' : 'Send welcome letter' }}</small>
+                                @endif
                             @endif
                         </td>
                         <td class="text-center">

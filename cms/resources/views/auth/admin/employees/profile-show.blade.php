@@ -64,8 +64,8 @@
                             <input type="text" name="first_name" value="{{ $employee->first_name }}" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="50" required>
                         </div>
                         <div class="form-group">
-                            <label>Last Name *</label>
-                            <input type="text" name="last_name" value="{{ $employee->last_name }}" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="50" required>
+                            <label>Last Name</label>
+                            <input type="text" name="last_name" value="{{ $employee->last_name }}" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="50">
                         </div>
                         <div class="form-group">
                             <label>Email *</label>
@@ -102,19 +102,18 @@
                         </div>
                         <div class="form-group">
                             <label>Department *</label>
-                            <input type="text" name="department" value="{{ $employee->department }}" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" maxlength="100" required>
+                            <input type="text" name="department" value="{{ $employee->department }}" maxlength="100" required>
                         </div>
                         <div class="form-group">
                             <label>Shift</label>
                             <select name="shift" id="shiftSelect">
                                 <option value="">Select Shift</option>
-                                <option value="day" {{ $employee->shift == 'day' ? 'selected' : '' }}>Day Shift (9:30AM - 6:30PM)</option>
-                                <option value="night1" {{ $employee->shift == 'night1' ? 'selected' : '' }}>Night Shift 1 (7:30PM - 4:30AM)</option>
-                                <option value="night2" {{ $employee->shift == 'night2' ? 'selected' : '' }}>Night Shift 2 (8PM - 5:10AM)</option>
-                                <option value="custom" {{ $employee->shift == 'custom' ? 'selected' : '' }}>Custom Shift</option>
+                                <option value="Day" {{ $employee->shift == 'Day' ? 'selected' : '' }}>Day Shift (9:30AM - 6:30PM)</option>
+                                <option value="Night" {{ $employee->shift == 'Night' ? 'selected' : '' }}>Night Shift (7:30PM - 5:10AM)</option>
+                                <option value="Custom" {{ $employee->shift == 'Custom' ? 'selected' : '' }}>Custom Shift</option>
                             </select>
                         </div>
-                        <div class="form-group" id="customShiftFields" style="display: {{ $employee->shift == 'custom' ? 'flex' : 'none' }};">
+                        <div class="form-group" id="customShiftFields" style="display: {{ $employee->shift == 'Custom' ? 'flex' : 'none' }};">
                             <label>Start Time</label>
                             <input type="time" name="start_time" value="{{ $employee->start_time }}">
                             <label style="margin-top: 10px;">End Time</label>
@@ -399,12 +398,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const ifsc = document.querySelector('input[name="ifsc_code"]');
     if(ifsc) ifsc.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
 
-    // Shift toggle
+    // Shift selection handler
     const shiftSelect = document.getElementById('shiftSelect');
-    const customFields = document.getElementById('customShiftFields');
-    if(shiftSelect && customFields) {
+    const customShiftFields = document.getElementById('customShiftFields');
+    if(shiftSelect && customShiftFields) {
         shiftSelect.addEventListener('change', function() {
-            customFields.style.display = this.value === 'custom' ? 'flex' : 'none';
+            customShiftFields.style.display = this.value === 'Custom' ? 'flex' : 'none';
         });
     }
 });

@@ -147,8 +147,8 @@ body {
                                             <td>{{ $emp->email }}</td>
                                             <td>{{ $emp->department ?? 'N/A' }}</td>
                                             <td>
-                                                <span class="badge bg-{{ ($selected_shift ?? 'Day') === 'Day' ? 'primary' : 'dark' }}">
-                                                    {{ ($selected_shift ?? 'Day') === 'Day' ? 'Day (IST)' : 'Night (US)' }}
+                                                <span class="badge bg-{{ $emp->shift === 'Day' ? 'primary' : 'dark' }}">
+                                                    {{ $emp->shift === 'Day' ? 'Day (IST)' : 'Night (US)' }}
                                                 </span>
                                             </td>
                                             <td>
