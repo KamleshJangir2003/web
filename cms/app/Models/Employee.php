@@ -107,7 +107,7 @@ class Employee extends Authenticatable
             if (empty($employee->employee_id)) {
                 $lastEmployee = self::whereNotNull('employee_id')->orderByRaw('CAST(SUBSTRING(employee_id, 4) AS UNSIGNED) DESC')->first();
                 $nextNumber = $lastEmployee ? (intval(substr($lastEmployee->employee_id, 3)) + 1) : 1;
-                $employee->employee_id = 'KOI' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
+                $employee->employee_id = 'KIO' . str_pad($nextNumber, 2, '0', STR_PAD_LEFT);
             }
         });
     }

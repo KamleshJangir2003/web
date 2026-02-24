@@ -434,13 +434,13 @@
                             <a href="{{ route('admin.employees.edit', $emp->id) }}" class="action-icon edit" title="Edit">
                                 <i class="bi bi-pencil"></i>
                             </a>
-                            <form action="{{ route('admin.employees.delete', $emp->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this employee?')">
+                            <!-- <form action="{{ route('admin.employees.delete', $emp->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this employee?')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="action-icon delete" title="Delete">
                                     <i class="bi bi-trash"></i>
                                 </button>
-                            </form>
+                            </form> -->
                         </td>
                     </tr>
                     @empty
