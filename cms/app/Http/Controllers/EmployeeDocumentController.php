@@ -710,4 +710,22 @@ EmailLog::create([
 
         return redirect()->route('admin.employees.documents.index')->with('success', 'Status updated successfully');
     }
+
+    /* =====================================================
+       REHIRE EMPLOYEE (Move from Not Selected to Hired)
+    ===================================================== */
+    public function rehireEmployee($id)
+    {
+        $employee = Employee::findOrFail($id);
+        
+        $employee->update([
+            'action_status' => null,
+            'action_reason' => null,
+            'hired_status' => 'hired',
+            'joining_date' => now()
+        ]);
+
+        return redirect()->route('admin.employees.hired.index')
+            ->with('success', 'Employee rehired successfully with new joining date!');
+    }
 }

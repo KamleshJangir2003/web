@@ -50,6 +50,7 @@
                         <th>Joining Date</th>
                         <th>Reason</th>
                         <th>Date Rejected</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,11 +58,11 @@
                     <tr>
                         <td>{{ $employee->employee_id ?? 'N/A' }}</td>
                         <td>
-                            <div class="d-flex align-items-center">
+                            <!-- <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/40?u={{ $employee->id }}"
                                      class="rounded-circle me-2"
                                      width="40" height="40">
-                                <div>
+                                <div> -->
                                     <div class="fw-medium">{{ $employee->full_name }}</div>
                                     <small class="text-muted">{{ $employee->department ?? 'N/A' }}</small>
                                 </div>
@@ -81,10 +82,19 @@
                         <td>
                             <span class="text-muted">{{ $employee->updated_at->format('M d, Y') }}</span>
                         </td>
+                        <td>
+                            <form action="{{ route('admin.employees.rehire', $employee->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to rehire this employee?')">
+                                    <i class="fas fa-user-check"></i> Rehire
+                                </button>
+                            </form>
+                        </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
+                        <td colspan="7" class="text-center text-muted py-4">
                             No rejected employees found
                         </td>
                     </tr>

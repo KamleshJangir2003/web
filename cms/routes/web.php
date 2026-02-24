@@ -119,6 +119,12 @@ Route::patch(
 )->middleware(['auth', 'check.user.type:admin'])
  ->name('admin.employees.update-hired-status');
 
+Route::patch(
+    '/admin/employees/{id}/rehire',
+    [EmployeeDocumentController::class, 'rehireEmployee']
+)->middleware(['auth', 'check.user.type:admin'])
+ ->name('admin.employees.rehire');
+
 // Test route for offer letter
 Route::get('/test-offer-letter/{userId}', function($userId) {
     $employee = \App\Models\Employee::findOrFail($userId);
