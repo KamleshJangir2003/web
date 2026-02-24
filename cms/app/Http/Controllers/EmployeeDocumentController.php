@@ -136,17 +136,30 @@ class EmployeeDocumentController extends Controller
                     }
                 }
                 
+                // Calculate actual uploaded count (3 required + 3 from groups)
+                $actualUploadedCount = 0;
+                foreach (self::REQUIRED_DOCUMENTS as $docType) {
+                    if ($documents->where('document_type', $docType)->whereIn('status', ['uploaded', 'submitted', 'verified'])->count() > 0) {
+                        $actualUploadedCount++;
+                    }
+                }
+                foreach (self::OPTIONAL_GROUPS as $group) {
+                    if ($documents->whereIn('document_type', $group)->whereIn('status', ['uploaded', 'submitted', 'verified'])->count() > 0) {
+                        $actualUploadedCount++;
+                    }
+                }
+                
                 $employee->document_stats = [
-                    'total_required' => 6, // 3 required + 3 groups (one from each)
-                    'uploaded' => $allRequiredUploaded ? 6 : $uploadedCount,
+                    'total_required' => 6,
+                    'uploaded' => $actualUploadedCount,
                     'verified' => $verifiedCount,
                     'submitted' => $submittedCount,
                     'pending' => $pendingCount,
-                    'missing' => $allRequiredUploaded ? 0 : (6 - $uploadedCount),
-                    'status' => $uploadedCount == 0 ? 'not_started' : 
+                    'missing' => 6 - $actualUploadedCount,
+                    'status' => $actualUploadedCount == 0 ? 'not_started' : 
                                ($allRequiredUploaded && $verifiedCount >= 6 ? 'completed' : 
                                ($submittedCount > 0 ? 'submitted' : 
-                               ($uploadedCount > 0 ? 'in_progress' : 'pending')))
+                               ($actualUploadedCount > 0 ? 'in_progress' : 'pending')))
                 ];
                 
                 return $employee;
@@ -674,14 +687,14 @@ EmailLog::create([
                 return redirect()->back()->with('error', 'Cannot hire employee. All required documents must be uploaded first.');
             }
             
-            // Check if welcome letter was sent
-            $welcomeLetterSent = EmailLog::where('to_email', $employee->email)
-                ->where('subject', 'like', '%Welcome%')
+            // Check if offer letter was sent
+            $offerLetterSent = EmailLog::where('to_email', $employee->email)
+                ->where('subject', 'like', '%Offer Letter%')
                 ->where('status', 'sent')
                 ->exists();
             
-            if (!$welcomeLetterSent) {
-                return redirect()->back()->with('error', 'Cannot hire employee. Welcome letter must be sent first.');
+            if (!$offerLetterSent) {
+                return redirect()->back()->with('error', 'Cannot hire employee. Offer letter must be sent first.');
             }
         }
         

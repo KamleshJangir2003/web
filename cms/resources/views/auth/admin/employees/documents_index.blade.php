@@ -127,11 +127,11 @@
                                 @php
                                     $stats = $emp->document_stats;
                                     $allDocsUploaded = $stats['uploaded'] >= 6 && $stats['missing'] == 0;
-                                    $welcomeLetterSent = \App\Models\EmailLog::where('to_email', $emp->email)
-                                        ->where('subject', 'like', '%Welcome%')
+                                    $offerLetterSent = \App\Models\EmailLog::where('to_email', $emp->email)
+                                        ->where('subject', 'like', '%Offer Letter%')
                                         ->where('status', 'sent')
                                         ->exists();
-                                    $canHire = $allDocsUploaded && $welcomeLetterSent;
+                                    $canHire = $allDocsUploaded && $offerLetterSent;
                                 @endphp
                                 <form method="POST" action="{{ route('admin.employees.update-hired-status', $emp->id) }}?t={{ time() }}" class="d-inline">
                                     @csrf
@@ -142,7 +142,13 @@
                                     </select>
                                 </form>
                                 @if(!$canHire && ($emp->hired_status ?? 'not_hired') == 'not_hired')
-                                    <small class="text-muted d-block mt-1">{{ !$allDocsUploaded ? 'Upload docs first' : 'Send welcome letter' }}</small>
+                                    <small class="text-muted d-block mt-1">
+                                        @if(!$allDocsUploaded)
+                                            Upload docs ({{ $stats['uploaded'] }}/6)
+                                        @else
+                                            Send offer letter
+                                        @endif
+                                    </small>
                                 @endif
                             @endif
                         </td>

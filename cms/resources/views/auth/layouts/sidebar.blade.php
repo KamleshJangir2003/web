@@ -229,7 +229,7 @@
        
             <a href="{{ route('admin.leads.index') }}">
                 <i class="fa-solid fa-address-book"></i>
-                Leads
+                All Leads
             </a>
         
 
@@ -245,6 +245,8 @@
                     0
                 </span>
             </a>
+            <a href="{{ route('admin.interns.index') }}">Intern Leads</a>
+                <a href="{{ route('admin.interns.callbacks') }}">Intern Callbacks</a>
         
     </ul>
 </li>
@@ -263,30 +265,30 @@
        
             <a href="{{ route('admin.leads.interested') }}">
                 <i class="fa-solid fa-star"></i>
-                Interested
+                ShortListed
             </a>
        
             <a href="{{ route('admin.interviews.index') }}">
                 <i class="fa-solid fa-calendar-check"></i>
-                Interview Schedule
+                Interview In Process
             </a>
         
             <a href="{{ route('admin.interviews.selected') }}">
                 <i class="fa-solid fa-user-check"></i>
-                Selected Employees
+                Offer Released
             </a>
         
 
         
             <a href="{{ route('admin.employees.documents.index') }}">
                 <i class="fa-solid fa-file-lines"></i>
-                Documentation Verification
+                Document Check
             </a>
         
         
             <a href="{{ route('admin.employees.hired.index') }}">
                 <i class="fa-solid fa-user-check"></i>
-                Onboarded
+                Certification Period
             </a>
        
         
@@ -297,7 +299,7 @@
         <a href="#" class="submenu-toggle">
     <span>
         <i class="fa-solid fa-bars-progress"></i>
-        Application Status
+        Applicant Status
     </span>
     <i class="fa-solid fa-chevron-down arrow"></i>
 </a>
@@ -315,6 +317,7 @@
                
                 Not Selected Employee
             </a>
+            <a href="{{ route('admin.interviews.rejected') }}">Rejected Interview</a>
         
     </ul>
 </li>
@@ -328,9 +331,9 @@
             <a href="#">
             <i class="fa-solid fa-users"></i> Employee</a>
             <ul class="submenu">
-                <a href="{{ route('admin.employees.index') }}">All Employees</a>
+                <a href="{{ route('admin.employees.index') }}">Active Employees</a>
                 <a href="{{ route('admin.employee.credentials') }}">Employee Login</a>
-                <a href="{{ route('admin.interviews.rejected') }}">Rejected Interview</a>
+                
             </ul>
         </li>
 
@@ -339,8 +342,7 @@
             <a href="#">
             <i class="fa-solid fa-graduation-cap"></i> Interns</a>
             <ul class="submenu">
-                <a href="{{ route('admin.interns.index') }}">Leads</a>
-                <a href="{{ route('admin.interns.callbacks') }}">Intern Callbacks</a>
+                
                 <a href="{{ route('admin.interns.interested') }}">Interested Interns</a>
                 <a href="{{ route('admin.interns.ongoing-list') }}">Ongoing Interns</a>
                 <a href="{{ route('admin.interns.rejected') }}">Rejected Interns</a>
