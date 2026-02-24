@@ -74,11 +74,11 @@
                     <tr>
                         <td>{{ $employee->employee_id ?? 'N/A' }}</td>
                         <td>
-                            <div class="d-flex align-items-center">
+                            <!-- <div class="d-flex align-items-center">
                                 <img src="https://i.pravatar.cc/40?u={{ $employee->id }}"
                                      class="rounded-circle me-2"
                                      width="40" height="40">
-                                <div>
+                                <div> -->
                                     <div class="fw-medium">{{ $employee->full_name }}</div>
                                     <small class="text-muted">{{ $employee->department ?? 'N/A' }}</small>
                                 </div>
