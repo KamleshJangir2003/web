@@ -196,8 +196,10 @@
     <div class="sidebar-header">
     <div class="company-info">
     <div class="company-logo1">
+    <a href="{{ route('admin.dashboard') }}">
         <img src="{{ asset('Kwikster.jpeg') }}" alt="Kwikster Logo">
-    </div>
+    </a>
+</div>
     
 </div>
 
