@@ -366,13 +366,13 @@
                         
                         <!-- Employee Info -->
                         <td>
-                            <div class="d-flex align-items-center">
+                            <!-- <div class="d-flex align-items-center">
                                 @if($emp->selfie)
                                     <img src="{{ asset('storage/' . $emp->selfie) }}" class="employee-avatar me-3">
                                 @else
                                     <img src="https://i.pravatar.cc/42?u={{ $emp->id }}" class="employee-avatar me-3">
                                 @endif
-                                <div>
+                                <div> -->
                                     <div class="employee-name">{{ $emp->full_name ?? $emp->first_name . ' ' . $emp->last_name }}</div>
                                     <small class="text-muted">{{ $emp->email }}</small>
                                 </div>

@@ -1549,4 +1549,62 @@ function markBillAsPaidFromDashboard(billId) {
     });
 }
 </script>
+
+<!-- 🎉 Birthday Popup Modal -->
+<div class="modal fade" id="birthdayPopupModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border: none; border-radius: 20px; overflow: hidden;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #ff6b6b, #ffa500); color: white; border: none;">
+                <h5 class="modal-title">
+                    <i class="fa-solid fa-birthday-cake me-2"></i>🎉 Today's Birthdays!
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding: 30px;">
+                @if(isset($todayBirthdays) && $todayBirthdays->count() > 0)
+                    @foreach($todayBirthdays as $employee)
+                    <div class="birthday-employee-card" style="background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; gap: 15px;">
+                        <div style="font-size: 40px;">🎂</div>
+                        <div>
+                            <h6 style="margin: 0; font-weight: 600; color: #333;">{{ $employee->full_name }}</h6>
+                            <p style="margin: 0; color: #666; font-size: 14px;">{{ $employee->department }}</p>
+                            @if($employee->phone)
+                            <a href="tel:{{ $employee->phone }}" class="btn btn-sm btn-success mt-2">
+                                <i class="fa-solid fa-phone"></i> Call & Wish
+                            </a>
+                            @endif
+                        </div>
+                    </div>
+                    @endforeach
+                @else
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 60px; margin-bottom: 15px;">🎂</div>
+                        <h6>No birthdays today</h6>
+                        <p style="color: #666;">Check back tomorrow!</p>
+                    </div>
+                @endif
+            </div>
+            <div class="modal-footer" style="border: none; background: #f8f9fa;">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-check"></i> Got it!
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    @if(isset($todayBirthdays) && $todayBirthdays->count() > 0)
+    const modalElement = document.getElementById('birthdayPopupModal');
+    if (modalElement) {
+        setTimeout(function() {
+            const birthdayModal = new bootstrap.Modal(modalElement);
+            birthdayModal.show();
+        }, 1000);
+    }
+    @endif
+});
+</script>
+
 @endsection
