@@ -377,6 +377,14 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/interested-candidates/{id}/status', [App\Http\Controllers\Admin\InterestedCandidateController::class, 'updateStatus'])->name('interested.candidates.status');
             Route::post('/interested-candidates/{id}/notes', [App\Http\Controllers\Admin\InterestedCandidateController::class, 'addNotes'])->name('interested.candidates.notes');
             
+            /*
+            |--------------------------------------------------------------------------
+            | CANDIDATE JOURNEY TRACKER
+            |--------------------------------------------------------------------------
+            */
+            Route::get('/candidate-journey', [App\Http\Controllers\Admin\CandidateJourneyController::class, 'index'])->name('candidate-journey.index');
+            Route::get('/candidate-journey/{id}', [App\Http\Controllers\Admin\CandidateJourneyController::class, 'show'])->name('candidate-journey.show');
+            
             // Callback routes
             Route::get('/callbacks', [LeadController::class, 'callbacks'])->name('callbacks.index');
             Route::get('/callbacks/count', [LeadController::class, 'getCallbackCount'])->name('callbacks.count');

@@ -399,6 +399,8 @@
         <!-- <li><a href="#">Maps</a></li> -->
         <li><a href="{{ route('admin.hr-notes.index') }}">
         <i class="fa-solid fa-clipboard"></i> HR Notes</a></li>
+        <li><a href="{{ route('admin.candidate-journey.index') }}">
+        <i class="fa-solid fa-diagram-project"></i> Candidate Journey</a></li>
         <li class="menu-item has-submenu">
     <a href="javascript:void(0);" class="menu-toggle">
         <i class="fa-solid fa-users"></i> HR Management

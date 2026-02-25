@@ -184,7 +184,7 @@
 <body>
     <div class="email-container">
         <div class="header">
-            <h1>📋 Interview Assignment</h1>
+            <h1>📋 Interview Assigned</h1>
         </div>
         
         <div class="content">
