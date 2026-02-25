@@ -1071,6 +1071,699 @@ document.getElementById("employeeSearch").addEventListener("keyup", function () 
 
     </div>
     
+
+<style>
+ .filter-container {
+    background: #ffffff;
+    padding: 18px 20px;
+    border-radius: 14px;
+    display: flex;
+    gap: 25px;
+    align-items: end;
+    flex-wrap: wrap;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+    border: 1px solid #f1f1f1;
+    width: 50%;
+    margin-top: 30px;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    
+}
+.filter-item {
+    width: 230px;
+}
+
+.search-item {
+    flex: 1;
+    
+}
+
+.filter-label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #555;
+}
+
+.filter-control {
+    height: 44px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    padding-left: 12px;
+    transition: 0.2s ease;
+}
+
+.filter-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 2px rgba(13,110,253,0.1);
+}
+
+.search-wrapper {
+    position: relative;
+}
+
+.search-wrapper i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 14px;
+}
+
+.search-wrapper input {
+    padding-left: 35px;
+}
+.search-item {
+    width: 350px;   /* 👈 Yaha control karo */
+    flex: unset;    /* important */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .filter-item,
+    .search-item {
+        width: 100%;
+    }
+}
+</style>
+
+<style>
+.journey-card {
+    background: white;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+.journey-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+.journey-header {
+    /* display: flex; */
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+}
+.candidate-info h5 {
+    margin: 0;
+    color: #2d3748;
+    font-size: 15px;
+    font-weight: 600;
+}
+.candidate-meta {
+    color: #718096;
+    font-size: 13px;
+    margin-top: 3px;
+    line-height: 1.4;
+}
+.status-dropdown {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+.collapse {
+    display: none;
+}
+.collapse.show {
+    display: block;
+}
+.journey-wrapper {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+.journey-column {
+    min-width: 0;
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 12px;
+}
+.journey-column h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(0,0,0,0.1);
+}
+.btn.w-100 {
+    font-size: 11px;
+    padding: 6px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+/* @media (max-width: 1400px) {
+    .journey-wrapper {
+        grid-template-columns: repeat(4, 1fr);
+    }
+} */
+@media (max-width: 992px) {
+    .journey-wrapper {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 576px) {
+    .journey-wrapper {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<div class="journey-wrapper">
+<!-- Leads Column -->
+@if(isset($leads) && $leads->count() > 0)
+<div class="journey-column">
+    <h4 class="text-primary">📋 Leads ({{ $leads->count() }})</h4>
+    @foreach($leads->take(4) as $lead)
+    <div class="journey-card" data-date="{{ $lead->created_at }}" data-name="{{ strtolower($lead->name) }}" data-meta="{{ strtolower(($lead->phone ?? $lead->number) . ' ' . $lead->role) }}">
+        <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#lead-{{ $lead->id }}">
+            <div class="candidate-info">
+                <h5>{{ $lead->name }}</h5>
+                <div class="candidate-meta">{{ $lead->phone ?? $lead->number }} | {{ $lead->role }}</div>
+            </div>
+        </button>
+        <div id="lead-{{ $lead->id }}" class="collapse">
+            <div class="mt-2">
+                <select class="form-select form-select-sm status-dropdown" onchange="showStatusModal({{ $lead->id }}, this.value)">
+                    <option value="">Select Status</option>
+                    <option value="Interested">Interested</option>
+                    <option value="Call Back">Call Back</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Not Interested">Not Interested</option>
+                    <option value="Wrong Number">Wrong Number</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    @endforeach
+    @if($leads->count() > 4)
+    <small class="text-muted d-block text-center mb-2">+{{ $leads->count() - 4 }} more</small>
+    @endif
+    <a href="{{ url('/admin/leads') }}" class="btn btn-sm btn-primary w-100">View All</a>
+</div>
+@endif
+
+<!-- Callbacks Column -->
+@if(isset($callbacks) && $callbacks->count() > 0)
+<div class="journey-column">
+    <h4 class="text-warning">📞 Callbacks ({{ $callbacks->count() }})</h4>
+    @foreach($callbacks->take(4) as $callback)
+    <div class="journey-card" data-date="{{ $callback->callback_date }}" data-name="{{ strtolower($callback->name) }}" data-meta="{{ strtolower($callback->number) }}">
+        <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#callback-{{ $callback->id }}">
+            <div class="candidate-info">
+                <h5>{{ $callback->name }}</h5>
+                <div class="candidate-meta">{{ $callback->number }} | {{ \Carbon\Carbon::parse($callback->callback_date)->format('d M Y') }}</div>
+            </div>
+        </button>
+        <div id="callback-{{ $callback->id }}" class="collapse">
+            <div class="mt-2">
+                <select class="form-select form-select-sm status-dropdown" onchange="showCallbackStatusModal({{ $callback->id }}, this.value)">
+                    <option value="">Select Status</option>
+                    <option value="interested">Interested</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="not_interested">Not Interested</option>
+                    <option value="wrong_number">Wrong Number</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    @endforeach
+    @if($callbacks->count() > 4)
+    <small class="text-muted d-block text-center mb-2">+{{ $callbacks->count() - 4 }} more</small>
+    @endif
+    <a href="{{ url('/admin/callbacks') }}" class="btn btn-sm btn-warning w-100">View All</a>
+</div>
+@endif
+
+<!-- Interested Column -->
+@if(isset($interestedCandidates) && $interestedCandidates->count() > 0)
+<div class="journey-column">
+    <h4 class="text-success">✅ Interested ({{ $interestedCandidates->count() }})</h4>
+    @foreach($interestedCandidates->take(4) as $candidate)
+    <div class="journey-card" data-date="{{ $candidate->created_at }}" data-name="{{ strtolower($candidate->name) }}" data-meta="{{ strtolower(($candidate->phone ?? $candidate->number) . ' ' . ($candidate->role ?? '')) }}">
+        <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#interested-{{ $candidate->id }}">
+            <div class="candidate-info">
+                <h5>{{ $candidate->name }}</h5>
+                <div class="candidate-meta">{{ $candidate->phone ?? $candidate->number }} | {{ $candidate->role ?? 'N/A' }}</div>
+            </div>
+        </button>
+        <div id="interested-{{ $candidate->id }}" class="collapse">
+            <div class="mt-2">
+                <a href="{{ url('/admin/interviews/create?lead_id=' . $candidate->id) }}" class="btn btn-sm btn-primary w-100">Schedule Interview</a>
+            </div>
+        </div>
+    </div>
+    @endforeach
+    @if($interestedCandidates->count() > 4)
+    <small class="text-muted d-block text-center mb-2">+{{ $interestedCandidates->count() - 4 }} more</small>
+    @endif
+    <a href="{{ url('/admin/leads/interested') }}" class="btn btn-sm btn-success w-100">View All</a>
+</div>
+@endif
+
+<!-- Interviews Column -->
+@if(isset($interviews) && $interviews->count() > 0)
+<div class="journey-column">
+    <h4 class="text-info">🎤 Interviews ({{ $interviews->count() }})</h4>
+    @foreach($interviews->take(4) as $interview)
+    <div class="journey-card" data-date="{{ $interview->interview_date }}" data-name="{{ strtolower($interview->lead->name ?? '') }}" data-meta="{{ strtolower($interview->interview_round ?? '') }}">
+        <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#interview-{{ $interview->id }}">
+            <div class="candidate-info">
+                <h5>{{ $interview->lead->name ?? 'N/A' }}</h5>
+                <div class="candidate-meta">{{ \Carbon\Carbon::parse($interview->interview_date)->format('d M Y') }} | {{ $interview->interview_round }}</div>
+            </div>
+        </button>
+        <div id="interview-{{ $interview->id }}" class="collapse">
+            <div class="mt-2">
+                <select class="form-select form-select-sm status-dropdown" onchange="showInterviewResultModal({{ $interview->id }}, this.value)">
+                    <option value="">Select Result</option>
+                    <option value="Selected">Selected</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    @endforeach
+    @if($interviews->count() > 4)
+    <small class="text-muted d-block text-center mb-2">+{{ $interviews->count() - 4 }} more</small>
+    @endif
+    <a href="{{ url('/admin/interviews') }}" class="btn btn-sm btn-info w-100">View All</a>
+</div>
+@endif
+
+<!-- Selected Column -->
+@if(isset($selectedInterviews) && $selectedInterviews->count() > 0)
+<div class="journey-column">
+    <h4 class="text-dark">🎯 Selected ({{ $selectedInterviews->count() }})</h4>
+    @foreach($selectedInterviews->take(4) as $interview)
+    <div class="journey-card" data-date="{{ $interview->updated_at }}" data-name="{{ strtolower($interview->lead->name ?? '') }}" data-meta="{{ strtolower(($interview->candidate_email ?? '') . ' ' . ($interview->job_role ?? '')) }}">
+        <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#selected-{{ $interview->id }}">
+            <div class="candidate-info">
+                <h5>{{ $interview->lead->name ?? 'N/A' }}</h5>
+                <div class="candidate-meta">{{ $interview->candidate_email }} | {{ $interview->job_role }}</div>
+            </div>
+        </button>
+        <div id="selected-{{ $interview->id }}" class="collapse">
+            <div class="mt-2">
+                <button class="btn btn-sm btn-primary w-100" onclick="showWelcomeLetterModal({{ $interview->id }})">Send Welcome Letter</button>
+            </div>
+        </div>
+    </div>
+    @endforeach
+    @if($selectedInterviews->count() > 4)
+    <small class="text-muted d-block text-center mb-2">+{{ $selectedInterviews->count() - 4 }} more</small>
+    @endif
+    <a href="{{ url('/admin/interviews/selected') }}" class="btn btn-sm btn-dark w-100">View All</a>
+</div>
+@endif
+
+<!-- Documents Column -->
+@if(isset($employeesWithDocuments) && $employeesWithDocuments->count() > 0)
+<div class="journey-column">
+    <h4 class="text-secondary">📄 Documents ({{ $employeesWithDocuments->count() }})</h4>
+    @foreach($employeesWithDocuments->take(4) as $employee)
+    <div class="journey-card" data-date="{{ $employee->created_at }}" data-name="{{ strtolower($employee->first_name . ' ' . $employee->last_name) }}" data-meta="{{ strtolower(($employee->email ?? '') . ' ' . ($employee->department ?? '')) }}">
+        <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#doc-{{ $employee->id }}">
+            <div class="candidate-info">
+                <h5>{{ $employee->first_name }} {{ $employee->last_name }}</h5>
+                <div class="candidate-meta">{{ $employee->email }} | {{ $employee->department }}</div>
+            </div>
+        </button>
+        <div id="doc-{{ $employee->id }}" class="collapse">
+            <div class="mt-2">
+                <a href="{{ url('/admin/employees/documents') }}" class="btn btn-sm btn-secondary w-100">View Documents</a>
+            </div>
+        </div>
+    </div>
+    @endforeach
+    @if($employeesWithDocuments->count() > 4)
+    <small class="text-muted d-block text-center mb-2">+{{ $employeesWithDocuments->count() - 4 }} more</small>
+    @endif
+    <a href="{{ url('/admin/employees/documents') }}" class="btn btn-sm btn-secondary w-100">View All</a>
+</div>
+@endif
+
+<!-- Hired Column -->
+@if(isset($hiredEmployees) && $hiredEmployees->count() > 0)
+<div class="journey-column">
+    <h4 style="color: #667eea;">👔 Hired ({{ $hiredEmployees->count() }})</h4>
+    @foreach($hiredEmployees->take(4) as $employee)
+    <div class="journey-card" data-date="{{ $employee->created_at }}" data-name="{{ strtolower($employee->first_name . ' ' . $employee->last_name) }}" data-meta="{{ strtolower(($employee->email ?? '') . ' ' . ($employee->department ?? '')) }}">
+        <div class="journey-header">
+            <div class="candidate-info">
+                <h5>{{ $employee->first_name }} {{ $employee->last_name }}</h5>
+                <div class="candidate-meta">{{ $employee->email }} | {{ $employee->department }}</div>
+            </div>
+            <span class="badge bg-success">{{ $employee->employee_status }}</span>
+        </div>
+    </div>
+    @endforeach
+    @if($hiredEmployees->count() > 4)
+    <small class="text-muted d-block text-center mb-2">+{{ $hiredEmployees->count() - 4 }} more</small>
+    @endif
+    <a href="{{ url('/admin/employees/hired') }}" class="btn btn-sm w-100" style="background: #667eea; color: white;">View All</a>
+</div>
+@endif
+</div>
+
+<script>
+document.querySelectorAll('.journey-header').forEach(button => {
+    button.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-target');
+        if (targetId) {
+            const targetElement = document.querySelector(targetId);
+            targetElement.classList.toggle('show');
+        }
+    });
+});
+</script>
+
+<!-- Status Modal for Leads -->
+<div class="modal fade" id="statusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Lead Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="leadId">
+                <input type="hidden" id="leadStatus">
+                <div class="mb-3">
+                    <label class="form-label">Reason <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="leadReason" rows="3" required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitLeadStatus()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Modal for Callbacks -->
+<div class="modal fade" id="callbackStatusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Callback Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="callbackId">
+                <input type="hidden" id="callbackStatus">
+                <div class="mb-3">
+                    <label class="form-label">Reason <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="callbackReason" rows="3" required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitCallbackStatus()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Interview Result Modal -->
+<div class="modal fade" id="interviewResultModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Interview Result</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="interviewId">
+                <input type="hidden" id="interviewResult">
+                <div class="mb-3" id="rejectionReasonDiv" style="display:none;">
+                    <label class="form-label">Rejection Reason <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="rejectionReason" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitInterviewResult()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Welcome Letter Modal -->
+<div class="modal fade" id="welcomeLetterModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Send Welcome Letter</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="welcomeInterviewId">
+                <div class="mb-3">
+                    <label class="form-label">Joining Date <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" id="joiningDate" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Current CTC <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="currentCtc" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">In-Hand Salary <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="inHandSalary" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitWelcomeLetter()">Send Letter</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showStatusModal(leadId, status) {
+    if (!status) return;
+    document.getElementById('leadId').value = leadId;
+    document.getElementById('leadStatus').value = status;
+    document.getElementById('leadReason').value = '';
+    new bootstrap.Modal(document.getElementById('statusModal')).show();
+}
+
+function submitLeadStatus() {
+    const leadId = document.getElementById('leadId').value;
+    const status = document.getElementById('leadStatus').value;
+    const reason = document.getElementById('leadReason').value;
+    
+    if (!reason) {
+        alert('Please enter a reason');
+        return;
+    }
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfToken) {
+        alert('CSRF token not found');
+        return;
+    }
+    
+    fetch(`/admin/leads/${leadId}/update-status`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken.content,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ condition_status: status, reason: reason })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('statusModal')).hide();
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating status');
+    });
+}
+
+function showCallbackStatusModal(callbackId, status) {
+    if (!status) return;
+    document.getElementById('callbackId').value = callbackId;
+    document.getElementById('callbackStatus').value = status;
+    document.getElementById('callbackReason').value = '';
+    new bootstrap.Modal(document.getElementById('callbackStatusModal')).show();
+}
+
+function submitCallbackStatus() {
+    const callbackId = document.getElementById('callbackId').value;
+    const status = document.getElementById('callbackStatus').value;
+    const reason = document.getElementById('callbackReason').value;
+    
+    if (!reason) {
+        alert('Please enter a reason');
+        return;
+    }
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfToken) {
+        alert('CSRF token not found');
+        return;
+    }
+    
+    fetch(`/admin/callbacks/${callbackId}/update-status`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken.content,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ status: status, reason: reason })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('callbackStatusModal')).hide();
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating status');
+    });
+}
+
+function showInterviewResultModal(interviewId, result) {
+    if (!result) return;
+    document.getElementById('interviewId').value = interviewId;
+    document.getElementById('interviewResult').value = result;
+    document.getElementById('rejectionReason').value = '';
+    
+    if (result === 'Rejected') {
+        document.getElementById('rejectionReasonDiv').style.display = 'block';
+    } else {
+        document.getElementById('rejectionReasonDiv').style.display = 'none';
+    }
+    
+    new bootstrap.Modal(document.getElementById('interviewResultModal')).show();
+}
+
+function submitInterviewResult() {
+    const interviewId = document.getElementById('interviewId').value;
+    const result = document.getElementById('interviewResult').value;
+    const reason = document.getElementById('rejectionReason').value;
+    
+    if (result === 'Rejected' && !reason) {
+        alert('Please enter rejection reason');
+        return;
+    }
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfToken) {
+        alert('CSRF token not found');
+        return;
+    }
+    
+    fetch(`/admin/interviews/${interviewId}/update-result`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken.content,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ result: result, rejection_reason: reason })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('interviewResultModal')).hide();
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating result');
+    });
+}
+
+function showWelcomeLetterModal(interviewId) {
+    document.getElementById('welcomeInterviewId').value = interviewId;
+    document.getElementById('joiningDate').value = '';
+    document.getElementById('currentCtc').value = '';
+    document.getElementById('inHandSalary').value = '';
+    new bootstrap.Modal(document.getElementById('welcomeLetterModal')).show();
+}
+
+function submitWelcomeLetter() {
+    const interviewId = document.getElementById('welcomeInterviewId').value;
+    const joiningDate = document.getElementById('joiningDate').value;
+    const ctc = document.getElementById('currentCtc').value;
+    const inHand = document.getElementById('inHandSalary').value;
+    
+    if (!joiningDate || !ctc || !inHand) {
+        alert('Please fill all fields');
+        return;
+    }
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfToken) {
+        alert('CSRF token not found');
+        return;
+    }
+    
+    fetch(`/admin/interviews/${interviewId}/send-welcome`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken.content,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ 
+            joining_date: joiningDate, 
+            current_ctc: ctc, 
+            in_hand_salary: inHand 
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('welcomeLetterModal')).hide();
+            alert(data.message);
+            if (data.redirect) {
+                window.location.href = data.redirect;
+            } else {
+                location.reload();
+            }
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error sending welcome letter');
+    });
+}
+</script>
+
    <!-- 🔹 Activity Logs Section -->
 <div class="activity-card">
     <div class="activity-header">
@@ -1605,6 +2298,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     @endif
 });
+</script>
+
+<script>
+function filterData() {
+    const dateFilter = document.getElementById('dateFilter').value;
+    const searchTerm = document.getElementById('searchBar').value.toLowerCase();
+    
+    const url = new URL(window.location.href);
+    if (dateFilter) url.searchParams.set('date_filter', dateFilter);
+    else url.searchParams.delete('date_filter');
+    
+    if (searchTerm) url.searchParams.set('search', searchTerm);
+    else url.searchParams.delete('search');
+    
+    window.location.href = url.toString();
+}
 </script>
 
 @endsection

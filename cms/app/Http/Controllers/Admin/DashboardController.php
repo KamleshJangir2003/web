@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\Models\ActivityLog;
+use App\Models\Lead;
+use App\Models\Callback;
+use App\Models\InterestedCandidate;
+use App\Models\Interview;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
@@ -65,6 +69,58 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        // Dashboard data - exactly as shown on respective pages
+        $leads = Lead::whereDoesntHave('interviews')
+            ->where(function($q) {
+                $q->whereNull('condition_status')
+                  ->orWhere('condition_status', '');
+            })
+            ->orderBy('id', 'desc')
+            ->limit(10)
+            ->get();
+            
+        $callbacks = Callback::where('status', 'call_backs')
+            ->orderBy('callback_date', 'desc')
+            ->limit(10)
+            ->get();
+            
+        $interestedCandidates = Lead::where('condition_status', 'Interested')
+            ->whereDoesntHave('interviews')
+            ->orderBy('updated_at', 'desc')
+            ->limit(10)
+            ->get();
+            
+        $interviews = Interview::with('lead')
+            ->where('result', '!=', 'Selected')
+            ->where('result', '!=', 'Rejected')
+            ->where('status', '!=', 'Rescheduled')
+            ->orderBy('interview_date', 'desc')
+            ->limit(10)
+            ->get();
+            
+        $selectedInterviews = Interview::with('lead')
+            ->where('result', 'Selected')
+            ->where('welcome_letter_sent', false)
+            ->orderBy('updated_at', 'desc')
+            ->limit(10)
+            ->get();
+            
+        $employeesWithDocuments = Employee::where('user_type', 'employee')
+            ->where('is_approved', true)
+            ->where('hired_status', 'not_hired')
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+            
+        $hiredEmployees = Employee::where('user_type', '!=', 'admin')
+            ->where('hired_status', 'hired')
+            ->where('employee_status', 'active')
+            ->whereNotNull('joining_date')
+            ->whereRaw('DATE_ADD(joining_date, INTERVAL certification_period DAY) <= CURDATE()')
+            ->orderBy('first_name')
+            ->limit(10)
+            ->get();
+
         return view('auth.admin.dashboard', [
             'user' => Auth::user(),
             'stats' => $stats,
@@ -74,6 +130,13 @@ class DashboardController extends Controller
             'todayCallbacks' => $todayCallbacks,
             'allEmployees' => $allEmployees,
             'recentLogs' => $recentLogs,
+            'leads' => $leads,
+            'callbacks' => $callbacks,
+            'interestedCandidates' => $interestedCandidates,
+            'interviews' => $interviews,
+            'selectedInterviews' => $selectedInterviews,
+            'employeesWithDocuments' => $employeesWithDocuments,
+            'hiredEmployees' => $hiredEmployees,
         ]);
     }
 
