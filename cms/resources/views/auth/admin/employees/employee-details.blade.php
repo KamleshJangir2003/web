@@ -80,7 +80,7 @@
     <div class="card employee-card">
         <!-- Profile Header -->
         <div class="profile-header text-center">
-            <img src="{{ $employee->selfie ? asset('storage/' . $employee->selfie) : 'https://via.placeholder.com/120' }}" 
+            <img src="{{ $employee->selfie ? asset('uploads/selfies/' . $employee->selfie) : 'https://via.placeholder.com/120' }}" 
                  alt="Profile" class="profile-img mb-3">
             <h2 class="mb-1">{{ $employee->first_name }} {{ $employee->last_name }}</h2>
             <p class="mb-0 opacity-75">{{ $employee->department ?? 'Employee' }}</p>
