@@ -936,7 +936,111 @@ body {
 }
 </style>
 
+<!-- Journey Filter Bar -->
+<!-- Journey Filter Bar -->
+<div class="journey-filter-bar">
+
+    <div class="filter-group">
+        <label>Date</label>
+        <select id="journeyDateFilter" onchange="filterJourneyData()">
+            <option value="">All Time</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+        </select>
+    </div>
+
+    <div class="filter-group search-group">
+        <label>Search</label>
+        <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="journeySearchBar"
+                   placeholder="Search by name, phone, email..."
+                   oninput="filterJourneyData()">
+        </div>
+    </div>
+<!-- 
+    <div class="filter-group">
+        <label>&nbsp;</label>
+        <button class="reset-btn" onclick="resetJourneyFilter()">
+            Reset
+        </button>
+    </div> -->
+
+</div>
+
 <style>
+.journey-filter-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+.filter-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: transform 0.2s ease;
+}
+.filter-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+.filter-left {
+    width: 280px;
+}
+.filter-right {
+    flex: 1;
+    max-width: 450px;
+}
+.filter-icon {
+    font-size: 32px;
+    line-height: 1;
+}
+.filter-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.filter-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+.filter-control {
+    height: 42px;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 0 14px;
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    transition: all 0.2s ease;
+}
+.filter-control:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.8);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+@media (max-width: 768px) {
+    .journey-filter-container {
+        flex-direction: column;
+    }
+    .filter-left,
+    .filter-right {
+        width: 100%;
+        max-width: 100%;
+    }
+}
 .journey-card {
     background: white;
     border-radius: 12px;
@@ -1020,6 +1124,112 @@ body {
     .journey-wrapper {
         grid-template-columns: 1fr;
     }
+}
+</style>
+<style>
+    .journey-filter-bar {
+    display: flex;
+    align-items: end;
+    gap: 20px;              /* normal spacing */
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    margin-bottom: 25px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+}
+
+.filter-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.filter-group select,
+.filter-group input {
+    height: 42px;
+    border-radius: 8px;
+    border: 1px solid #e0e6ed;
+    padding: 0 12px;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Search Input */
+.search-wrapper {
+    position: relative;
+}
+
+.search-wrapper input {
+    padding-left: 38px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    opacity: 0.6;
+}
+
+/* Reset Button */
+.reset-btn {
+    height: 42px;
+    padding: 0 18px;
+    border-radius: 8px;
+    border: none;
+    background: #ef4444;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.reset-btn:hover {
+    background: #dc2626;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .journey-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+}
+/* Left filter fixed width */
+.filter-group:first-child {
+    width: 220px;
+}
+
+/* Search group expand karega */
+.search-group {
+    flex: 1;              /* ye important hai */
+}
+
+/* Search input full width */
+.search-group input {
+    width: 100%;
 }
 </style>
 
@@ -1200,6 +1410,51 @@ body {
 </div>
 
 <script>
+function filterJourneyData() {
+    const dateFilter = document.getElementById('journeyDateFilter').value;
+    const searchTerm = document.getElementById('journeySearchBar').value.toLowerCase();
+    const allCards = document.querySelectorAll('.journey-card');
+    
+    allCards.forEach(card => {
+        const cardDate = new Date(card.getAttribute('data-date'));
+        const cardName = card.getAttribute('data-name') || '';
+        const cardMeta = card.getAttribute('data-meta') || '';
+        
+        let dateMatch = true;
+        let searchMatch = true;
+        
+        // Date filter logic
+        if (dateFilter) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (dateFilter === 'today') {
+                dateMatch = cardDate.toDateString() === today.toDateString();
+            } else if (dateFilter === 'week') {
+                const weekAgo = new Date(today);
+                weekAgo.setDate(today.getDate() - 7);
+                dateMatch = cardDate >= weekAgo;
+            } else if (dateFilter === 'month') {
+                const monthAgo = new Date(today);
+                monthAgo.setMonth(today.getMonth() - 1);
+                dateMatch = cardDate >= monthAgo;
+            }
+        }
+        
+        // Search filter logic
+        if (searchTerm) {
+            searchMatch = cardName.includes(searchTerm) || cardMeta.includes(searchTerm);
+        }
+        
+        // Show/hide card
+        if (dateMatch && searchMatch) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
 document.querySelectorAll('.journey-header').forEach(button => {
     button.addEventListener('click', function() {
         const targetId = this.getAttribute('data-target');
