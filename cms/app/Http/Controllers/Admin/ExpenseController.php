@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Expense;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class ExpenseController extends Controller
 {
@@ -43,12 +44,14 @@ class ExpenseController extends Controller
                 'updated_at' => now()
             ]);
             
+            Cache::forget('dashboard_stats');
             return redirect()->back()->with('success', 'Expense added successfully!');
         }
 
         // Handle delete
         if ($request->has('delete')) {
             DB::table('admin_expenses')->where('id', $request->delete)->delete();
+            Cache::forget('dashboard_stats');
             return redirect()->back()->with('success', 'Expense deleted successfully!');
         }
 

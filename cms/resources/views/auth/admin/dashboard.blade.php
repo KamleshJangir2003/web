@@ -842,8 +842,8 @@ body {
         <div class="col-xl-3 col-md-6">
             <div class="card stat-card bg-warning">
                 <div class="card-body">
-                    <div class="stat-title">Employee Hired</div>
-                    <div class="stat-number">{{ $stats['employeeHired'] ?? 0 }}</div>
+                    <div class="stat-title">Reimbursement</div>
+                    <div class="stat-number">₹{{ number_format($stats['totalReimbursement'] ?? 0) }}</div>
                     <i class="bi bi-ticket-perforated"></i>
                 </div>
             </div>
@@ -851,8 +851,8 @@ body {
         <div class="col-xl-3 col-md-6">
             <div class="card stat-card bg-secondary">
                 <div class="card-body">
-                    <div class="stat-title">Selected Employee</div>
-                    <div class="stat-number">{{ $stats['selectedEmployee'] ?? 0 }}</div>
+                    <div class="stat-title">Expenses</div>
+                    <div class="stat-number">₹{{ number_format($stats['totalExpenses'] ?? 0) }}</div>
                     <i class="bi bi-ticket-detailed"></i>
                 </div>
             </div>

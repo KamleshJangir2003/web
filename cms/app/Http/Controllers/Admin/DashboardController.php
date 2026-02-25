@@ -173,7 +173,9 @@ class DashboardController extends Controller
                 (SELECT COUNT(*) FROM interviews WHERE status = "Scheduled") as scheduledInterviews,
                 (SELECT COUNT(*) FROM interns WHERE final_result = "Ongoing") as activeInterns,
                 (SELECT COALESCE(SUM(stipend), 0) FROM interns WHERE final_result IN ("Ongoing", "Selected")) as totalInternPayment,
-                (SELECT COALESCE(SUM(total_paid), 0) FROM interns WHERE final_result IN ("Ongoing", "Selected")) as receivedInternPayment
+                (SELECT COALESCE(SUM(total_paid), 0) FROM interns WHERE final_result IN ("Ongoing", "Selected")) as receivedInternPayment,
+                (SELECT COALESCE(SUM(amount), 0) FROM expenses WHERE employee_id IS NOT NULL) as totalReimbursement,
+                (SELECT COALESCE(SUM(amount), 0) FROM admin_expenses) as totalExpenses
         ');
 
         $ticketCounts = DB::table('tickets')
@@ -219,6 +221,8 @@ class DashboardController extends Controller
             'activeInterns' => $otherCounts->activeInterns,
             'totalInternPayment' => $otherCounts->totalInternPayment,
             'receivedInternPayment' => $otherCounts->receivedInternPayment,
+            'totalReimbursement' => $otherCounts->totalReimbursement,
+            'totalExpenses' => $otherCounts->totalExpenses,
         ];
     }
 }
