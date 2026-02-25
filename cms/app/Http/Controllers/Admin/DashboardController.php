@@ -170,7 +170,8 @@ class DashboardController extends Controller
                 (SELECT COUNT(*) FROM interviews) as totalInterviews,
                 (SELECT COUNT(*) FROM interviews WHERE result = "Rejected") as rejectedInterviews,
                 (SELECT COUNT(*) FROM interviews WHERE result = "Selected") as selectedEmployee,
-                (SELECT COUNT(*) FROM interviews WHERE status = "Scheduled") as scheduledInterviews
+                (SELECT COUNT(*) FROM interviews WHERE status = "Scheduled") as scheduledInterviews,
+                (SELECT COUNT(*) FROM interns WHERE final_result = "Ongoing") as activeInterns
         ');
 
         $ticketCounts = DB::table('tickets')
@@ -213,6 +214,7 @@ class DashboardController extends Controller
             'femaleEmployees' => $employeeCounts->femaleCount,
             'malePercentage' => $malePercentage,
             'femalePercentage' => $femalePercentage,
+            'activeInterns' => $otherCounts->activeInterns,
         ];
     }
 }

@@ -808,8 +808,8 @@ body {
         <div class="col-xl-3 col-md-6">
             <div class="card stat-card bg-secondary">
                 <div class="card-body">
-                    <div class="stat-title">Total Tickets</div>
-                    <div class="stat-number">{{ $stats['totalTickets'] ?? 0 }}</div>
+                    <div class="stat-title">Active Interns</div>
+                    <div class="stat-number">{{ $stats['activeInterns'] ?? 0 }}</div>
                     <i class="bi bi-ticket-detailed"></i>
                 </div>
             </div>
