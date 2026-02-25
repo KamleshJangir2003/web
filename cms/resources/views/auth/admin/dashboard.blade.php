@@ -854,222 +854,7 @@ body {
             </div>
         </div>
     </div>
-    <!---employee male - female--->
-    <div class="male-all-employee">
-    <div class="employee-card">
-        
-        <!-- Header -->
-        <div class="card-header">
-            <div class="icon-badge">👥</div>
-            <h2>Employee Structure</h2>
-        </div>
-
-        <!-- Total row (highlighted) -->
-        <div class="info-row total-row">
-            <span class="label">📋 Total</span>
-            <span class="value">{{ $stats['totalHiredEmployees'] ?? 0 }}</span>
-        </div>
-
-        <!-- Male -->
-        <div class="info-row">
-            <span class="label"><span>♂️</span> Male</span>
-            <span class="value">{{ $stats['malePercentage'] ?? 0 }}% <small>({{ $stats['maleEmployees'] ?? 0 }})</small></span>
-        </div>
-
-        <!-- Female -->
-        <div class="info-row">
-            <span class="label"><span>♀️</span> Female</span>
-            <span class="value">{{ $stats['femalePercentage'] ?? 0 }}% <small>({{ $stats['femaleEmployees'] ?? 0 }})</small></span>
-        </div>
-
-        <!-- Visual progress bars (extra, but keeps UI rich) -->
-        <div class="progress-section">
-            <div class="progress-item">
-                <div class="progress-header">
-                    <span>👨 Male</span>
-                    <span>{{ $stats['malePercentage'] ?? 0 }}%</span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-fill-male" style="width: {{ $stats['malePercentage'] ?? 0 }}%;"></div>
-                </div>
-            </div>
-            <div class="progress-item">
-                <div class="progress-header">
-                    <span>👩 Female</span>
-                    <span>{{ $stats['femalePercentage'] ?? 0 }}%</span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-fill-female" style="width: {{ $stats['femalePercentage'] ?? 0 }}%;"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Summary footer -->
-        <div class="footer-note">
-            👤 <strong>{{ $stats['maleEmployees'] ?? 0 }} Male</strong> · <strong>{{ $stats['femaleEmployees'] ?? 0 }} Female</strong> · Total {{ $stats['totalHiredEmployees'] ?? 0 }}
-        </div>
-
-    </div>
-    
-    <!-- 🔹 All Employees Table -->
-    @if(isset($allEmployees) && $allEmployees->count() > 0)
-
-<style>
-/* Scroll Wrapper */
-.employee-table-wrapper {
-    max-height: 400px; /* Height control yaha se */
-    overflow-y: auto;
-}
-
-/* Sticky Header */
-.employee-table-wrapper thead th {
-    position: sticky;
-    top: 0;
-    background: #ffffff;
-    z-index: 2;
-    box-shadow: 0 2px 2px rgba(0,0,0,0.05);
-}
-
-/* Name wrap fix */
-.table td {
-    white-space: nowrap;
-}
-
-/* Search box styling */
-.employee-search {
-    max-width: 250px;
-}
-
-/* Smooth scrollbar */
-.employee-table-wrapper::-webkit-scrollbar {
-    width: 6px;
-}
-
-.employee-table-wrapper::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 10px;
-}
-</style>
-
-
-<div class="card table-card mb-4 shadow-sm">
-    
-    <!-- Header -->
-    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-        
-        <h5 class="mb-0 fw-semibold">
-            👥 All Employees ({{ $allEmployees->count() }})
-        </h5>
-
-        <!-- Search -->
-        <input type="text"
-               id="employeeSearch"
-               class="form-control form-control-sm employee-search"
-               placeholder="🔍 Search employee...">
-    </div>
-
-
-    <!-- Table -->
-    <div class="card-body p-0">
-        <div class="table-responsive employee-table-wrapper">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Name</th>
-                        <th>Department</th>
-                        <th>Platform</th>
-                        <th class="text-center">Contact</th>
-                    </tr>
-                </thead>
-                <tbody id="employeeTableBody">
-                    
-                    @foreach($allEmployees as $employee)
-                    <tr>
-                        <td>
-                            <strong>
-                                {{ $employee->first_name }} {{ $employee->last_name }}
-                            </strong>
-                        </td>
-
-                        <td>
-                            {{ $employee->department ?? 'N/A' }}
-                        </td>
-
-                       <td>
-    @if($employee->platform)
-        <span class="badge bg-info">
-            {{ ucfirst(str_replace('_', ' ', $employee->platform)) }}
-        </span>
-    @else
-        <span class="text-muted">N/A</span>
-    @endif
-</td>
-
-
-                        <td class="text-center">
-                            
-                            @if($employee->phone)
-                            <a href="tel:{{ $employee->phone }}"
-                               class="btn btn-sm btn-success me-1"
-                               title="Call">
-                                <i class="bi bi-telephone-fill"></i>
-                            </a>
-                            @endif
-
-                            @if($employee->email)
-                            <a href="mailto:{{ $employee->email }}"
-                               class="btn btn-sm btn-primary me-1"
-                               title="Email">
-                                <i class="bi bi-envelope-fill"></i>
-                            </a>
-                            @endif
-
-                            @if($employee->phone)
-                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $employee->phone) }}"
-                               target="_blank"
-                               class="btn btn-sm btn-success"
-                               title="WhatsApp">
-                                <i class="bi bi-whatsapp"></i>
-                            </a>
-                            @endif
-
-                        </td>
-                    </tr>
-                    @endforeach
-
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-
-<!-- Live Search Script -->
-<script>
-document.getElementById("employeeSearch").addEventListener("keyup", function () {
-
-    let value = this.value.toLowerCase();
-    let rows = document.querySelectorAll("#employeeTableBody tr");
-
-    rows.forEach(function (row) {
-
-        let name = row.cells[0].innerText.toLowerCase();
-        let department = row.cells[1].innerText.toLowerCase();
-        let platform = row.cells[2].innerText.toLowerCase();
-
-        if (name.includes(value) || department.includes(value) || platform.includes(value)) {
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
-        }
-    });
-
-});
-</script>
-
-@endif
-
-    </div>
+  
     
 
 <style>
@@ -1240,10 +1025,10 @@ document.getElementById("employeeSearch").addEventListener("keyup", function () 
 
 <div class="journey-wrapper">
 <!-- Leads Column -->
-@if(isset($leads) && $leads->count() > 0)
 <div class="journey-column">
-    <h4 class="text-primary">📋 Leads ({{ $leads->count() }})</h4>
-    @foreach($leads->take(4) as $lead)
+    <h4 class="text-primary">📋 Leads ({{ isset($leads) ? $leads->count() : 0 }})</h4>
+    @if(isset($leads) && $leads->count() > 0)
+    @foreach($leads as $lead)
     <div class="journey-card" data-date="{{ $lead->created_at }}" data-name="{{ strtolower($lead->name) }}" data-meta="{{ strtolower(($lead->phone ?? $lead->number) . ' ' . $lead->role) }}">
         <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#lead-{{ $lead->id }}">
             <div class="candidate-info">
@@ -1265,18 +1050,15 @@ document.getElementById("employeeSearch").addEventListener("keyup", function () 
         </div>
     </div>
     @endforeach
-    @if($leads->count() > 4)
-    <small class="text-muted d-block text-center mb-2">+{{ $leads->count() - 4 }} more</small>
     @endif
     <a href="{{ url('/admin/leads') }}" class="btn btn-sm btn-primary w-100">View All</a>
 </div>
-@endif
 
 <!-- Callbacks Column -->
-@if(isset($callbacks) && $callbacks->count() > 0)
 <div class="journey-column">
-    <h4 class="text-warning">📞 Callbacks ({{ $callbacks->count() }})</h4>
-    @foreach($callbacks->take(4) as $callback)
+    <h4 class="text-warning">📞 Callbacks ({{ isset($callbacks) ? $callbacks->count() : 0 }})</h4>
+    @if(isset($callbacks) && $callbacks->count() > 0)
+    @foreach($callbacks as $callback)
     <div class="journey-card" data-date="{{ $callback->callback_date }}" data-name="{{ strtolower($callback->name) }}" data-meta="{{ strtolower($callback->number) }}">
         <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#callback-{{ $callback->id }}">
             <div class="candidate-info">
@@ -1297,18 +1079,15 @@ document.getElementById("employeeSearch").addEventListener("keyup", function () 
         </div>
     </div>
     @endforeach
-    @if($callbacks->count() > 4)
-    <small class="text-muted d-block text-center mb-2">+{{ $callbacks->count() - 4 }} more</small>
     @endif
     <a href="{{ url('/admin/callbacks') }}" class="btn btn-sm btn-warning w-100">View All</a>
 </div>
-@endif
 
 <!-- Interested Column -->
-@if(isset($interestedCandidates) && $interestedCandidates->count() > 0)
 <div class="journey-column">
-    <h4 class="text-success">✅ Interested ({{ $interestedCandidates->count() }})</h4>
-    @foreach($interestedCandidates->take(4) as $candidate)
+    <h4 class="text-success">✅ Interested ({{ isset($interestedCandidates) ? $interestedCandidates->count() : 0 }})</h4>
+    @if(isset($interestedCandidates) && $interestedCandidates->count() > 0)
+    @foreach($interestedCandidates as $candidate)
     <div class="journey-card" data-date="{{ $candidate->created_at }}" data-name="{{ strtolower($candidate->name) }}" data-meta="{{ strtolower(($candidate->phone ?? $candidate->number) . ' ' . ($candidate->role ?? '')) }}">
         <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#interested-{{ $candidate->id }}">
             <div class="candidate-info">
@@ -1323,18 +1102,15 @@ document.getElementById("employeeSearch").addEventListener("keyup", function () 
         </div>
     </div>
     @endforeach
-    @if($interestedCandidates->count() > 4)
-    <small class="text-muted d-block text-center mb-2">+{{ $interestedCandidates->count() - 4 }} more</small>
     @endif
     <a href="{{ url('/admin/leads/interested') }}" class="btn btn-sm btn-success w-100">View All</a>
 </div>
-@endif
 
 <!-- Interviews Column -->
-@if(isset($interviews) && $interviews->count() > 0)
 <div class="journey-column">
-    <h4 class="text-info">🎤 Interviews ({{ $interviews->count() }})</h4>
-    @foreach($interviews->take(4) as $interview)
+    <h4 class="text-info">🎤 Interviews ({{ isset($interviews) ? $interviews->count() : 0 }})</h4>
+    @if(isset($interviews) && $interviews->count() > 0)
+    @foreach($interviews as $interview)
     <div class="journey-card" data-date="{{ $interview->interview_date }}" data-name="{{ strtolower($interview->lead->name ?? '') }}" data-meta="{{ strtolower($interview->interview_round ?? '') }}">
         <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#interview-{{ $interview->id }}">
             <div class="candidate-info">
@@ -1353,18 +1129,15 @@ document.getElementById("employeeSearch").addEventListener("keyup", function () 
         </div>
     </div>
     @endforeach
-    @if($interviews->count() > 4)
-    <small class="text-muted d-block text-center mb-2">+{{ $interviews->count() - 4 }} more</small>
     @endif
     <a href="{{ url('/admin/interviews') }}" class="btn btn-sm btn-info w-100">View All</a>
 </div>
-@endif
 
 <!-- Selected Column -->
-@if(isset($selectedInterviews) && $selectedInterviews->count() > 0)
 <div class="journey-column">
-    <h4 class="text-dark">🎯 Selected ({{ $selectedInterviews->count() }})</h4>
-    @foreach($selectedInterviews->take(4) as $interview)
+    <h4 class="text-dark">🎯 Selected ({{ isset($selectedInterviews) ? $selectedInterviews->count() : 0 }})</h4>
+    @if(isset($selectedInterviews) && $selectedInterviews->count() > 0)
+    @foreach($selectedInterviews as $interview)
     <div class="journey-card" data-date="{{ $interview->updated_at }}" data-name="{{ strtolower($interview->lead->name ?? '') }}" data-meta="{{ strtolower(($interview->candidate_email ?? '') . ' ' . ($interview->job_role ?? '')) }}">
         <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#selected-{{ $interview->id }}">
             <div class="candidate-info">
@@ -1379,18 +1152,15 @@ document.getElementById("employeeSearch").addEventListener("keyup", function () 
         </div>
     </div>
     @endforeach
-    @if($selectedInterviews->count() > 4)
-    <small class="text-muted d-block text-center mb-2">+{{ $selectedInterviews->count() - 4 }} more</small>
     @endif
     <a href="{{ url('/admin/interviews/selected') }}" class="btn btn-sm btn-dark w-100">View All</a>
 </div>
-@endif
 
 <!-- Documents Column -->
-@if(isset($employeesWithDocuments) && $employeesWithDocuments->count() > 0)
 <div class="journey-column">
-    <h4 class="text-secondary">📄 Documents ({{ $employeesWithDocuments->count() }})</h4>
-    @foreach($employeesWithDocuments->take(4) as $employee)
+    <h4 class="text-secondary">📄 Documents ({{ isset($employeesWithDocuments) ? $employeesWithDocuments->count() : 0 }})</h4>
+    @if(isset($employeesWithDocuments) && $employeesWithDocuments->count() > 0)
+    @foreach($employeesWithDocuments as $employee)
     <div class="journey-card" data-date="{{ $employee->created_at }}" data-name="{{ strtolower($employee->first_name . ' ' . $employee->last_name) }}" data-meta="{{ strtolower(($employee->email ?? '') . ' ' . ($employee->department ?? '')) }}">
         <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#doc-{{ $employee->id }}">
             <div class="candidate-info">
@@ -1405,18 +1175,15 @@ document.getElementById("employeeSearch").addEventListener("keyup", function () 
         </div>
     </div>
     @endforeach
-    @if($employeesWithDocuments->count() > 4)
-    <small class="text-muted d-block text-center mb-2">+{{ $employeesWithDocuments->count() - 4 }} more</small>
     @endif
     <a href="{{ url('/admin/employees/documents') }}" class="btn btn-sm btn-secondary w-100">View All</a>
 </div>
-@endif
 
 <!-- Hired Column -->
-@if(isset($hiredEmployees) && $hiredEmployees->count() > 0)
 <div class="journey-column">
-    <h4 style="color: #667eea;">👔 Hired ({{ $hiredEmployees->count() }})</h4>
-    @foreach($hiredEmployees->take(4) as $employee)
+    <h4 style="color: #667eea;">👔 Hired ({{ isset($hiredEmployees) ? $hiredEmployees->count() : 0 }})</h4>
+    @if(isset($hiredEmployees) && $hiredEmployees->count() > 0)
+    @foreach($hiredEmployees as $employee)
     <div class="journey-card" data-date="{{ $employee->created_at }}" data-name="{{ strtolower($employee->first_name . ' ' . $employee->last_name) }}" data-meta="{{ strtolower(($employee->email ?? '') . ' ' . ($employee->department ?? '')) }}">
         <div class="journey-header">
             <div class="candidate-info">
@@ -1427,12 +1194,9 @@ document.getElementById("employeeSearch").addEventListener("keyup", function () 
         </div>
     </div>
     @endforeach
-    @if($hiredEmployees->count() > 4)
-    <small class="text-muted d-block text-center mb-2">+{{ $hiredEmployees->count() - 4 }} more</small>
     @endif
     <a href="{{ url('/admin/employees/hired') }}" class="btn btn-sm w-100" style="background: #667eea; color: white;">View All</a>
 </div>
-@endif
 </div>
 
 <script>
@@ -1763,6 +1527,223 @@ function submitWelcomeLetter() {
     });
 }
 </script>
+
+  <!---employee male - female--->
+  <div class="male-all-employee">
+    <div class="employee-card">
+        
+        <!-- Header -->
+        <div class="card-header">
+            <div class="icon-badge">👥</div>
+            <h2>Employee Structure</h2>
+        </div>
+
+        <!-- Total row (highlighted) -->
+        <div class="info-row total-row">
+            <span class="label">📋 Total</span>
+            <span class="value">{{ $stats['totalHiredEmployees'] ?? 0 }}</span>
+        </div>
+
+        <!-- Male -->
+        <div class="info-row">
+            <span class="label"><span>♂️</span> Male</span>
+            <span class="value">{{ $stats['malePercentage'] ?? 0 }}% <small>({{ $stats['maleEmployees'] ?? 0 }})</small></span>
+        </div>
+
+        <!-- Female -->
+        <div class="info-row">
+            <span class="label"><span>♀️</span> Female</span>
+            <span class="value">{{ $stats['femalePercentage'] ?? 0 }}% <small>({{ $stats['femaleEmployees'] ?? 0 }})</small></span>
+        </div>
+
+        <!-- Visual progress bars (extra, but keeps UI rich) -->
+        <div class="progress-section">
+            <div class="progress-item">
+                <div class="progress-header">
+                    <span>👨 Male</span>
+                    <span>{{ $stats['malePercentage'] ?? 0 }}%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-fill-male" style="width: {{ $stats['malePercentage'] ?? 0 }}%;"></div>
+                </div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-header">
+                    <span>👩 Female</span>
+                    <span>{{ $stats['femalePercentage'] ?? 0 }}%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-fill-female" style="width: {{ $stats['femalePercentage'] ?? 0 }}%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary footer -->
+        <div class="footer-note">
+            👤 <strong>{{ $stats['maleEmployees'] ?? 0 }} Male</strong> · <strong>{{ $stats['femaleEmployees'] ?? 0 }} Female</strong> · Total {{ $stats['totalHiredEmployees'] ?? 0 }}
+        </div>
+
+    </div>
+    
+    <!-- 🔹 All Employees Table -->
+    @if(isset($allEmployees) && $allEmployees->count() > 0)
+
+<style>
+/* Scroll Wrapper */
+.employee-table-wrapper {
+    max-height: 400px; /* Height control yaha se */
+    overflow-y: auto;
+}
+
+/* Sticky Header */
+.employee-table-wrapper thead th {
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    z-index: 2;
+    box-shadow: 0 2px 2px rgba(0,0,0,0.05);
+}
+
+/* Name wrap fix */
+.table td {
+    white-space: nowrap;
+}
+
+/* Search box styling */
+.employee-search {
+    max-width: 250px;
+}
+
+/* Smooth scrollbar */
+.employee-table-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+
+.employee-table-wrapper::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+</style>
+
+
+<div class="card table-card mb-4 shadow-sm">
+    
+    <!-- Header -->
+    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+        
+        <h5 class="mb-0 fw-semibold">
+            👥 All Employees ({{ $allEmployees->count() }})
+        </h5>
+
+        <!-- Search -->
+        <input type="text"
+               id="employeeSearch"
+               class="form-control form-control-sm employee-search"
+               placeholder="🔍 Search employee...">
+    </div>
+
+
+    <!-- Table -->
+    <div class="card-body p-0">
+        <div class="table-responsive employee-table-wrapper">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Platform</th>
+                        <th class="text-center">Contact</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody">
+                    
+                    @foreach($allEmployees as $employee)
+                    <tr>
+                        <td>
+                            <strong>
+                                {{ $employee->first_name }} {{ $employee->last_name }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ $employee->department ?? 'N/A' }}
+                        </td>
+
+                       <td>
+    @if($employee->platform)
+        <span class="badge bg-info">
+            {{ ucfirst(str_replace('_', ' ', $employee->platform)) }}
+        </span>
+    @else
+        <span class="text-muted">N/A</span>
+    @endif
+</td>
+
+
+                        <td class="text-center">
+                            
+                            @if($employee->phone)
+                            <a href="tel:{{ $employee->phone }}"
+                               class="btn btn-sm btn-success me-1"
+                               title="Call">
+                                <i class="bi bi-telephone-fill"></i>
+                            </a>
+                            @endif
+
+                            @if($employee->email)
+                            <a href="mailto:{{ $employee->email }}"
+                               class="btn btn-sm btn-primary me-1"
+                               title="Email">
+                                <i class="bi bi-envelope-fill"></i>
+                            </a>
+                            @endif
+
+                            @if($employee->phone)
+                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $employee->phone) }}"
+                               target="_blank"
+                               class="btn btn-sm btn-success"
+                               title="WhatsApp">
+                                <i class="bi bi-whatsapp"></i>
+                            </a>
+                            @endif
+
+                        </td>
+                    </tr>
+                    @endforeach
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- Live Search Script -->
+<script>
+document.getElementById("employeeSearch").addEventListener("keyup", function () {
+
+    let value = this.value.toLowerCase();
+    let rows = document.querySelectorAll("#employeeTableBody tr");
+
+    rows.forEach(function (row) {
+
+        let name = row.cells[0].innerText.toLowerCase();
+        let department = row.cells[1].innerText.toLowerCase();
+        let platform = row.cells[2].innerText.toLowerCase();
+
+        if (name.includes(value) || department.includes(value) || platform.includes(value)) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+
+});
+</script>
+
+@endif
+
+    </div>
 
    <!-- 🔹 Activity Logs Section -->
 <div class="activity-card">
