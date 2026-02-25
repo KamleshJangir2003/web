@@ -270,6 +270,9 @@ class InternController extends Controller
             'end_date' => $endDate,
             'final_result' => 'Selected'
         ]);
+        
+        // Clear dashboard cache
+        \Cache::forget('dashboard_stats');
 
         return back()->with('success', 'Mentor assigned successfully!');
     }
@@ -354,6 +357,9 @@ class InternController extends Controller
         $intern->update([
             'stipend' => $request->stipend
         ]);
+        
+        // Clear dashboard cache
+        \Cache::forget('dashboard_stats');
 
         return response()->json([
             'success' => true,
@@ -386,6 +392,9 @@ class InternController extends Controller
         // Update total paid
         $newTotalPaid = ($intern->total_paid ?? 0) + $request->amount;
         $intern->update(['total_paid' => $newTotalPaid]);
+        
+        // Clear dashboard cache
+        \Cache::forget('dashboard_stats');
 
         return response()->json([
             'success' => true,
@@ -520,6 +529,9 @@ class InternController extends Controller
                 'notes' => $request->notes,
                 'documents' => !empty($documentPaths) ? json_encode($documentPaths) : null
             ]);
+            
+            // Clear dashboard cache
+            \Cache::forget('dashboard_stats');
 
             return redirect()->route('admin.interns.ongoing-list')->with('success', 'Ongoing internship setup completed successfully!');
             

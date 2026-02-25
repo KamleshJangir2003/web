@@ -816,12 +816,16 @@ body {
         </div>
 
         <div class="col-xl-3 col-md-6">
-            <a href="{{ url('/admin/leads/interested') }}" class="text-decoration-none">
+            <a href="{{ url('/admin/interns/ongoing-list') }}" class="text-decoration-none">
                 <div class="card stat-card bg-success">
                     <div class="card-body">
-                        <div class="stat-title">Interested</div>
-                        <div class="stat-number">{{ $stats['interested'] ?? 0 }}</div>
-                        <i class="bi bi-chat-dots-fill"></i>
+                        <div class="stat-title">Intern Payment</div>
+                        <div class="stat-number" style="font-size: 16px; line-height: 1.4;">
+                            Total: ₹{{ number_format($stats['totalInternPayment'] ?? 0) }}<br>
+                            <small style="font-size: 13px; opacity: 0.9;">Received: ₹{{ number_format($stats['receivedInternPayment'] ?? 0) }}</small><br>
+                            <small style="font-size: 13px; opacity: 0.85;">Pending: ₹{{ number_format(($stats['totalInternPayment'] ?? 0) - ($stats['receivedInternPayment'] ?? 0)) }}</small>
+                        </div>
+                        <i class="bi bi-cash-stack"></i>
                     </div>
                 </div>
             </a>
@@ -829,8 +833,8 @@ body {
         <div class="col-xl-3 col-md-6">
             <div class="card stat-card bg-danger">
                 <div class="card-body">
-                    <div class="stat-title"> Interviews Schedule</div>
-                    <div class="stat-number">{{ $stats['scheduledInterviews'] ?? 0 }}</div>
+                    <div class="stat-title"> total employee salary</div>
+                    <div class="stat-number">#</div>
                     <i class="bi bi-x-circle-fill"></i>
                 </div>
             </div>
