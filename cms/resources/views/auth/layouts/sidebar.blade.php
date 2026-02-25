@@ -247,8 +247,13 @@
                     0
                 </span>
             </a>
-            <a href="{{ route('admin.interns.index') }}">Intern Leads</a>
-                <a href="{{ route('admin.interns.callbacks') }}">Intern Callbacks</a>
+            <a href="{{ route('admin.interns.index') }}" class="nav-link">
+    <i class="bi bi-people-fill me-2"></i> Intern Leads
+</a>
+
+<a href="{{ route('admin.interns.callbacks') }}" class="nav-link">
+    <i class="bi bi-telephone-fill me-2"></i> Intern Callbacks
+</a>
         
     </ul>
 </li>
