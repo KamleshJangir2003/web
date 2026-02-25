@@ -7,6 +7,7 @@ use App\Models\InterestedCandidate;
 use App\Models\Lead;
 use App\Models\Interview;
 use App\Models\Employee;
+use App\Models\Callback;
 use Illuminate\Http\Request;
 
 class CandidateJourneyController extends Controller
@@ -264,6 +265,69 @@ class CandidateJourneyController extends Controller
                     }
                 }
             }
+            
+            $journeys->push($journey);
+        }
+        
+        // Get Callbacks
+        $callbacks = Callback::when($query, function($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%")
+              ->orWhere('number', 'like', "%{$query}%");
+        })->where('status', 'call_backs')->latest()->get();
+        
+        foreach ($callbacks as $callback) {
+            $journey = [
+                'id' => 'CB-' . $callback->id,
+                'name' => $callback->name,
+                'email' => '',
+                'phone' => $callback->number,
+                'role' => $callback->role,
+                'platform' => $callback->platform,
+                'stages' => [],
+                'current_stage' => 'callback',
+                'final_status' => 'callback',
+                'rejection_reason' => $callback->notes,
+                'created_at' => $callback->created_at
+            ];
+            
+            $journey['stages'][] = [
+                'name' => 'Callback',
+                'status' => 'pending',
+                'date' => $callback->callback_date ?? $callback->created_at,
+                'notes' => $callback->notes
+            ];
+            
+            $journeys->push($journey);
+        }
+        
+        // Get Not Interested from Leads
+        $notInterestedLeads = Lead::when($query, function($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%")
+              ->orWhere('number', 'like', "%{$query}%")
+              ->orWhere('email', 'like', "%{$query}%");
+        })->where('condition_status', 'Not Interested')->latest()->get();
+        
+        foreach ($notInterestedLeads as $lead) {
+            $journey = [
+                'id' => 'NI-' . $lead->id,
+                'name' => $lead->name,
+                'email' => $lead->email ?? '',
+                'phone' => $lead->number,
+                'role' => $lead->role,
+                'platform' => $lead->platform,
+                'stages' => [],
+                'current_stage' => 'not_interested',
+                'final_status' => 'not_interested',
+                'rejection_reason' => $lead->reason,
+                'created_at' => $lead->created_at
+            ];
+            
+            $journey['stages'][] = [
+                'name' => 'Not Interested',
+                'status' => 'rejected',
+                'date' => $lead->updated_at,
+                'notes' => $lead->reason ?? 'Candidate not interested'
+            ];
             
             $journeys->push($journey);
         }

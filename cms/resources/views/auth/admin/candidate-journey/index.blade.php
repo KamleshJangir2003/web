@@ -84,6 +84,8 @@
 .status-interview { background: #feebc8; color: #7c2d12; }
 .status-hired { background: #9ae6b4; color: #22543d; }
 .status-rejected { background: #fed7d7; color: #742a2a; }
+.status-callback { background: #fbd38d; color: #744210; }
+.status-not-interested { background: #e2e8f0; color: #2d3748; }
 
 .stats-row {
     display: grid;
@@ -115,6 +117,46 @@
     display: block;
 }
 </style>
+<style>
+    /* 5 Columns Equal Width */
+.journey-wrapper {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+}
+
+/* Column Safe Width */
+.journey-column {
+    min-width: 0;
+}
+
+/* Card Size Compact */
+.journey-card {
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+/* Heading Size Smaller */
+.journey-column h4 {
+    font-size: 16px;
+}
+
+/* Candidate Name */
+.candidate-info h4 {
+    font-size: 15px;
+}
+
+/* Meta Text */
+.candidate-meta {
+    font-size: 11px;
+}
+
+/* Status Badge Smaller */
+.status-badge {
+    font-size: 11px;
+    padding: 4px 8px;
+}
+</style>
 
 <div class="container-fluid py-4">
 
@@ -142,10 +184,135 @@
     </div>
 
     <!-- Accordion Wrapper -->
-    <div class="row">
+    <div class="journey-wrapper">
+
+    {{-- ================= CALL BACKS ================= --}}
+    <div class="journey-column">
+        <h4 class="text-info mb-3">Call Backs</h4>
+
+        @foreach($journeys->where('final_status','callback') as $journey)
+
+        <div class="journey-card">
+
+            <button class="journey-header w-100 border-0 bg-transparent text-start"
+                    type="button"
+                    data-target="#journey-callback-{{ $journey['id'] }}">
+
+                <div class="candidate-info">
+                    <h4>{{ $journey['name'] }}</h4>
+                    <div class="candidate-meta">
+                        {{ $journey['email'] }} |
+                        {{ $journey['phone'] }} |
+                        {{ $journey['role'] }}
+                    </div>
+                </div>
+
+                <span class="status-badge status-callback">
+                    Call Back
+                </span>
+            </button>
+
+            <div id="journey-callback-{{ $journey['id'] }}" class="collapse">
+
+                <div class="accordion-body">
+
+                    <div class="timeline">
+                        @foreach($journey['stages'] ?? [] as $stage)
+                            <div class="timeline-item">
+                                <div class="timeline-dot {{ $stage['status'] ?? 'pending' }}"></div>
+                                <div class="timeline-content">
+                                    <strong>{{ $stage['title'] ?? $stage['name'] ?? $stage['stage_name'] ?? 'Stage' }}</strong>
+
+                                    @if(!empty($stage['date']))
+                                        <br>
+                                        <small>{{ \Carbon\Carbon::parse($stage['date'])->format('d M Y') }}</small>
+                                    @endif
+
+                                    @if(!empty($stage['notes']))
+                                        <div class="mt-2">{{ $stage['notes'] }}</div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="alert alert-info mt-3">
+                        <strong>Status:</strong> Awaiting callback
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        @endforeach
+    </div>
+
+    {{-- ================= NOT INTERESTED ================= --}}
+    <div class="journey-column">
+        <h4 class="text-secondary mb-3">Not Interested</h4>
+
+        @foreach($journeys->where('final_status','not_interested') as $journey)
+
+        <div class="journey-card">
+
+            <button class="journey-header w-100 border-0 bg-transparent text-start"
+                    type="button"
+                    data-target="#journey-notinterested-{{ $journey['id'] }}">
+
+                <div class="candidate-info">
+                    <h4>{{ $journey['name'] }}</h4>
+                    <div class="candidate-meta">
+                        {{ $journey['email'] }} |
+                        {{ $journey['phone'] }} |
+                        {{ $journey['role'] }}
+                    </div>
+                </div>
+
+                <span class="status-badge status-not-interested">
+                    Not Interested
+                </span>
+            </button>
+
+            <div id="journey-notinterested-{{ $journey['id'] }}" class="collapse">
+
+                <div class="accordion-body">
+
+                    <div class="timeline">
+                        @foreach($journey['stages'] ?? [] as $stage)
+                            <div class="timeline-item">
+                                <div class="timeline-dot {{ $stage['status'] ?? 'pending' }}"></div>
+                                <div class="timeline-content">
+                                    <strong>{{ $stage['title'] ?? $stage['name'] ?? $stage['stage_name'] ?? 'Stage' }}</strong>
+
+                                    @if(!empty($stage['date']))
+                                        <br>
+                                        <small>{{ \Carbon\Carbon::parse($stage['date'])->format('d M Y') }}</small>
+                                    @endif
+
+                                    @if(!empty($stage['notes']))
+                                        <div class="mt-2">{{ $stage['notes'] }}</div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="alert alert-secondary mt-3">
+                        <strong>Reason:</strong><br>
+                        {{ $journey['rejection_reason'] ?? 'Candidate not interested' }}
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        @endforeach
+    </div>
 
     {{-- ================= HIRED ================= --}}
-    <div class="col-md-4">
+    <div class="journey-column">
         <h4 class="text-success mb-3">Hired</h4>
 
         @foreach($journeys->where('current_stage','hired') as $journey)
@@ -221,7 +388,7 @@
 
 
     {{-- ================= INTERVIEW REJECT ================= --}}
-    <div class="col-md-4">
+    <div class="journey-column">
         <h4 class="text-warning mb-3">Interview Reject</h4>
 
         @foreach($journeys->where('final_status','interview_reject') as $journey)
@@ -280,7 +447,7 @@
     </div>
 
     {{-- ================= NOT SELECTED ================= --}}
-    <div class="col-md-4">
+    <div class="journey-column">
         <h4 class="text-danger mb-3">Not Selected</h4>
 
         @foreach($journeys->where('final_status','rejected') as $journey)
