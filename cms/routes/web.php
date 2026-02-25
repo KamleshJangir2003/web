@@ -461,6 +461,8 @@ Route::middleware(['auth'])->group(function () {
             |--------------------------------------------------------------------------
             */
             Route::get('/birthdays', [App\Http\Controllers\Admin\BirthdayController::class, 'index'])->name('birthdays.index');
+            Route::post('/birthdays/toggle-popup', [App\Http\Controllers\Admin\BirthdayController::class, 'togglePopup'])->name('birthdays.toggle-popup');
+            Route::get('/birthdays/popup-status', [App\Http\Controllers\Admin\BirthdayController::class, 'popupStatus'])->name('birthdays.popup-status');
             
             /*
             |--------------------------------------------------------------------------

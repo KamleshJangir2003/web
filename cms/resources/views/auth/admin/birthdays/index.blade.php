@@ -132,9 +132,14 @@
 
 <div class="dashboard-wrapper">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2></h2>
-        <div class="text-muted">
-            <i class="fa-solid fa-calendar"></i> {{ date('Y') }}
+        <h2>🎂 Birthday Management</h2>
+        <div class="d-flex gap-3 align-items-center">
+            <button class="btn btn-sm" id="togglePopupBtn" onclick="toggleBirthdayPopup()" style="background: linear-gradient(135deg, #ff6b6b, #ffa500); color: white; border: none; padding: 8px 16px; border-radius: 8px;">
+                <i class="fa-solid fa-bell"></i> <span id="popupStatusText">Loading...</span>
+            </button>
+            <div class="text-muted">
+                <i class="fa-solid fa-calendar"></i> {{ date('Y') }}
+            </div>
         </div>
     </div>
 
@@ -202,4 +207,49 @@
     </div>
     @endif
 </div>
+
+<script>
+function toggleBirthdayPopup() {
+    fetch('/admin/birthdays/toggle-popup', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updatePopupButton(data.enabled);
+            alert(data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function updatePopupButton(enabled) {
+    const btn = document.getElementById('togglePopupBtn');
+    const text = document.getElementById('popupStatusText');
+    
+    if (enabled) {
+        text.textContent = 'Popup Enabled';
+        btn.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+    } else {
+        text.textContent = 'Popup Disabled';
+        btn.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
+    }
+}
+
+function checkPopupStatus() {
+    fetch('/admin/birthdays/popup-status')
+        .then(response => response.json())
+        .then(data => {
+            updatePopupButton(data.enabled);
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+document.addEventListener('DOMContentLoaded', checkPopupStatus);
+</script>
+
 @endsection

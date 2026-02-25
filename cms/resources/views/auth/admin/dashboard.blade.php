@@ -2289,13 +2289,21 @@ function markBillAsPaidFromDashboard(billId) {
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     @if(isset($todayBirthdays) && $todayBirthdays->count() > 0)
-    const modalElement = document.getElementById('birthdayPopupModal');
-    if (modalElement) {
-        setTimeout(function() {
-            const birthdayModal = new bootstrap.Modal(modalElement);
-            birthdayModal.show();
-        }, 1000);
-    }
+    // Check if popup is enabled
+    fetch('/admin/birthdays/popup-status')
+        .then(response => response.json())
+        .then(data => {
+            if (data.enabled) {
+                const modalElement = document.getElementById('birthdayPopupModal');
+                if (modalElement) {
+                    setTimeout(function() {
+                        const birthdayModal = new bootstrap.Modal(modalElement);
+                        birthdayModal.show();
+                    }, 1000);
+                }
+            }
+        })
+        .catch(error => console.error('Error:', error));
     @endif
 });
 </script>

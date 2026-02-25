@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class BirthdayController extends Controller
 {
@@ -25,5 +26,28 @@ class BirthdayController extends Controller
         });
 
         return view('auth.admin.birthdays.index', compact('todayBirthdays', 'birthdaysByMonth'));
+    }
+
+    public function togglePopup(Request $request)
+    {
+        $currentStatus = session('birthday_popup_enabled', true);
+        $newStatus = !$currentStatus;
+        
+        session(['birthday_popup_enabled' => $newStatus]);
+        
+        return response()->json([
+            'success' => true,
+            'enabled' => $newStatus,
+            'message' => $newStatus ? 'Birthday popup enabled successfully!' : 'Birthday popup disabled successfully!'
+        ]);
+    }
+
+    public function popupStatus()
+    {
+        $enabled = session('birthday_popup_enabled', true);
+        
+        return response()->json([
+            'enabled' => $enabled
+        ]);
     }
 }
