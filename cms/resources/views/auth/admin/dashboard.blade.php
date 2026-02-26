@@ -818,7 +818,7 @@ body {
         <div class="col-xl-3 col-md-6">
             <a href="{{ url('/admin/interns/ongoing-list') }}" class="text-decoration-none">
                 <div class="card stat-card bg-success">
-                    <div class="card-body">
+                    <div class="card-body"> 
                         <div class="stat-title">Intern Payment</div>
                         <div class="stat-number" style="font-size: 16px; line-height: 1.4;">
                             Total: ₹{{ number_format($stats['totalInternPayment'] ?? 0) }}<br>
@@ -1099,8 +1099,10 @@ body {
     min-width: 0;
     background: #f8f9fa;
     padding: 12px;
+    overflow-wrap: anywhere;
     border-radius: 12px;
 }
+
 .journey-column h4 {
     font-size: 14px;
     font-weight: 700;
@@ -1920,8 +1922,12 @@ function submitWelcomeLetter() {
                     <tr>
                         <td>
                             <strong>
-                                {{ $employee->first_name }} {{ $employee->last_name }}
+                                {{ $employee->first_name }}
                             </strong>
+                            @if($employee->phone)
+                            <br>
+                            <small class="text-muted">{{ $employee->phone }}</small>
+                            @endif
                         </td>
 
                         <td>
