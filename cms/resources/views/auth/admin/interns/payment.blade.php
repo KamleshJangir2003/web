@@ -420,6 +420,8 @@
 @endsection
 
 @section('scripts')
+<link rel="stylesheet" href="{{ asset('css/notifications.css') }}">
+<script src="{{ asset('js/notifications.js') }}"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 function addPayment() {
@@ -439,12 +441,12 @@ function savePayment() {
         contentType: false,
         success: function(response) {
             if(response.success) {
-                alert('Payment added successfully!');
+                showNotification('Payment added successfully!', 'success');
                 const modal = bootstrap.Modal.getInstance(document.getElementById('addPaymentModal'));
                 modal.hide();
                 location.reload();
             } else {
-                alert('Error: ' + response.message);
+                showNotification('Error: ' + response.message, 'error');
             }
         },
         error: function(xhr) {
@@ -453,7 +455,7 @@ function savePayment() {
                 let errorMsg = Object.values(errors).flat().join('\n');
                 alert('Validation Errors:\n' + errorMsg);
             } else {
-                alert('An error occurred. Please try again.');
+                showNotification('An error occurred. Please try again.', 'error');
             }
         }
     });
@@ -476,12 +478,12 @@ function saveStipend() {
         contentType: false,
         success: function(response) {
             if(response.success) {
-                alert('Stipend updated successfully!');
+                showNotification('Stipend updated successfully!', 'success');
                 const modal = bootstrap.Modal.getInstance(document.getElementById('updateStipendModal'));
                 modal.hide();
                 location.reload();
             } else {
-                alert('Error: ' + response.message);
+                showNotification('Error: ' + response.message, 'error');
             }
         },
         error: function(xhr) {
@@ -490,7 +492,7 @@ function saveStipend() {
                 let errorMsg = Object.values(errors).flat().join('\n');
                 alert('Validation Errors:\n' + errorMsg);
             } else {
-                alert('An error occurred. Please try again.');
+                showNotification('An error occurred. Please try again.', 'error');
             }
         }
     });
@@ -534,7 +536,7 @@ function saveCompleteInternship() {
         contentType: false,
         success: function(response) {
             if(response.success) {
-                alert('Internship completed successfully! Certificate has been generated and sent.');
+                showNotification('Internship completed successfully! Certificate has been generated and sent.', 'success');
                 
                 // Download certificate
                 if(response.certificate_url) {
@@ -547,7 +549,7 @@ function saveCompleteInternship() {
                 // Reload page to show updated status
                 location.reload();
             } else {
-                alert('Error: ' + response.message);
+                showNotification('Error: ' + response.message, 'error');
             }
         },
         error: function(xhr) {
@@ -556,7 +558,7 @@ function saveCompleteInternship() {
                 let errorMsg = Object.values(errors).flat().join('\n');
                 alert('Validation Errors:\n' + errorMsg);
             } else {
-                alert('An error occurred. Please try again.');
+                showNotification('An error occurred. Please try again.', 'error');
             }
         }
     });
@@ -583,14 +585,14 @@ function saveCancelInternship() {
         contentType: false,
         success: function(response) {
             if(response.success) {
-                alert('Internship cancelled successfully.');
+                showNotification('Internship cancelled successfully.', 'success');
                 const modal = bootstrap.Modal.getInstance(document.getElementById('cancelInternshipModal'));
                 modal.hide();
                 
                 // Reload page to show updated status
                 location.reload();
             } else {
-                alert('Error: ' + response.message);
+                showNotification('Error: ' + response.message, 'error');
             }
         },
         error: function(xhr) {
@@ -599,7 +601,7 @@ function saveCancelInternship() {
                 let errorMsg = Object.values(errors).flat().join('\n');
                 alert('Validation Errors:\n' + errorMsg);
             } else {
-                alert('An error occurred. Please try again.');
+                showNotification('An error occurred. Please try again.', 'error');
             }
         }
     });

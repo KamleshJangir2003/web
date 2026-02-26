@@ -151,12 +151,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const emailInput = document.getElementById('emailInput').value.trim();
         
         if (!sendEmail && !sendWhatsApp) {
-            alert('Please select at least one sending method');
+            showNotification('Please select at least one sending method', 'error');
             return;
         }
         
         if (sendEmail && !emailInput) {
-            alert('Please enter an email address');
+            showNotification('Please enter an email address', 'error');
             return;
         }
         
@@ -184,15 +184,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.open(whatsappUrl, '_blank');
                 }
                 
-                alert(data.message);
+                showNotification(data.message, 'success');
                 bootstrap.Modal.getInstance(document.getElementById('sendCertificateModal')).hide();
             } else {
-                alert('Error: ' + data.message);
+                showNotification('Error: ' + data.message, 'error');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Failed to send certificate. Please try again.');
+            showNotification('Failed to send certificate. Please try again.', 'error');
         })
         .finally(() => {
             this.disabled = false;

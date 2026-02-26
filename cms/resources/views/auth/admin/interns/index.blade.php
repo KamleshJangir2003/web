@@ -666,19 +666,84 @@ function updateInternStatus(internId, status, reason, row) {
     .then(data => {
         console.log('Response data:', data);
         if (data.success) {
-            alert('Status updated successfully!');
-            // Reload page instead of removing row to see actual data
-            window.location.reload();
+            showNotification('Status updated successfully!', 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         } else {
-            alert('Error: ' + (data.message || 'Unknown error'));
+            showNotification('Error: ' + (data.message || 'Unknown error'), 'error');
             row.querySelector('.status-select').value = '';
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Network error: ' + error.message);
+        showNotification('Network error: ' + error.message, 'error');
         row.querySelector('.status-select').value = '';
     });
 }
 </script>
+
+<script>
+// Custom Notification System
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `custom-notification ${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fa ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => notification.classList.add('show'), 100);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+</script>
+
+<style>
+.custom-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateX(400px);
+    transition: all 0.3s ease;
+    min-width: 300px;
+    max-width: 500px;
+}
+
+.custom-notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.custom-notification.success {
+    background: #28a745;
+    color: white;
+}
+
+.custom-notification.error {
+    background: #dc3545;
+    color: white;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notification-content i {
+    font-size: 20px;
+}
+</style>
 @endsection

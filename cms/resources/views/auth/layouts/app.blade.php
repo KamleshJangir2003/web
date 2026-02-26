@@ -9,6 +9,7 @@
     <!-- Sidebar CSS -->
     <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+   <link rel="stylesheet" href="{{ asset('css/notifications.css') }}">
 
 <!-- Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -314,6 +315,7 @@ table th {
 
     <!-- Sidebar JS -->
     <script src="{{ asset('js/sidebar.js') }}"></script>
+    <script src="{{ asset('js/notifications.js') }}"></script>
     <!-- Excel Upload JS -->
     <script src="{{ asset('js/excel-upload.js') }}"></script>
     <!-- Bootstrap JS -->
