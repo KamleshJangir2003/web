@@ -154,12 +154,12 @@ class AttendanceController extends Controller
     {
         $date = Carbon::parse($attendance_date);
         
-        // Always check if it's month end or if we're in a new month
-        if ($date->isLastOfMonth() || $date->day >= 28) {
+        // Check if it's 22nd (payroll cycle end: 23rd to 22nd)
+        if ($date->day == 22) {
             $month = $date->month;
             $year = $date->year;
             
-            // Check if salary already generated for this month
+            // Check if salary already generated for this payroll cycle
             $existingSalaries = SalaryRecord::where('month', $month)
                 ->where('year', $year)
                 ->count();
@@ -169,7 +169,6 @@ class AttendanceController extends Controller
                 $generatedCount = $this->generateMonthlySalary($month, $year);
                 
                 if ($generatedCount > 0) {
-                    // Store notification for admin
                     session()->flash('salary_generated', [
                         'count' => $generatedCount,
                         'month' => $month,
@@ -192,33 +191,32 @@ class AttendanceController extends Controller
         ->where('in_hand_salary', '>', 0)
         ->get();
 
-        $totalDaysInMonth = Carbon::create($year, $month)->daysInMonth;
+        // Payroll cycle: 23rd previous month to 22nd current month
+        $startDate = Carbon::create($year, $month, 23)->subMonth()->format('Y-m-d');
+        $endDate = Carbon::create($year, $month, 22)->format('Y-m-d');
+        $totalDaysInCycle = 30; // Fixed 30 days cycle (23 to 22)
         $generatedCount = 0;
 
         foreach ($employees as $employee) {
-            // Check if salary already exists for this employee
             $existingRecord = SalaryRecord::where('employee_id', $employee->id)
                 ->where('month', $month)
                 ->where('year', $year)
                 ->first();
                 
             if ($existingRecord) {
-                continue; // Skip if already generated
+                continue;
             }
 
             $inHandSalary = $employee->in_hand_salary;
             
-            // Calculate salary components using same logic as salary calculator
             $gross = $this->calculateGrossFromInHand($inHandSalary);
             $basic = $gross * 0.60;
             $hra = $gross * 0.40;
             
-            // PF calculations with cap rule
             $pfBasic = ($basic >= 15000) ? 15000 : $basic;
             $employeePf = $pfBasic * 0.12;
             $employerPf = $pfBasic * 0.13;
             
-            // ESIC calculations (only if Gross <= 21000)
             if ($gross <= 21000) {
                 $employeeEsic = $gross * 0.0075;
                 $employerEsic = $gross * 0.0325;
@@ -227,10 +225,10 @@ class AttendanceController extends Controller
                 $employerEsic = 0;
             }
 
+            // Get attendance from 23rd previous month to 22nd current month
             $attendanceRecords = DB::table('attendance')
                 ->where('employee_id', $employee->id)
-                ->whereYear('attendance_date', $year)
-                ->whereMonth('attendance_date', $month)
+                ->whereBetween('attendance_date', [$startDate, $endDate])
                 ->get();
 
             $present = $attendanceRecords->where('status', 'Present')->count();
@@ -242,16 +240,12 @@ class AttendanceController extends Controller
             $weekOff = $attendanceRecords->where('status', 'Week Off')->count();
             $compOff = $attendanceRecords->where('status', 'Comp Off')->count();
 
-            // Calculate working days
             $workingDays = $present + $paidLeave + $compOff + ($halfDay * 0.5);
 
-            // Calculate per day salary
-            $perDaySalary = $inHandSalary / $totalDaysInMonth;
+            // Per day salary based on 30-day cycle
+            $perDaySalary = $inHandSalary / $totalDaysInCycle;
 
-            // Calculate salary based on working days only (proportional)
             $earnedSalary = $workingDays * $perDaySalary;
-            
-            // No deductions - just pay for actual working days
             $deduction = $inHandSalary - $earnedSalary;
             $netSalary = $earnedSalary;
 

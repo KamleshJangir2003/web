@@ -140,6 +140,19 @@ class DashboardController extends Controller
         ]);
     }
 
+    private function getPayrollMonthDates()
+    {
+        $today = date('d');
+        if ($today >= 23) {
+            $startDate = date('Y-m-23');
+            $endDate = date('Y-m-22', strtotime('+1 month'));
+        } else {
+            $startDate = date('Y-m-23', strtotime('-1 month'));
+            $endDate = date('Y-m-22');
+        }
+        return ['start' => $startDate, 'end' => $endDate];
+    }
+
     private function getOptimizedStats()
     {
         // Single query for employee counts
