@@ -172,8 +172,8 @@ class DashboardController extends Controller
                 (SELECT COUNT(*) FROM interviews WHERE result = "Selected") as selectedEmployee,
                 (SELECT COUNT(*) FROM interviews WHERE status = "Scheduled") as scheduledInterviews,
                 (SELECT COUNT(*) FROM interns WHERE final_result = "Ongoing") as activeInterns,
-                (SELECT COALESCE(SUM(stipend), 0) FROM interns WHERE final_result IN ("Ongoing", "Selected")) as totalInternPayment,
-                (SELECT COALESCE(SUM(ip.amount), 0) FROM intern_payments ip INNER JOIN interns i ON ip.intern_id = i.id WHERE i.final_result IN ("Ongoing", "Selected")) as receivedInternPayment,
+                (SELECT COALESCE(SUM(stipend), 0) FROM interns WHERE final_result IN ("Ongoing", "Selected", "Completed")) as totalInternPayment,
+                (SELECT COALESCE(SUM(ip.amount), 0) FROM intern_payments ip INNER JOIN interns i ON ip.intern_id = i.id WHERE i.final_result IN ("Ongoing", "Selected", "Completed")) as receivedInternPayment,
                 (SELECT COALESCE(SUM(amount), 0) FROM expenses WHERE employee_id IS NOT NULL) as totalReimbursement,
                 (SELECT COALESCE(SUM(amount), 0) FROM admin_expenses) as totalExpenses
         ');
