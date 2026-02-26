@@ -175,7 +175,8 @@ class DashboardController extends Controller
                 (SELECT COALESCE(SUM(stipend), 0) FROM interns WHERE final_result IN ("Ongoing", "Selected", "Completed")) as totalInternPayment,
                 (SELECT COALESCE(SUM(ip.amount), 0) FROM intern_payments ip INNER JOIN interns i ON ip.intern_id = i.id WHERE i.final_result IN ("Ongoing", "Selected", "Completed")) as receivedInternPayment,
                 (SELECT COALESCE(SUM(amount), 0) FROM expenses WHERE employee_id IS NOT NULL) as totalReimbursement,
-                (SELECT COALESCE(SUM(amount), 0) FROM admin_expenses) as totalExpenses
+                (SELECT COALESCE(SUM(amount), 0) FROM admin_expenses) as totalExpenses,
+                (SELECT COALESCE(SUM(in_hand_salary), 0) FROM employees WHERE user_type = "employee" AND is_approved = 1 AND hired_status = "hired" AND employee_status = "active") as totalEmployeeSalary
         ');
 
         $ticketCounts = DB::table('tickets')
@@ -223,6 +224,7 @@ class DashboardController extends Controller
             'receivedInternPayment' => $otherCounts->receivedInternPayment,
             'totalReimbursement' => $otherCounts->totalReimbursement,
             'totalExpenses' => $otherCounts->totalExpenses,
+            'totalEmployeeSalary' => $otherCounts->totalEmployeeSalary,
         ];
     }
 }

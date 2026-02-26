@@ -833,9 +833,12 @@ body {
         <div class="col-xl-3 col-md-6">
             <div class="card stat-card bg-danger">
                 <div class="card-body">
-                    <div class="stat-title"> total employee salary</div>
-                    <div class="stat-number">#</div>
-                    <i class="bi bi-x-circle-fill"></i>
+                    <div class="stat-title">Total Employee Salary</div>
+                    <div class="stat-number" style="font-size: 16px; line-height: 1.4;">
+                        
+                        <small style="font-size: 20px; opacity: 0.9;"> ₹{{ number_format($stats['totalEmployeeSalary'] ?? 0) }}</small>
+                    </div>
+                    <i class="bi bi-cash-coin"></i>
                 </div>
             </div>
         </div>
