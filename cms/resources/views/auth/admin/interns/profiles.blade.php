@@ -87,12 +87,18 @@
             </div>
             <div class="modal-body">
                 <p>Send certificate to <strong id="internName"></strong></p>
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="checkbox" id="sendEmail" checked>
-                    <label class="form-check-label" for="sendEmail">
-                        Send via Email (<span id="internEmail"></span>)
-                    </label>
+                
+                <div class="mb-3">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="sendEmail" checked>
+                        <label class="form-check-label" for="sendEmail">
+                            Send via Email
+                        </label>
+                    </div>
+                    <input type="email" class="form-control" id="emailInput" placeholder="Enter email address">
+                    <small class="text-muted">Current: <span id="internEmail"></span></small>
                 </div>
+                
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="sendWhatsApp" checked>
                     <label class="form-check-label" for="sendWhatsApp">
@@ -124,15 +130,13 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('internEmail').textContent = internEmail || 'Not available';
             document.getElementById('internNumber').textContent = internNumber || 'Not available';
             
-            // Disable checkboxes if email/number not available
-            const emailCheckbox = document.getElementById('sendEmail');
+            // Set email input value
+            const emailInput = document.getElementById('emailInput');
+            emailInput.value = internEmail || '';
+            
+            // Disable WhatsApp checkbox if number not available
             const whatsappCheckbox = document.getElementById('sendWhatsApp');
-            
-            emailCheckbox.disabled = !internEmail;
             whatsappCheckbox.disabled = !internNumber;
-            
-            // Uncheck disabled options
-            if (!internEmail) emailCheckbox.checked = false;
             if (!internNumber) whatsappCheckbox.checked = false;
             
             const modal = new bootstrap.Modal(document.getElementById('sendCertificateModal'));
@@ -144,9 +148,15 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('confirmSendBtn')?.addEventListener('click', function() {
         const sendEmail = document.getElementById('sendEmail').checked;
         const sendWhatsApp = document.getElementById('sendWhatsApp').checked;
+        const emailInput = document.getElementById('emailInput').value.trim();
         
         if (!sendEmail && !sendWhatsApp) {
             alert('Please select at least one sending method');
+            return;
+        }
+        
+        if (sendEmail && !emailInput) {
+            alert('Please enter an email address');
             return;
         }
         
@@ -161,7 +171,8 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify({
                 send_email: sendEmail,
-                send_whatsapp: sendWhatsApp
+                send_whatsapp: sendWhatsApp,
+                email: emailInput
             })
         })
         .then(response => response.json())

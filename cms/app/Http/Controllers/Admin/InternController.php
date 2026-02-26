@@ -430,14 +430,13 @@ class InternController extends Controller
         
         $pdf->save($path);
         
-        $pdfUrl = url('uploads/payslips/' . $filename);
-        $message = "Hi {$intern->name}, your training receipt from KWIKSTER is ready. Download: {$pdfUrl}";
+        $message = "Hi {$intern->name}, your training receipt from KWIKSTER is ready.";
         
         return response()->json([
             'success' => true,
             'phone' => $intern->number,
             'message' => $message,
-            'pdf_url' => $pdfUrl
+            'pdf_path' => $path
         ]);
     }
     
@@ -660,18 +659,24 @@ class InternController extends Controller
             $sent = [];
             
             // Send via Email
-            if ($request->has('send_email') && $intern->email) {
+            if ($request->has('send_email') && $request->send_email) {
+                $email = $request->input('email') ?: $intern->email;
+                
+                if (!$email) {
+                    return response()->json(['success' => false, 'message' => 'Email address is required']);
+                }
+                
                 try {
                     $pdf = Pdf::loadView('auth.admin.interns.certificate', compact('intern'));
-                    Mail::send('emails.certificate', ['intern' => $intern], function($message) use ($intern, $pdf) {
-                        $message->to($intern->email)
+                    Mail::send('emails.certificate', ['intern' => $intern], function($message) use ($email, $intern, $pdf) {
+                        $message->to($email)
                                 ->subject('Internship Completion Certificate - KWIKSTER')
                                 ->attachData($pdf->output(), 'certificate_' . $intern->name . '.pdf');
                     });
-                    $sent[] = 'Email sent to ' . $intern->email;
+                    $sent[] = 'Email sent to ' . $email;
                 } catch (\Exception $e) {
                     \Log::error('Certificate email failed: ' . $e->getMessage());
-                    return response()->json(['success' => false, 'message' => 'Email sending failed']);
+                    return response()->json(['success' => false, 'message' => 'Email sending failed: ' . $e->getMessage()]);
                 }
             }
             

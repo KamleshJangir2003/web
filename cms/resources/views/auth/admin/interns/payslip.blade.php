@@ -154,8 +154,8 @@
 <div class="container">
 
     <div class="btn-area">
-        <button onclick="sendWhatsApp()" class="btn btn-success">📱 Send WhatsApp</button>
-        <button onclick="showEmailModal()" class="btn btn-info">📧 Send Email</button>
+        <button onclick="sendEmail()" class="btn btn-success">📧 Send via Email (with PDF)</button>
+        <button onclick="sendWhatsApp()" class="btn btn-info">📱 Send WhatsApp Notification</button>
         <button onclick="window.print()" class="btn btn-primary">Print</button>
         <a href="{{ route('admin.interns.payment', $intern->id) }}" class="btn btn-secondary">Back</a>
     </div>
@@ -249,10 +249,18 @@
 </div>
 
 <script>
+function sendEmail() {
+    showEmailModal();
+}
+
 function sendWhatsApp() {
     const phone = '{{ $intern->number ?? "" }}';
     if (!phone) {
-        alert('Intern phone number not available');
+        alert('❌ Intern phone number not available');
+        return;
+    }
+    
+    if (!confirm('⚠️ Note: WhatsApp Web cannot send PDF files directly.\n\nThis will only send a text notification.\n\nTo send the PDF file, please use "Send via Email" button.\n\nDo you want to continue with WhatsApp notification?')) {
         return;
     }
     
@@ -267,11 +275,12 @@ function sendWhatsApp() {
     .then(data => {
         if (data.success) {
             window.open(`https://wa.me/${data.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(data.message)}`, '_blank');
+            alert('✅ WhatsApp notification opened. Please send the message manually.');
         } else {
-            alert(data.message);
+            alert('❌ ' + data.message);
         }
     })
-    .catch(err => alert('Error sending WhatsApp'));
+    .catch(err => alert('❌ Error: ' + err));
 }
 
 function showEmailModal() {
