@@ -140,6 +140,7 @@
 #notifBtn:hover {
     background: #2eacb3;
     color: #fff;
+    padding-left: 10px;
 }
 
 #notifBtn:hover i {
@@ -148,8 +149,8 @@
 
 #notifBtn .badge{
     position: absolute;
-    top: 2px;          /* thoda andar lao */
-    right: 15px;        /* thoda andar lao */
+    top: 17px;          /* thoda andar lao */
+    right: 29px;        /* thoda andar lao */
     transform: translate(40%, -40%);  /* perfect corner alignment */
     
     background: #ff3b3b;
@@ -1275,6 +1276,7 @@ function showStatusPopup(type, title, message, details = null) {
     background-color: #dc3545;
     color: white;
 }
+    
 
 
 </style>

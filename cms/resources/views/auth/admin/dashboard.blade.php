@@ -942,535 +942,538 @@ body {
 
 <!-- Journey Filter Bar -->
 <!-- Journey Filter Bar -->
-<div class="journey-filter-bar">
+    <div class="journey-filter-bar">
 
-    <div class="filter-group">
-        <label>Date</label>
-        <select id="journeyDateFilter" onchange="filterJourneyData()">
-            <option value="">All Time</option>
-            <option value="today">Today</option>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-        </select>
-    </div>
-
-    <div class="filter-group search-group">
-        <label>Search</label>
-        <div class="search-wrapper">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="journeySearchBar"
-                   placeholder="Search by name, phone, email..."
-                   oninput="filterJourneyData()">
+        <div class="filter-group">
+            <label>Date</label>
+            <select id="journeyDateFilter" onchange="filterJourneyData()">
+                <option value="">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+            </select>
         </div>
+
+        <div class="filter-group search-group">
+            <label>Search</label>
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="journeySearchBar"
+                    placeholder="Search by name, phone, email..."
+                    oninput="filterJourneyData()">
+            </div>
+        </div>
+    <!-- 
+        <div class="filter-group">
+            <label>&nbsp;</label>
+            <button class="reset-btn" onclick="resetJourneyFilter()">
+                Reset
+            </button>
+        </div> -->
+
     </div>
-<!-- 
-    <div class="filter-group">
-        <label>&nbsp;</label>
-        <button class="reset-btn" onclick="resetJourneyFilter()">
-            Reset
-        </button>
-    </div> -->
 
-</div>
-
-<style>
-.journey-filter-container {
-    display: flex;
-    justify-content: space-between;
-    gap: 30px;
-    margin-bottom: 20px;
-}
-.filter-box {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    transition: transform 0.2s ease;
-}
-.filter-box:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
-.filter-left {
-    width: 280px;
-}
-.filter-right {
-    flex: 1;
-    max-width: 450px;
-}
-.filter-icon {
-    font-size: 32px;
-    line-height: 1;
-}
-.filter-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-.filter-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin: 0;
-}
-.filter-control {
-    height: 42px;
-    border-radius: 10px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    padding: 0 14px;
-    font-size: 14px;
-    background: rgba(255, 255, 255, 0.95);
-    color: #333;
-    transition: all 0.2s ease;
-}
-.filter-control:focus {
-    outline: none;
-    border-color: rgba(255, 255, 255, 0.8);
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
-}
-@media (max-width: 768px) {
+    <style>
     .journey-filter-container {
-        flex-direction: column;
+        display: flex;
+        justify-content: space-between;
+        gap: 30px;
+        margin-bottom: 20px;
     }
-    .filter-left,
+    .filter-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: transform 0.2s ease;
+    }
+    .filter-box:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    .filter-left {
+        width: 280px;
+    }
     .filter-right {
-        width: 100%;
-        max-width: 100%;
+        flex: 1;
+        max-width: 450px;
     }
-}
-.journey-card {
-    background: white;
-    border-radius: 12px;
-    padding: 12px;
-    margin-bottom: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    transition: all 0.3s ease;
-}
-.journey-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    transform: translateY(-2px);
-}
-.journey-header {
-    /* display: flex; */
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #f0f0f0;
-    cursor: pointer;
-}
-.candidate-info h5 {
-    margin: 0;
-    color: #2d3748;
-    font-size: 15px;
-    font-weight: 600;
-}
-.candidate-meta {
-    color: #718096;
-    font-size: 13px;
-    margin-top: 3px;
-    line-height: 1.4;
-}
-.status-dropdown {
-    font-size: 11px;
-    padding: 4px 8px;
-    border-radius: 6px;
-}
-.collapse {
-    display: none;
-}
-.collapse.show {
-    display: block;
-}
-.journey-wrapper {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
-    margin-top: 20px;
-}
-.journey-column {
-    min-width: 0;
-    background: #f8f9fa;
-    padding: 12px;
-    overflow-wrap: anywhere;
-    border-radius: 12px;
-}
-
-.journey-column h4 {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid rgba(0,0,0,0.1);
-}
-.btn.w-100 {
-    font-size: 11px;
-    padding: 6px;
-    border-radius: 6px;
-    font-weight: 600;
-}
-/* @media (max-width: 1400px) {
-    .journey-wrapper {
-        grid-template-columns: repeat(4, 1fr);
+    .filter-icon {
+        font-size: 32px;
+        line-height: 1;
     }
-} */
-@media (max-width: 992px) {
-    .journey-wrapper {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-@media (max-width: 576px) {
-    .journey-wrapper {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
-<style>
-    .journey-filter-bar {
-    display: flex;
-    align-items: end;
-    gap: 20px;              /* normal spacing */
-    padding: 20px;
-    background: #ffffff;
-    border-radius: 14px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-    margin-bottom: 25px;
-}
-
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    min-width: 200px;
-}
-
-.filter-group label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #6c757d;
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-}
-
-.filter-group select,
-.filter-group input {
-    height: 42px;
-    border-radius: 8px;
-    border: 1px solid #e0e6ed;
-    padding: 0 12px;
-    font-size: 14px;
-    transition: 0.2s ease;
-}
-
-.filter-group select:focus,
-.filter-group input:focus {
-    outline: none;
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-}
-
-/* Search Input */
-.search-wrapper {
-    position: relative;
-}
-
-.search-wrapper input {
-    padding-left: 38px;
-}
-
-.search-icon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 14px;
-    opacity: 0.6;
-}
-
-/* Reset Button */
-.reset-btn {
-    height: 42px;
-    padding: 0 18px;
-    border-radius: 8px;
-    border: none;
-    background: #ef4444;
-    color: white;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.reset-btn:hover {
-    background: #dc2626;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .journey-filter-bar {
+    .filter-content {
+        flex: 1;
+        display: flex;
         flex-direction: column;
-        align-items: stretch;
+        gap: 8px;
+    }
+    .filter-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.9);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0;
+    }
+    .filter-control {
+        height: 42px;
+        border-radius: 10px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        padding: 0 14px;
+        font-size: 14px;
+        background: rgba(255, 255, 255, 0.95);
+        color: #333;
+        transition: all 0.2s ease;
+    }
+    .filter-control:focus {
+        outline: none;
+        border-color: rgba(255, 255, 255, 0.8);
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+    }
+    @media (max-width: 768px) {
+        .journey-filter-container {
+            flex-direction: column;
+        }
+        .filter-left,
+        .filter-right {
+            width: 100%;
+            max-width: 100%;
+        }
+    }
+    .journey-card {
+        background: white;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    .journey-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+    }
+    .journey-header {
+        /* display: flex; */
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
+    }
+    .candidate-info h5 {
+        margin: 0;
+        color: #2d3748;
+        font-size: 15px;
+        font-weight: 600;
+    }
+    .candidate-meta {
+        color: #718096;
+        font-size: 13px;
+        margin-top: 3px;
+        line-height: 1.4;
+    }
+    .status-dropdown {
+        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+    .collapse {
+        display: none;
+    }
+    .collapse.show {
+        display: block;
+    }
+    .journey-wrapper {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+        margin-top: 20px;
+    }
+    .journey-column {
+        min-width: 0;
+        background: #f8f9fa;
+        padding: 12px;
+        overflow-wrap: anywhere;
+        border-radius: 12px;
+    }
+
+    .journey-column h4 {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid rgba(0,0,0,0.1);
+    }
+    .btn.w-100 {
+        font-size: 11px;
+        padding: 6px;
+        border-radius: 6px;
+        font-weight: 600;
+    }
+    /* @media (max-width: 1400px) {
+        .journey-wrapper {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    } */
+    @media (max-width: 992px) {
+        .journey-wrapper {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    @media (max-width: 576px) {
+        .journey-wrapper {
+            grid-template-columns: 1fr;
+        }
+    }
+    </style>
+    <style>
+        .journey-filter-bar {
+        display: flex;
+        align-items: end;
+        gap: 20px;              /* normal spacing */
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 14px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        margin-bottom: 25px;
     }
 
     .filter-group {
+        display: flex;
+        flex-direction: column;
+        min-width: 200px;
+    }
+
+    .filter-group label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #6c757d;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .filter-group select,
+    .filter-group input {
+        height: 42px;
+        border-radius: 8px;
+        border: 1px solid #e0e6ed;
+        padding: 0 12px;
+        font-size: 14px;
+        transition: 0.2s ease;
+    }
+
+    .filter-group select:focus,
+    .filter-group input:focus {
+        outline: none;
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    /* Search Input */
+    .search-wrapper {
+        position: relative;
+    }
+
+    .search-wrapper input {
+        padding-left: 38px;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 14px;
+        opacity: 0.6;
+    }
+
+    /* Reset Button */
+    .reset-btn {
+        height: 42px;
+        padding: 0 18px;
+        border-radius: 8px;
+        border: none;
+        background: #ef4444;
+        color: white;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .reset-btn:hover {
+        background: #dc2626;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .journey-filter-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-group {
+            width: 100%;
+        }
+    }
+    /* Left filter fixed width */
+    .filter-group:first-child {
+        width: 220px;
+    }
+
+    /* Search group expand karega */
+    .search-group {
+        flex: 1;              /* ye important hai */
+    }
+
+    /* Search input full width */
+    .search-group input {
         width: 100%;
     }
-}
-/* Left filter fixed width */
-.filter-group:first-child {
-    width: 220px;
-}
+    </style>
 
-/* Search group expand karega */
-.search-group {
-    flex: 1;              /* ye important hai */
-}
-
-/* Search input full width */
-.search-group input {
-    width: 100%;
-}
-</style>
-
-<div class="journey-wrapper">
-<!-- Leads Column -->
-<div class="journey-column">
-    <h4 class="text-primary">📋 Leads ({{ isset($leads) ? $leads->count() : 0 }})</h4>
-    @if(isset($leads) && $leads->count() > 0)
-    @foreach($leads as $lead)
-    <div class="journey-card" data-date="{{ $lead->created_at }}" data-name="{{ strtolower($lead->name) }}" data-meta="{{ strtolower(($lead->phone ?? $lead->number) . ' ' . $lead->role) }}">
-        <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#lead-{{ $lead->id }}">
-            <div class="candidate-info">
-                <h5>{{ $lead->name }}</h5>
-                <div class="candidate-meta">{{ $lead->phone ?? $lead->number }} | {{ $lead->role }}</div>
-            </div>
-        </button>
-        <div id="lead-{{ $lead->id }}" class="collapse">
-            <div class="mt-2">
-                <select class="form-select form-select-sm status-dropdown" onchange="showStatusModal({{ $lead->id }}, this.value)">
-                    <option value="">Select Status</option>
-                    <option value="Interested">Interested</option>
-                    <option value="Call Back">Call Back</option>
-                    <option value="Rejected">Rejected</option>
-                    <option value="Not Interested">Not Interested</option>
-                    <option value="Wrong Number">Wrong Number</option>
-                </select>
+    <div class="journey-wrapper">
+    <!-- Leads Column -->
+    <div class="journey-column">
+        <h4 class="text-primary">📋 Leads ({{ isset($leads) ? $leads->count() : 0 }})</h4>
+        @if(isset($leads) && $leads->count() > 0)
+        @foreach($leads as $lead)
+        <div class="journey-card" data-date="{{ \Carbon\Carbon::parse($lead->created_at)->format('Y-m-d') }}" data-name="{{ strtolower($lead->name) }}" data-meta="{{ strtolower(($lead->phone ?? $lead->number) . ' ' . $lead->role) }}">
+            <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#lead-{{ $lead->id }}">
+                <div class="candidate-info">
+                    <h5>{{ $lead->name }}</h5>
+                    <div class="candidate-meta">{{ $lead->phone ?? $lead->number }} | {{ $lead->role }}</div>
+                </div>
+            </button>
+            <div id="lead-{{ $lead->id }}" class="collapse">
+                <div class="mt-2">
+                    <select class="form-select form-select-sm status-dropdown" onchange="showStatusModal({{ $lead->id }}, this.value)">
+                        <option value="">Select Status</option>
+                        <option value="Interested">Interested</option>
+                        <option value="Call Back">Call Back</option>
+                        <option value="Rejected">Rejected</option>
+                        <option value="Not Interested">Not Interested</option>
+                        <option value="Wrong Number">Wrong Number</option>
+                    </select>
+                </div>
             </div>
         </div>
+        @endforeach
+        @endif
+        <a href="{{ url('/admin/leads') }}" class="btn btn-sm btn-primary w-100">View All</a>
     </div>
-    @endforeach
-    @endif
-    <a href="{{ url('/admin/leads') }}" class="btn btn-sm btn-primary w-100">View All</a>
-</div>
 
-<!-- Callbacks Column -->
-<div class="journey-column">
-    <h4 class="text-warning">📞 Callbacks ({{ isset($callbacks) ? $callbacks->count() : 0 }})</h4>
-    @if(isset($callbacks) && $callbacks->count() > 0)
-    @foreach($callbacks as $callback)
-    <div class="journey-card" data-date="{{ $callback->callback_date }}" data-name="{{ strtolower($callback->name) }}" data-meta="{{ strtolower($callback->number) }}">
-        <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#callback-{{ $callback->id }}">
-            <div class="candidate-info">
-                <h5>{{ $callback->name }}</h5>
-                <div class="candidate-meta">{{ $callback->number }} | {{ \Carbon\Carbon::parse($callback->callback_date)->format('d M Y') }}</div>
-            </div>
-        </button>
-        <div id="callback-{{ $callback->id }}" class="collapse">
-            <div class="mt-2">
-                <select class="form-select form-select-sm status-dropdown" onchange="showCallbackStatusModal({{ $callback->id }}, this.value)">
-                    <option value="">Select Status</option>
-                    <option value="interested">Interested</option>
-                    <option value="rejected">Rejected</option>
-                    <option value="not_interested">Not Interested</option>
-                    <option value="wrong_number">Wrong Number</option>
-                </select>
+    <!-- Callbacks Column -->
+    <div class="journey-column">
+        <h4 class="text-warning">📞 Callbacks ({{ isset($callbacks) ? $callbacks->count() : 0 }})</h4>
+        @if(isset($callbacks) && $callbacks->count() > 0)
+        @foreach($callbacks as $callback)
+        <div class="journey-card" data-date="{{ $callback->callback_date }}" data-name="{{ strtolower($callback->name) }}" data-meta="{{ strtolower($callback->number) }}">
+            <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#callback-{{ $callback->id }}">
+                <div class="candidate-info">
+                    <h5>{{ $callback->name }}</h5>
+                    <div class="candidate-meta">{{ $callback->number }} | {{ \Carbon\Carbon::parse($callback->callback_date)->format('d M Y') }}</div>
+                </div>
+            </button>
+            <div id="callback-{{ $callback->id }}" class="collapse">
+                <div class="mt-2">
+                    <select class="form-select form-select-sm status-dropdown" onchange="showCallbackStatusModal({{ $callback->id }}, this.value)">
+                        <option value="">Select Status</option>
+                        <option value="interested">Interested</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="not_interested">Not Interested</option>
+                        <option value="wrong_number">Wrong Number</option>
+                    </select>
+                </div>
             </div>
         </div>
+        @endforeach
+        @endif
+        <a href="{{ url('/admin/callbacks') }}" class="btn btn-sm btn-warning w-100">View All</a>
     </div>
-    @endforeach
-    @endif
-    <a href="{{ url('/admin/callbacks') }}" class="btn btn-sm btn-warning w-100">View All</a>
-</div>
 
-<!-- Interested Column -->
-<div class="journey-column">
-    <h4 class="text-success">✅ Interested ({{ isset($interestedCandidates) ? $interestedCandidates->count() : 0 }})</h4>
-    @if(isset($interestedCandidates) && $interestedCandidates->count() > 0)
-    @foreach($interestedCandidates as $candidate)
-    <div class="journey-card" data-date="{{ $candidate->created_at }}" data-name="{{ strtolower($candidate->name) }}" data-meta="{{ strtolower(($candidate->phone ?? $candidate->number) . ' ' . ($candidate->role ?? '')) }}">
-        <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#interested-{{ $candidate->id }}">
-            <div class="candidate-info">
-                <h5>{{ $candidate->name }}</h5>
-                <div class="candidate-meta">{{ $candidate->phone ?? $candidate->number }} | {{ $candidate->role ?? 'N/A' }}</div>
-            </div>
-        </button>
-        <div id="interested-{{ $candidate->id }}" class="collapse">
-            <div class="mt-2">
-                <a href="{{ url('/admin/interviews/create?lead_id=' . $candidate->id) }}" class="btn btn-sm btn-primary w-100">Schedule Interview</a>
+    <!-- Interested Column -->
+    <div class="journey-column">
+        <h4 class="text-success">✅ Interested ({{ isset($interestedCandidates) ? $interestedCandidates->count() : 0 }})</h4>
+        @if(isset($interestedCandidates) && $interestedCandidates->count() > 0)
+        @foreach($interestedCandidates as $candidate)
+        <div class="journey-card" data-date="{{ $candidate->created_at }}" data-name="{{ strtolower($candidate->name) }}" data-meta="{{ strtolower(($candidate->phone ?? $candidate->number) . ' ' . ($candidate->role ?? '')) }}">
+            <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#interested-{{ $candidate->id }}">
+                <div class="candidate-info">
+                    <h5>{{ $candidate->name }}</h5>
+                    <div class="candidate-meta">{{ $candidate->phone ?? $candidate->number }} | {{ $candidate->role ?? 'N/A' }}</div>
+                </div>
+            </button>
+            <div id="interested-{{ $candidate->id }}" class="collapse">
+                <div class="mt-2">
+                    <a href="{{ url('/admin/interviews/create?lead_id=' . $candidate->id) }}" class="btn btn-sm btn-primary w-100">Schedule Interview</a>
+                </div>
             </div>
         </div>
+        @endforeach
+        @endif
+        <a href="{{ url('/admin/leads/interested') }}" class="btn btn-sm btn-success w-100">View All</a>
     </div>
-    @endforeach
-    @endif
-    <a href="{{ url('/admin/leads/interested') }}" class="btn btn-sm btn-success w-100">View All</a>
-</div>
 
-<!-- Interviews Column -->
-<div class="journey-column">
-    <h4 class="text-info">🎤 Interviews ({{ isset($interviews) ? $interviews->count() : 0 }})</h4>
-    @if(isset($interviews) && $interviews->count() > 0)
-    @foreach($interviews as $interview)
-    <div class="journey-card" data-date="{{ $interview->interview_date }}" data-name="{{ strtolower($interview->lead->name ?? '') }}" data-meta="{{ strtolower($interview->interview_round ?? '') }}">
-        <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#interview-{{ $interview->id }}">
-            <div class="candidate-info">
-                <h5>{{ $interview->lead->name ?? 'N/A' }}</h5>
-                <div class="candidate-meta">{{ \Carbon\Carbon::parse($interview->interview_date)->format('d M Y') }} | {{ $interview->interview_round }}</div>
-            </div>
-        </button>
-        <div id="interview-{{ $interview->id }}" class="collapse">
-            <div class="mt-2">
-                <select class="form-select form-select-sm status-dropdown" onchange="showInterviewResultModal({{ $interview->id }}, this.value)">
-                    <option value="">Select Result</option>
-                    <option value="Selected">Selected</option>
-                    <option value="Rejected">Rejected</option>
-                </select>
+    <!-- Interviews Column -->
+    <div class="journey-column">
+        <h4 class="text-info">🎤 Interviews ({{ isset($interviews) ? $interviews->count() : 0 }})</h4>
+        @if(isset($interviews) && $interviews->count() > 0)
+        @foreach($interviews as $interview)
+        <div class="journey-card" data-date="{{ $interview->interview_date }}" data-name="{{ strtolower($interview->lead->name ?? '') }}" data-meta="{{ strtolower($interview->interview_round ?? '') }}">
+            <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#interview-{{ $interview->id }}">
+                <div class="candidate-info">
+                    <h5>{{ $interview->lead->name ?? 'N/A' }}</h5>
+                    <div class="candidate-meta">{{ \Carbon\Carbon::parse($interview->interview_date)->format('d M Y') }} | {{ $interview->interview_round }}</div>
+                </div>
+            </button>
+            <div id="interview-{{ $interview->id }}" class="collapse">
+                <div class="mt-2">
+                    <select class="form-select form-select-sm status-dropdown" onchange="showInterviewResultModal({{ $interview->id }}, this.value)">
+                        <option value="">Select Result</option>
+                        <option value="Selected">Selected</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                </div>
             </div>
         </div>
+        @endforeach
+        @endif
+        <a href="{{ url('/admin/interviews') }}" class="btn btn-sm btn-info w-100">View All</a>
     </div>
-    @endforeach
-    @endif
-    <a href="{{ url('/admin/interviews') }}" class="btn btn-sm btn-info w-100">View All</a>
-</div>
 
-<!-- Selected Column -->
-<div class="journey-column">
-    <h4 class="text-dark">🎯 Selected ({{ isset($selectedInterviews) ? $selectedInterviews->count() : 0 }})</h4>
-    @if(isset($selectedInterviews) && $selectedInterviews->count() > 0)
-    @foreach($selectedInterviews as $interview)
-    <div class="journey-card" data-date="{{ $interview->updated_at }}" data-name="{{ strtolower($interview->lead->name ?? '') }}" data-meta="{{ strtolower(($interview->candidate_email ?? '') . ' ' . ($interview->job_role ?? '')) }}">
-        <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#selected-{{ $interview->id }}">
-            <div class="candidate-info">
-                <h5>{{ $interview->lead->name ?? 'N/A' }}</h5>
-                <div class="candidate-meta">{{ $interview->candidate_email }} | {{ $interview->job_role }}</div>
-            </div>
-        </button>
-        <div id="selected-{{ $interview->id }}" class="collapse">
-            <div class="mt-2">
-                <button class="btn btn-sm btn-primary w-100" onclick="showWelcomeLetterModal({{ $interview->id }})">Send Welcome Letter</button>
+    <!-- Selected Column -->
+    <div class="journey-column">
+        <h4 class="text-dark">🎯 Selected ({{ isset($selectedInterviews) ? $selectedInterviews->count() : 0 }})</h4>
+        @if(isset($selectedInterviews) && $selectedInterviews->count() > 0)
+        @foreach($selectedInterviews as $interview)
+        <div class="journey-card" data-date="{{ $interview->updated_at }}" data-name="{{ strtolower($interview->lead->name ?? '') }}" data-meta="{{ strtolower(($interview->candidate_email ?? '') . ' ' . ($interview->job_role ?? '')) }}">
+            <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#selected-{{ $interview->id }}">
+                <div class="candidate-info">
+                    <h5>{{ $interview->lead->name ?? 'N/A' }}</h5>
+                    <div class="candidate-meta">{{ $interview->candidate_email }} | {{ $interview->job_role }}</div>
+                </div>
+            </button>
+            <div id="selected-{{ $interview->id }}" class="collapse">
+                <div class="mt-2">
+                    <button class="btn btn-sm btn-primary w-100" onclick="showWelcomeLetterModal({{ $interview->id }})">Send Welcome Letter</button>
+                </div>
             </div>
         </div>
+        @endforeach
+        @endif
+        <a href="{{ url('/admin/interviews/selected') }}" class="btn btn-sm btn-dark w-100">View All</a>
     </div>
-    @endforeach
-    @endif
-    <a href="{{ url('/admin/interviews/selected') }}" class="btn btn-sm btn-dark w-100">View All</a>
-</div>
 
-<!-- Documents Column -->
-<div class="journey-column">
-    <h4 class="text-secondary">📄 Documents ({{ isset($employeesWithDocuments) ? $employeesWithDocuments->count() : 0 }})</h4>
-    @if(isset($employeesWithDocuments) && $employeesWithDocuments->count() > 0)
-    @foreach($employeesWithDocuments as $employee)
-    <div class="journey-card" data-date="{{ $employee->created_at }}" data-name="{{ strtolower($employee->first_name . ' ' . $employee->last_name) }}" data-meta="{{ strtolower(($employee->email ?? '') . ' ' . ($employee->department ?? '')) }}">
-        <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#doc-{{ $employee->id }}">
-            <div class="candidate-info">
-                <h5>{{ $employee->first_name }} {{ $employee->last_name }}</h5>
-                <div class="candidate-meta">{{ $employee->email }} | {{ $employee->department }}</div>
-            </div>
-        </button>
-        <div id="doc-{{ $employee->id }}" class="collapse">
-            <div class="mt-2">
-                <a href="{{ url('/admin/employees/documents') }}" class="btn btn-sm btn-secondary w-100">View Documents</a>
+    <!-- Documents Column -->
+    <div class="journey-column">
+        <h4 class="text-secondary">📄 Documents ({{ isset($employeesWithDocuments) ? $employeesWithDocuments->count() : 0 }})</h4>
+        @if(isset($employeesWithDocuments) && $employeesWithDocuments->count() > 0)
+        @foreach($employeesWithDocuments as $employee)
+        <div class="journey-card" data-date="{{ $employee->created_at }}" data-name="{{ strtolower($employee->first_name . ' ' . $employee->last_name) }}" data-meta="{{ strtolower(($employee->email ?? '') . ' ' . ($employee->department ?? '')) }}">
+            <button class="journey-header w-100 border-0 bg-transparent text-start" type="button" data-target="#doc-{{ $employee->id }}">
+                <div class="candidate-info">
+                    <h5>{{ $employee->first_name }} {{ $employee->last_name }}</h5>
+                    <div class="candidate-meta">{{ $employee->email }} | {{ $employee->department }}</div>
+                </div>
+            </button>
+            <div id="doc-{{ $employee->id }}" class="collapse">
+                <div class="mt-2">
+                    <a href="{{ url('/admin/employees/documents') }}" class="btn btn-sm btn-secondary w-100">View Documents</a>
+                </div>
             </div>
         </div>
+        @endforeach
+        @endif
+        <a href="{{ url('/admin/employees/documents') }}" class="btn btn-sm btn-secondary w-100">View All</a>
     </div>
-    @endforeach
-    @endif
-    <a href="{{ url('/admin/employees/documents') }}" class="btn btn-sm btn-secondary w-100">View All</a>
-</div>
 
-<!-- Hired Column -->
-<div class="journey-column">
-    <h4 style="color: #667eea;">👔 Hired ({{ isset($hiredEmployees) ? $hiredEmployees->count() : 0 }})</h4>
-    @if(isset($hiredEmployees) && $hiredEmployees->count() > 0)
-    @foreach($hiredEmployees as $employee)
-    <div class="journey-card" data-date="{{ $employee->created_at }}" data-name="{{ strtolower($employee->first_name . ' ' . $employee->last_name) }}" data-meta="{{ strtolower(($employee->email ?? '') . ' ' . ($employee->department ?? '')) }}">
-        <div class="journey-header">
-            <div class="candidate-info">
-                <h5>{{ $employee->first_name }} {{ $employee->last_name }}</h5>
-                <div class="candidate-meta">{{ $employee->email }} | {{ $employee->department }}</div>
+    <!-- Hired Column -->
+    <div class="journey-column">
+        <h4 style="color: #667eea;">👔 Hired ({{ isset($hiredEmployees) ? $hiredEmployees->count() : 0 }})</h4>
+        @if(isset($hiredEmployees) && $hiredEmployees->count() > 0)
+        @foreach($hiredEmployees as $employee)
+        <div class="journey-card" data-date="{{ $employee->created_at }}" data-name="{{ strtolower($employee->first_name . ' ' . $employee->last_name) }}" data-meta="{{ strtolower(($employee->email ?? '') . ' ' . ($employee->department ?? '')) }}">
+            <div class="journey-header">
+                <div class="candidate-info">
+                    <h5>{{ $employee->first_name }} {{ $employee->last_name }}</h5>
+                    <div class="candidate-meta">{{ $employee->email }} | {{ $employee->department }}</div>
+                </div>
+                <span class="badge bg-success">{{ $employee->employee_status }}</span>
             </div>
-            <span class="badge bg-success">{{ $employee->employee_status }}</span>
         </div>
+        @endforeach
+        @endif
+        <a href="{{ url('/admin/employees/hired') }}" class="btn btn-sm w-100" style="background: #667eea; color: white;">View All</a>
     </div>
-    @endforeach
-    @endif
-    <a href="{{ url('/admin/employees/hired') }}" class="btn btn-sm w-100" style="background: #667eea; color: white;">View All</a>
-</div>
-</div>
+    </div>
 
-<script>
-function filterJourneyData() {
+    <script>
+   function filterJourneyData() {
     const dateFilter = document.getElementById('journeyDateFilter').value;
     const searchTerm = document.getElementById('journeySearchBar').value.toLowerCase();
     const allCards = document.querySelectorAll('.journey-card');
-    
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     allCards.forEach(card => {
-        const cardDate = new Date(card.getAttribute('data-date'));
+
+        const rawDate = card.getAttribute('data-date');
+        let cardDate = new Date(rawDate.replace(' ', 'T')); // 🔥 FIX
+
+        cardDate.setHours(0,0,0,0);
+
         const cardName = card.getAttribute('data-name') || '';
         const cardMeta = card.getAttribute('data-meta') || '';
-        
+
         let dateMatch = true;
         let searchMatch = true;
-        
-        // Date filter logic
-        if (dateFilter) {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
+
+        if (dateFilter && rawDate) {
+
             if (dateFilter === 'today') {
-                dateMatch = cardDate.toDateString() === today.toDateString();
-            } else if (dateFilter === 'week') {
+                dateMatch = cardDate.getTime() === today.getTime();
+            }
+
+            else if (dateFilter === 'week') {
                 const weekAgo = new Date(today);
                 weekAgo.setDate(today.getDate() - 7);
                 dateMatch = cardDate >= weekAgo;
-            } else if (dateFilter === 'month') {
+            }
+
+            else if (dateFilter === 'month') {
                 const monthAgo = new Date(today);
                 monthAgo.setMonth(today.getMonth() - 1);
                 dateMatch = cardDate >= monthAgo;
             }
         }
-        
-        // Search filter logic
+
         if (searchTerm) {
             searchMatch = cardName.includes(searchTerm) || cardMeta.includes(searchTerm);
         }
-        
-        // Show/hide card
-        if (dateMatch && searchMatch) {
-            card.style.display = '';
-        } else {
-            card.style.display = 'none';
-        }
+
+        card.style.display = (dateMatch && searchMatch) ? '' : 'none';
     });
 }
 
-document.querySelectorAll('.journey-header').forEach(button => {
-    button.addEventListener('click', function() {
-        const targetId = this.getAttribute('data-target');
-        if (targetId) {
-            const targetElement = document.querySelector(targetId);
-            targetElement.classList.toggle('show');
-        }
+    document.querySelectorAll('.journey-header').forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            if (targetId) {
+                const targetElement = document.querySelector(targetId);
+                targetElement.classList.toggle('show');
+            }
+        });
     });
-});
-</script>
+    </script>
 
 <!-- Status Modal for Leads -->
 <div class="modal fade" id="statusModal" tabindex="-1">
