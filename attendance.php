@@ -69,7 +69,12 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get existing attendance for selected date
 $attendance_data = [];
+$employee_lookup = [];
 if ($employees) {
+    foreach ($employees as $emp) {
+        $employee_lookup[$emp['id']] = $emp;
+    }
+    
     $employee_ids = array_column($employees, 'id');
     $placeholders = str_repeat('?,', count($employee_ids) - 1) . '?';
     
@@ -219,9 +224,9 @@ if ($employees) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php foreach ($employees as $emp): ?>
-                                            <?php if (isset($attendance_data[$emp['id']])): ?>
-                                                <?php $att = $attendance_data[$emp['id']]; ?>
+                                        <?php foreach ($attendance_data as $att): ?>
+                                            <?php $emp = $employee_lookup[$att['employee_id']] ?? null; ?>
+                                            <?php if ($emp): ?>
                                                 <tr>
                                                     <td><?= $emp['employee_code'] ?></td>
                                                     <td><?= $emp['name'] ?></td>

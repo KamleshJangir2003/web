@@ -273,8 +273,8 @@ body {
                                         @if(isset($attendance_data[$emp->id]))
                                             @php $att = $attendance_data[$emp->id]; @endphp
                                             <tr>
-                                                <td>{{ $emp->id }}</td>
-                                                <td>{{ $emp->first_name }} {{ $emp->last_name }}</td>
+                                                <td>{{ $emp->employee_id ?? 'N/A' }}</td>
+                                                <td>{{ $emp->full_name ?: ($emp->first_name . ' ' . $emp->last_name) }}</td>
                                                 <td>{{ $emp->department ?? 'N/A' }}</td>
                                                 <td>
                                                     <span class="badge bg-{{ $att->status === 'Present' ? 'success' : ($att->status === 'Absent' ? 'danger' : 'warning') }}">
