@@ -362,6 +362,9 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/interns/{id}/send-payslip-email', [App\Http\Controllers\Admin\InternController::class, 'sendPayslipEmail'])->name('interns.send-payslip-email');
             Route::post('/interns/{id}/update-stipend', [App\Http\Controllers\Admin\InternController::class, 'updateStipend'])->name('interns.update-stipend');
             Route::post('/interns/{id}/setup-ongoing', [App\Http\Controllers\Admin\InternController::class, 'setupOngoing'])->name('interns.setup-ongoing');
+            Route::post('/interns/{id}/complete-internship', [App\Http\Controllers\Admin\InternController::class, 'completeInternship'])->name('interns.complete-internship');
+            Route::post('/interns/{id}/cancel-internship', [App\Http\Controllers\Admin\InternController::class, 'cancelInternship'])->name('interns.cancel-internship');
+            Route::post('/interns/{id}/send-certificate', [App\Http\Controllers\Admin\InternController::class, 'sendCertificate'])->name('interns.send-certificate');
             
             // Intern Callbacks
             Route::get('/interns/callbacks', [App\Http\Controllers\Admin\InternController::class, 'callbacks'])->name('interns.callbacks');

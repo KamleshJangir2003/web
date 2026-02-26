@@ -125,9 +125,173 @@
                 
                 <div class="text-end">
                     <button type="submit" class="btn btn-success">Update Profile</button>
+                    @if($intern->final_result == 'Ongoing')
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#completeModal">Complete Internship</button>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">Cancel Internship</button>
+                    @endif
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<!-- Complete Internship Modal -->
+<div class="modal fade" id="completeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Complete Internship</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="completeForm">
+                    <div class="mb-3">
+                        <label class="form-label">Completion Date *</label>
+                        <input type="date" name="completion_date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Performance Rating</label>
+                        <select name="performance_rating" class="form-control">
+                            <option value="">Select Rating</option>
+                            <option value="Excellent">Excellent</option>
+                            <option value="Very Good">Very Good</option>
+                            <option value="Good">Good</option>
+                            <option value="Average">Average</option>
+                            <option value="Below Average">Below Average</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Remarks</label>
+                        <textarea name="remarks" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="sendEmailCheck" checked>
+                        <label class="form-check-label" for="sendEmailCheck">Send certificate via Email</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="sendWhatsAppCheck" checked>
+                        <label class="form-check-label" for="sendWhatsAppCheck">Send certificate via WhatsApp</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmCompleteBtn">Complete & Generate Certificate</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Internship Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cancel Internship</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="cancelForm">
+                    <div class="mb-3">
+                        <label class="form-label">Cancellation Date *</label>
+                        <input type="date" name="cancellation_date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cancellation Reason *</label>
+                        <textarea name="cancellation_reason" class="form-control" rows="3" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmCancelBtn">Confirm Cancellation</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Complete Internship
+    document.getElementById('confirmCompleteBtn')?.addEventListener('click', function() {
+        const form = document.getElementById('completeForm');
+        const formData = new FormData(form);
+        
+        if (document.getElementById('sendEmailCheck').checked) {
+            formData.append('send_email', '1');
+        }
+        if (document.getElementById('sendWhatsAppCheck').checked) {
+            formData.append('send_whatsapp', '1');
+        }
+        
+        this.disabled = true;
+        this.textContent = 'Processing...';
+        
+        fetch('{{ route("admin.interns.complete-internship", $intern->id) }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Open WhatsApp if message is prepared
+                if (data.whatsapp_message && data.whatsapp_number) {
+                    const whatsappUrl = `https://wa.me/${data.whatsapp_number.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(data.whatsapp_message)}`;
+                    window.open(whatsappUrl, '_blank');
+                }
+                
+                alert(data.message + '\n\nCertificate URL: ' + data.certificate_url);
+                window.location.href = '{{ route("admin.interns.profiles") }}';
+            } else {
+                alert('Error: ' + data.message);
+                this.disabled = false;
+                this.textContent = 'Complete & Generate Certificate';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to complete internship');
+            this.disabled = false;
+            this.textContent = 'Complete & Generate Certificate';
+        });
+    });
+    
+    // Cancel Internship
+    document.getElementById('confirmCancelBtn')?.addEventListener('click', function() {
+        const form = document.getElementById('cancelForm');
+        const formData = new FormData(form);
+        
+        this.disabled = true;
+        this.textContent = 'Processing...';
+        
+        fetch('{{ route("admin.interns.cancel-internship", $intern->id) }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                window.location.href = '{{ route("admin.interns.profiles") }}';
+            } else {
+                alert('Error: ' + data.message);
+                this.disabled = false;
+                this.textContent = 'Confirm Cancellation';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to cancel internship');
+            this.disabled = false;
+            this.textContent = 'Confirm Cancellation';
+        });
+    });
+});
+</script>
 @endsection

@@ -44,10 +44,21 @@
                             <td>{{ $intern->start_date ? $intern->start_date->format('d M Y') : 'Not Set' }}</td>
                             <td>{{ $intern->internship_duration ? $intern->internship_duration . ' months' : 'Not Set' }}</td>
                             <td>{{ $intern->stipend ? '₹' . number_format($intern->stipend) : 'Not Set' }}</td>
-                            <td><span class="badge bg-success">{{ $intern->final_result ?? 'Ongoing' }}</span></td>
+                            <td>
+                                @if($intern->final_result == 'Completed')
+                                    <span class="badge bg-success">Completed</span>
+                                @elseif($intern->final_result == 'Cancelled')
+                                    <span class="badge bg-danger">Cancelled</span>
+                                @else
+                                    <span class="badge bg-primary">Ongoing</span>
+                                @endif
+                            </td>
                             <td>
                                 <a href="{{ route('admin.interns.edit-profile', $intern->id) }}" class="btn btn-sm btn-primary">Edit Profile</a>
                                 <a href="{{ route('admin.interns.payment', $intern->id) }}" class="btn btn-sm btn-warning">Payment</a>
+                                @if($intern->final_result == 'Completed' && $intern->certificate_path)
+                                    <a href="{{ url('uploads/certificates/' . $intern->certificate_path) }}" class="btn btn-sm btn-success" target="_blank">Download Certificate</a>
+                                @endif
                             </td>
                         </tr>
                         @empty

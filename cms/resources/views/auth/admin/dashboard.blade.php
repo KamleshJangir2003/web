@@ -723,7 +723,7 @@ body {
     <div class="col-xl-3 col-md-6">
             <div class="card stat-card bg-info">
                 <div class="card-body">
-                    <div class="stat-title">Employee Leads</div>
+                    <div class="stat-title">Apllicant Database</div>
                     <div class="stat-number">{{ $stats['totalLeads'] ?? 0 }}</div>
                     <i class="bi bi-person-plus-fill"></i>
                 </div>
@@ -732,14 +732,14 @@ body {
         <div class="col-xl-3 col-md-6">
             <div class="card stat-card bg-primary">
                 <div class="card-body">
-                    <div class="stat-title">Total Employees</div>
+                    <div class="stat-title">active Employees</div>
                     <div class="stat-number">{{ $stats['totalHiredEmployees'] ?? 0 }}</div>
                     <i class="bi bi-people-fill"></i>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6">
+        <!-- <div class="col-xl-3 col-md-6">
             <div class="card stat-card bg-warning">
                 <div class="card-body">
                     <div class="stat-title">Pending Approvals</div>
@@ -747,7 +747,7 @@ body {
                     <i class="bi bi-clock-history"></i>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- <div class="col-xl-3 col-md-6">
             <div class="card stat-card bg-success">
@@ -768,7 +768,7 @@ body {
                 </div>
             </div>
         </div> -->
-        
+<!--         
         <div class="col-xl-3 col-md-6">
             <div class="card stat-card bg-warning">
                 <div class="card-body">
@@ -777,8 +777,8 @@ body {
                     <i class="bi bi-telephone-fill"></i>
                 </div>
             </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
+        </div> -->
+        <!-- <div class="col-xl-3 col-md-6">
             <div class="card stat-card bg-success">
                 <div class="card-body">
                     <div class="stat-title">Total Employee Interviews</div>
@@ -786,8 +786,8 @@ body {
                     <i class="bi bi-chat-dots-fill"></i>
                 </div>
             </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
+        </div> -->
+        <!-- <div class="col-xl-3 col-md-6">
             <div class="card stat-card bg-danger">
                 <div class="card-body">
                     <div class="stat-title">Total Employee rejected Interviews</div>
@@ -795,7 +795,7 @@ body {
                     <i class="bi bi-x-circle-fill"></i>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="col-xl-3 col-md-6">
             <div class="card stat-card bg-warning">
                 <div class="card-body">

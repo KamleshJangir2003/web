@@ -295,8 +295,10 @@ class InternController extends Controller
     public function profiles()
     {
         $interns = Intern::with(['mentor', 'hr'])
+            ->whereIn('final_result', ['Completed', 'Cancelled'])
             ->whereNotNull('mentor_id')
-            ->orderBy('name')
+            ->orderByRaw("FIELD(final_result, 'Completed', 'Cancelled')")
+            ->orderBy('completion_date', 'desc')
             ->paginate(15);
         return view('auth.admin.interns.profiles', compact('interns'));
     }
@@ -538,6 +540,166 @@ class InternController extends Controller
         } catch (\Exception $e) {
             \Log::error('Ongoing setup failed: ' . $e->getMessage());
             return back()->with('error', 'Error setting up ongoing internship: ' . $e->getMessage());
+        }
+    }
+    
+    public function completeInternship(Request $request, $id)
+    {
+        $request->validate([
+            'completion_date' => 'required|date',
+            'performance_rating' => 'nullable|string',
+            'remarks' => 'nullable|string'
+        ]);
+
+        try {
+            $intern = Intern::with(['mentor', 'hr'])->findOrFail($id);
+            
+            // Update intern status
+            $intern->update([
+                'final_result' => 'Completed',
+                'completion_date' => $request->completion_date,
+                'performance_rating' => $request->performance_rating,
+                'completion_remarks' => $request->remarks
+            ]);
+            
+            // Generate certificate PDF
+            $pdf = Pdf::loadView('auth.admin.interns.certificate', compact('intern'));
+            $filename = 'certificate_' . $intern->id . '_' . time() . '.pdf';
+            $path = public_path('uploads/certificates/' . $filename);
+            
+            if (!file_exists(public_path('uploads/certificates'))) {
+                mkdir(public_path('uploads/certificates'), 0777, true);
+            }
+            
+            $pdf->save($path);
+            $certificateUrl = url('uploads/certificates/' . $filename);
+            
+            // Save certificate path to database
+            $intern->update(['certificate_path' => $filename]);
+            
+            // Send via Email
+            if ($request->has('send_email') && $intern->email) {
+                try {
+                    Mail::send('emails.certificate', ['intern' => $intern], function($message) use ($intern, $pdf) {
+                        $message->to($intern->email)
+                                ->subject('Internship Completion Certificate - KWIKSTER')
+                                ->attachData($pdf->output(), 'certificate_' . $intern->name . '.pdf');
+                    });
+                } catch (\Exception $e) {
+                    \Log::error('Certificate email failed: ' . $e->getMessage());
+                }
+            }
+            
+            // Send via WhatsApp (return URL for WhatsApp integration)
+            $whatsappMessage = null;
+            if ($request->has('send_whatsapp') && $intern->number) {
+                $whatsappMessage = "Congratulations {$intern->name}! Your internship at KWIKSTER has been completed successfully. Download your certificate: {$certificateUrl}";
+            }
+            
+            \Cache::forget('dashboard_stats');
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Internship completed successfully!',
+                'certificate_url' => $certificateUrl,
+                'whatsapp_message' => $whatsappMessage,
+                'whatsapp_number' => $intern->number
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('Complete internship failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error completing internship: ' . $e->getMessage()
+            ]);
+        }
+    }
+    
+    public function cancelInternship(Request $request, $id)
+    {
+        $request->validate([
+            'cancellation_date' => 'required|date',
+            'cancellation_reason' => 'required|string'
+        ]);
+
+        try {
+            $intern = Intern::findOrFail($id);
+            
+            $intern->update([
+                'final_result' => 'Cancelled',
+                'cancellation_date' => $request->cancellation_date,
+                'cancellation_reason' => $request->cancellation_reason
+            ]);
+            
+            \Cache::forget('dashboard_stats');
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Internship cancelled successfully!'
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('Cancel internship failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error cancelling internship: ' . $e->getMessage()
+            ]);
+        }
+    }
+    
+    public function sendCertificate(Request $request, $id)
+    {
+        try {
+            $intern = Intern::with(['mentor', 'hr'])->findOrFail($id);
+            
+            if (!$intern->certificate_path) {
+                return response()->json(['success' => false, 'message' => 'Certificate not found']);
+            }
+            
+            $certificateUrl = url('uploads/certificates/' . $intern->certificate_path);
+            $sent = [];
+            
+            // Send via Email
+            if ($request->has('send_email') && $intern->email) {
+                try {
+                    $pdf = Pdf::loadView('auth.admin.interns.certificate', compact('intern'));
+                    Mail::send('emails.certificate', ['intern' => $intern], function($message) use ($intern, $pdf) {
+                        $message->to($intern->email)
+                                ->subject('Internship Completion Certificate - KWIKSTER')
+                                ->attachData($pdf->output(), 'certificate_' . $intern->name . '.pdf');
+                    });
+                    $sent[] = 'Email sent to ' . $intern->email;
+                } catch (\Exception $e) {
+                    \Log::error('Certificate email failed: ' . $e->getMessage());
+                    return response()->json(['success' => false, 'message' => 'Email sending failed']);
+                }
+            }
+            
+            // Send via WhatsApp
+            if ($request->has('send_whatsapp') && $intern->number) {
+                $whatsappMessage = "Congratulations {$intern->name}! Your internship at KWIKSTER has been completed successfully. Download your certificate: {$certificateUrl}";
+                $sent[] = 'WhatsApp message prepared for ' . $intern->number;
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => implode(' and ', $sent),
+                    'whatsapp_message' => $whatsappMessage,
+                    'whatsapp_number' => $intern->number,
+                    'certificate_url' => $certificateUrl
+                ]);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => implode(' and ', $sent)
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('Send certificate failed: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error sending certificate: ' . $e->getMessage()
+            ]);
         }
     }
 }

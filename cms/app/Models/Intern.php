@@ -34,13 +34,21 @@ class Intern extends Model
         'hr_id',
         'profile_details',
         'notes',
-        'documents'
+        'documents',
+        'completion_date',
+        'performance_rating',
+        'completion_remarks',
+        'certificate_path',
+        'cancellation_date',
+        'cancellation_reason'
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
         'dob' => 'date',
+        'completion_date' => 'date',
+        'cancellation_date' => 'date',
         'documents' => 'array'
     ];
 
