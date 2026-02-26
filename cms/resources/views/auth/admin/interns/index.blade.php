@@ -350,9 +350,9 @@
                             <td>
     <select class="status-select" data-id="{{ $intern->id }}">
         <option value="" selected>Select Status</option>
-        <option value="Not Interested">Not Interested</option>
+        <option value="Not Interested">Not ShortListed</option>
         <option value="Call Back">Call Back</option>
-        <option value="Interested">Interested</option>
+        <option value="Interested">ShortListed</option>
         <option value="Rejected">Rejected</option>
         <option value="Wrong Number">Wrong Number</option>
     </select>

@@ -1259,10 +1259,10 @@ body {
                 <div class="mt-2">
                     <select class="form-select form-select-sm status-dropdown" onchange="showStatusModal({{ $lead->id }}, this.value)">
                         <option value="">Select Status</option>
-                        <option value="Interested">Interested</option>
+                        <option value="Interested">ShortListed</option>
                         <option value="Call Back">Call Back</option>
                         <option value="Rejected">Rejected</option>
-                        <option value="Not Interested">Not Interested</option>
+                        <option value="Not Interested">Not ShortListed</option>
                         <option value="Wrong Number">Wrong Number</option>
                     </select>
                 </div>
@@ -1289,9 +1289,9 @@ body {
                 <div class="mt-2">
                     <select class="form-select form-select-sm status-dropdown" onchange="showCallbackStatusModal({{ $callback->id }}, this.value)">
                         <option value="">Select Status</option>
-                        <option value="interested">Interested</option>
+                        <option value="interested">ShortListed</option>
                         <option value="rejected">Rejected</option>
-                        <option value="not_interested">Not Interested</option>
+                        <option value="not_interested">Not ShortListed</option>
                         <option value="wrong_number">Wrong Number</option>
                     </select>
                 </div>

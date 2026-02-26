@@ -1146,7 +1146,7 @@ function showStatusPopup(type, title, message, details = null) {
     <li>
     <a href="{{ route('admin.employee.create') }}">
         <i class="fa-solid fa-user-plus"></i>
-        Add Employee
+        Whack in
     </a>
 </li>
 

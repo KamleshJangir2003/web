@@ -50,7 +50,7 @@
                                 @elseif($intern->final_result == 'Ongoing')
                                     <span class="badge badge-info">Ongoing</span>
                                 @elseif($intern->condition_status == 'Interested')
-                                    <span class="badge badge-success">Interested</span>
+                                    <span class="badge badge-success">ShortListed</span>
                                 @else
                                     <span class="badge badge-secondary">{{ $intern->condition_status ?: 'Pending' }}</span>
                                 @endif

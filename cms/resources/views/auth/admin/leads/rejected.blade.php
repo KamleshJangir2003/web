@@ -425,9 +425,9 @@
                                 <select class="callback-status-select" data-id="{{ $lead->id }}" data-status="rejected">
                                     <option value="rejected" selected>Rejected</option>
                                     <option value="call_backs">Call Backs</option>
-                                    <option value="not_interested">Not Interested</option>
+                                    <option value="not_interested">Not ShortListed</option>
                                     <option value="wrong_number">Wrong Number</option>
-                                    <option value="interested">Interested</option>
+                                    <option value="interested">ShortListed</option>
                                 </select>
                             </td>
                             <td>{{ $lead->reason ?? 'No reason provided' }}</td>

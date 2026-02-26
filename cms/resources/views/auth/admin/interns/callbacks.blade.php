@@ -220,8 +220,8 @@
                             <td>
                                 <select class="status-select" data-id="{{ $callback->id }}">
                                     <option value="">Select Status</option>
-                                    <option value="interested">Interested</option>
-                                    <option value="not_interested">Not Interested</option>
+                                    <option value="interested">ShortListed</option>
+                                    <option value="not_interested">Not ShortListed</option>
                                     <option value="rejected">Rejected</option>
                                     <option value="wrong_number">Wrong Number</option>
                                 </select>

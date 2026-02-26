@@ -303,7 +303,7 @@
         <option value="rejected" {{ $callback->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
         <option value="not_interested" {{ $callback->status == 'not_interested' ? 'selected' : '' }}>Not Interested</option>
         <option value="wrong_number" {{ $callback->status == 'wrong_number' ? 'selected' : '' }}>Wrong Number</option>
-        <option value="interested" {{ $callback->status == 'interested' ? 'selected' : '' }}>Interested</option>
+        <option value="interested" {{ $callback->status == 'interested' ? 'selected' : '' }}>ShortListed</option>
         
     </select>
 </td>

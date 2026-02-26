@@ -129,7 +129,7 @@ $(document).ready(function() {
                             <td>{{ $intern->role }}</td>
                             <td>
                                 <select class="form-select form-select-sm status-dropdown" data-intern-id="{{ $intern->id }}">
-                                    <option value="Interested" {{ $intern->condition_status == 'Interested' ? 'selected' : '' }}>Interested</option>
+                                    <option value="Interested" {{ $intern->condition_status == 'Interested' ? 'selected' : '' }}>ShortListed</option>
                                     <option value="Rejected" {{ $intern->condition_status == 'Rejected' ? 'selected' : '' }}>Rejected</option>
                                 </select>
                             </td>
