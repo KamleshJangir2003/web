@@ -34,6 +34,7 @@ class Intern extends Model
         'hr_id',
         'profile_details',
         'notes',
+        'comment',
         'documents',
         'completion_date',
         'performance_rating',

@@ -343,6 +343,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/interns', [App\Http\Controllers\Admin\InternController::class, 'index'])->name('interns.index');
             Route::post('/interns/upload', [App\Http\Controllers\Admin\InternController::class, 'uploadExcel'])->name('interns.upload');
             Route::post('/interns/{id}/status', [App\Http\Controllers\Admin\InternController::class, 'updateStatus'])->name('interns.status');
+            Route::post('/interns/{id}/comment', [App\Http\Controllers\Admin\InternController::class, 'updateComment'])->name('interns.comment');
             Route::get('/interns/{id}/profile', [App\Http\Controllers\Admin\InternController::class, 'showProfile'])->name('interns.profile');
             Route::post('/interns/{id}/resume', [App\Http\Controllers\Admin\InternController::class, 'uploadResume'])->name('interns.resume.upload');
             Route::get('/interns/interested', [App\Http\Controllers\Admin\InternController::class, 'interested'])->name('interns.interested');

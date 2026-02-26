@@ -101,6 +101,17 @@ class InternController extends Controller
             ]);
         }
     }
+
+    public function updateComment(Request $request, $id)
+    {
+        try {
+            $intern = Intern::findOrFail($id);
+            $intern->update(['comment' => $request->comment]);
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false], 500);
+        }
+    }
     
     private function getRedirectUrlForInternStatus($status)
     {
@@ -143,10 +154,8 @@ class InternController extends Controller
     public function interested()
     {
         $interns = Intern::where('condition_status', 'Interested')
-            ->where(function($query) {
-                $query->whereNull('mentor_id')
-                      ->orWhere('final_result', '!=', 'Ongoing');
-            })
+            ->whereNull('mentor_id')
+            ->whereNotIn('final_result', ['Completed', 'Cancelled'])
             ->orderBy('updated_at', 'desc')
             ->paginate(15);
         return view('auth.admin.interns.interested', compact('interns'));
