@@ -305,7 +305,7 @@
     </form>
 
     <!-- 🎯 Filter Buttons -->
-    <div class="status-buttons">
+    <!-- <div class="status-buttons">
         <a href="{{ route('admin.interns.interested') }}"
            class="btn btn-success btn-sm">
             Interested
@@ -315,7 +315,7 @@
            class="btn btn-danger btn-sm">
             Rejected
         </a>
-    </div>
+    </div> -->
 
     <!-- 📊 Result Count -->
     <div class="results-info">
@@ -659,26 +659,24 @@ function updateInternStatus(internId, status, reason, row) {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
     .then(data => {
+        console.log('Response data:', data);
         if (data.success) {
-            // Show success message
             alert('Status updated successfully!');
-            // Redirect to appropriate page
-            if (data.redirect) {
-                window.location.href = data.redirect;
-            } else {
-                // Remove row from table if no redirect
-                row.remove();
-            }
+            // Reload page instead of removing row to see actual data
+            window.location.reload();
         } else {
-            alert('Error updating status');
+            alert('Error: ' + (data.message || 'Unknown error'));
             row.querySelector('.status-select').value = '';
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Network error occurred');
+        alert('Network error: ' + error.message);
         row.querySelector('.status-select').value = '';
     });
 }

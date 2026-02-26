@@ -15,8 +15,10 @@ class InternController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Intern::whereIn('condition_status', ['', null, 'Interested'])
-            ->orWhereNull('condition_status');
+        $query = Intern::where(function($q) {
+            $q->whereNull('condition_status')
+              ->orWhere('condition_status', '');
+        });
 
         if ($request->has('search') && $request->search) {
             $search = $request->search;

@@ -43,9 +43,17 @@
                         <tr>
                             <td><strong>Status:</strong></td>
                             <td>
-                                <span class="badge badge-{{ $intern->condition_status == 'Interested' ? 'success' : 'secondary' }}">
-                                    {{ $intern->condition_status ?: 'Pending' }}
-                                </span>
+                                @if($intern->final_result == 'Completed')
+                                    <span class="badge badge-success">Completed</span>
+                                @elseif($intern->final_result == 'Cancelled')
+                                    <span class="badge badge-danger">Cancelled</span>
+                                @elseif($intern->final_result == 'Ongoing')
+                                    <span class="badge badge-info">Ongoing</span>
+                                @elseif($intern->condition_status == 'Interested')
+                                    <span class="badge badge-success">Interested</span>
+                                @else
+                                    <span class="badge badge-secondary">{{ $intern->condition_status ?: 'Pending' }}</span>
+                                @endif
                             </td>
                         </tr>
                     </table>
@@ -94,6 +102,52 @@
                     </form>
                 </div>
             </div>
+
+            @if($intern->documents)
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h5>Uploaded Documents</h5>
+                    <div class="row">
+                        @php
+                            $documents = json_decode($intern->documents, true);
+                        @endphp
+                        @if(isset($documents['aadhar_card']))
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <i class="fa-solid fa-id-card fa-3x mb-2 text-primary"></i>
+                                    <h6>Aadhar Card</h6>
+                                    <a href="{{ asset('uploads/intern_documents/' . $documents['aadhar_card']) }}" target="_blank" class="btn btn-sm btn-primary">View Document</a>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                        @if(isset($documents['pan_card']))
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <i class="fa-solid fa-credit-card fa-3x mb-2 text-success"></i>
+                                    <h6>PAN Card</h6>
+                                    <a href="{{ asset('uploads/intern_documents/' . $documents['pan_card']) }}" target="_blank" class="btn btn-sm btn-success">View Document</a>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                        @if(isset($documents['education_document']))
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <i class="fa-solid fa-graduation-cap fa-3x mb-2 text-warning"></i>
+                                    <h6>Education Document</h6>
+                                    <a href="{{ asset('uploads/intern_documents/' . $documents['education_document']) }}" target="_blank" class="btn btn-sm btn-warning">View Document</a>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </div>

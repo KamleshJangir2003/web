@@ -41,7 +41,11 @@
                             <p><strong>Mentor:</strong> {{ $intern->mentor->full_name ?? 'Not Assigned' }}</p>
                             <p><strong>Duration:</strong> {{ $intern->internship_duration ?? 'Not Set' }} months</p>
                             <p><strong>Start Date:</strong> {{ $intern->start_date ? $intern->start_date->format('d M Y') : 'Not Set' }}</p>
-                            <p><strong>End Date:</strong> {{ $intern->end_date ? $intern->end_date->format('d M Y') : 'Not Set' }}</p>
+                            @if($intern->final_result == 'Completed')
+                                <p><strong>Completion Date:</strong> {{ $intern->end_date ? $intern->end_date->format('d M Y') : 'Not Set' }}</p>
+                            @else
+                                <p><strong>End Date:</strong> {{ $intern->end_date ? $intern->end_date->format('d M Y') : 'Not Set' }}</p>
+                            @endif
                             <p><strong>Status:</strong> 
                                 @if($intern->final_result == 'Completed')
                                     <span class="badge bg-success" style="font-size: 14px;">✓ Completed</span>

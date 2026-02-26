@@ -123,6 +123,50 @@
                     <textarea name="notes" class="form-control" rows="2" placeholder="Any additional notes or comments">{{ $intern->notes }}</textarea>
                 </div>
                 
+                @if($intern->documents)
+                <div class="mb-3">
+                    <label class="form-label">Uploaded Documents</label>
+                    <div class="row">
+                        @php
+                            $documents = json_decode($intern->documents, true);
+                        @endphp
+                        @if(isset($documents['aadhar_card']))
+                        <div class="col-md-4 mb-2">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <i class="fa-solid fa-id-card fa-2x mb-2 text-primary"></i>
+                                    <p class="mb-1"><strong>Aadhar Card</strong></p>
+                                    <a href="{{ asset('uploads/intern_documents/' . $documents['aadhar_card']) }}" target="_blank" class="btn btn-sm btn-primary">View</a>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                        @if(isset($documents['pan_card']))
+                        <div class="col-md-4 mb-2">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <i class="fa-solid fa-credit-card fa-2x mb-2 text-success"></i>
+                                    <p class="mb-1"><strong>PAN Card</strong></p>
+                                    <a href="{{ asset('uploads/intern_documents/' . $documents['pan_card']) }}" target="_blank" class="btn btn-sm btn-success">View</a>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                        @if(isset($documents['education_document']))
+                        <div class="col-md-4 mb-2">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <i class="fa-solid fa-graduation-cap fa-2x mb-2 text-warning"></i>
+                                    <p class="mb-1"><strong>Education Document</strong></p>
+                                    <a href="{{ asset('uploads/intern_documents/' . $documents['education_document']) }}" target="_blank" class="btn btn-sm btn-warning">View</a>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                @endif
+                
                 <div class="text-end">
                     <button type="submit" class="btn btn-success">Update Profile</button>
                     @if($intern->final_result == 'Ongoing')
