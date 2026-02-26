@@ -733,7 +733,7 @@ body {
             <div class="card stat-card bg-primary">
                 <div class="card-body">
                     <div class="stat-title">active Employees</div>
-                    <div class="stat-number">{{ $stats['totalHiredEmployees'] ?? 0 }}</div>
+                    <div class="stat-number">{{ $allEmployees->count() }}</div>
                     <i class="bi bi-people-fill"></i>
                 </div>
             </div>
@@ -1857,7 +1857,7 @@ function submitWelcomeLetter() {
         <!-- Total row (highlighted) -->
         <div class="info-row total-row">
             <span class="label">📋 Total</span>
-            <span class="value">{{ $stats['totalHiredEmployees'] ?? 0 }}</span>
+            <span class="value">{{ $allEmployees->count() }}</span>
         </div>
 
         <!-- Male -->
@@ -1896,7 +1896,7 @@ function submitWelcomeLetter() {
 
         <!-- Summary footer -->
         <div class="footer-note">
-            👤 <strong>{{ $stats['maleEmployees'] ?? 0 }} Male</strong> · <strong>{{ $stats['femaleEmployees'] ?? 0 }} Female</strong> · Total {{ $stats['totalHiredEmployees'] ?? 0 }}
+            👤 <strong>{{ $stats['maleEmployees'] ?? 0 }} Male</strong> · <strong>{{ $stats['femaleEmployees'] ?? 0 }} Female</strong> · Total {{ $allEmployees->count() }}
         </div>
 
     </div>
