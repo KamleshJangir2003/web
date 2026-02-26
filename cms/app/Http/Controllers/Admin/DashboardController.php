@@ -70,56 +70,56 @@ class DashboardController extends Controller
             ->get();
 
         // Dashboard data - exactly as shown on respective pages
-        $leads = Lead::whereDoesntHave('interviews')
+        $leadsQuery = Lead::whereDoesntHave('interviews')
             ->where(function($q) {
                 $q->whereNull('condition_status')
                   ->orWhere('condition_status', '');
             })
-            ->orderBy('id', 'desc')
-            ->limit(10)
-            ->get();
+            ->orderBy('id', 'desc');
+        $leadsTotal = $leadsQuery->count();
+        $leads = $leadsQuery->limit(4)->get();
             
-        $callbacks = Callback::where('status', 'call_backs')
-            ->orderBy('callback_date', 'desc')
-            ->limit(10)
-            ->get();
+        $callbacksQuery = Callback::where('status', 'call_backs')
+            ->orderBy('callback_date', 'desc');
+        $callbacksTotal = $callbacksQuery->count();
+        $callbacks = $callbacksQuery->limit(4)->get();
             
-        $interestedCandidates = Lead::where('condition_status', 'Interested')
+        $interestedQuery = Lead::where('condition_status', 'Interested')
             ->whereDoesntHave('interviews')
-            ->orderBy('updated_at', 'desc')
-            ->limit(10)
-            ->get();
+            ->orderBy('updated_at', 'desc');
+        $interestedTotal = $interestedQuery->count();
+        $interestedCandidates = $interestedQuery->limit(4)->get();
             
-        $interviews = Interview::with('lead')
+        $interviewsQuery = Interview::with('lead')
             ->where('result', '!=', 'Selected')
             ->where('result', '!=', 'Rejected')
             ->where('status', '!=', 'Rescheduled')
-            ->orderBy('interview_date', 'desc')
-            ->limit(10)
-            ->get();
+            ->orderBy('interview_date', 'desc');
+        $interviewsTotal = $interviewsQuery->count();
+        $interviews = $interviewsQuery->limit(4)->get();
             
-        $selectedInterviews = Interview::with('lead')
+        $selectedQuery = Interview::with('lead')
             ->where('result', 'Selected')
             ->where('welcome_letter_sent', false)
-            ->orderBy('updated_at', 'desc')
-            ->limit(10)
-            ->get();
+            ->orderBy('updated_at', 'desc');
+        $selectedTotal = $selectedQuery->count();
+        $selectedInterviews = $selectedQuery->limit(4)->get();
             
-        $employeesWithDocuments = Employee::where('user_type', 'employee')
+        $documentsQuery = Employee::where('user_type', 'employee')
             ->where('is_approved', true)
             ->where('hired_status', 'not_hired')
-            ->orderBy('created_at', 'desc')
-            ->limit(10)
-            ->get();
+            ->orderBy('created_at', 'desc');
+        $documentsTotal = $documentsQuery->count();
+        $employeesWithDocuments = $documentsQuery->limit(4)->get();
             
-        $hiredEmployees = Employee::where('user_type', '!=', 'admin')
+        $hiredQuery = Employee::where('user_type', '!=', 'admin')
             ->where('hired_status', 'hired')
             ->where('employee_status', 'active')
             ->whereNotNull('joining_date')
             ->whereRaw('DATE_ADD(joining_date, INTERVAL certification_period DAY) <= CURDATE()')
-            ->orderBy('first_name')
-            ->limit(10)
-            ->get();
+            ->orderBy('first_name');
+        $hiredTotal = $hiredQuery->count();
+        $hiredEmployees = $hiredQuery->limit(4)->get();
 
         return view('auth.admin.dashboard', [
             'user' => Auth::user(),
@@ -131,12 +131,19 @@ class DashboardController extends Controller
             'allEmployees' => $allEmployees,
             'recentLogs' => $recentLogs,
             'leads' => $leads,
+            'leadsTotal' => $leadsTotal,
             'callbacks' => $callbacks,
+            'callbacksTotal' => $callbacksTotal,
             'interestedCandidates' => $interestedCandidates,
+            'interestedTotal' => $interestedTotal,
             'interviews' => $interviews,
+            'interviewsTotal' => $interviewsTotal,
             'selectedInterviews' => $selectedInterviews,
+            'selectedTotal' => $selectedTotal,
             'employeesWithDocuments' => $employeesWithDocuments,
+            'documentsTotal' => $documentsTotal,
             'hiredEmployees' => $hiredEmployees,
+            'hiredTotal' => $hiredTotal,
         ]);
     }
 

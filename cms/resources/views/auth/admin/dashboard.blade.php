@@ -1245,7 +1245,7 @@ body {
     <div class="journey-wrapper">
     <!-- Leads Column -->
     <div class="journey-column">
-        <h4 class="text-primary">📋 Leads ({{ isset($leads) ? $leads->count() : 0 }})</h4>
+        <h4 class="text-primary">📋 Leads ({{ isset($leadsTotal) ? $leadsTotal : 0 }})</h4>
         @if(isset($leads) && $leads->count() > 0)
         @foreach($leads as $lead)
         <div class="journey-card" data-date="{{ \Carbon\Carbon::parse($lead->created_at)->format('Y-m-d') }}" data-name="{{ strtolower($lead->name) }}" data-meta="{{ strtolower(($lead->phone ?? $lead->number) . ' ' . $lead->role) }}">
@@ -1269,13 +1269,20 @@ body {
             </div>
         </div>
         @endforeach
+        @if(isset($leadsTotal) && $leadsTotal > 5)
+        <div class="journey-card bg-light">
+            <div class="journey-header text-center">
+                <small class="text-muted">+{{ $leadsTotal - 5 }} Others</small>
+            </div>
+        </div>
+        @endif
         @endif
         <a href="{{ url('/admin/leads') }}" class="btn btn-sm btn-primary w-100">View All</a>
     </div>
 
     <!-- Callbacks Column -->
     <div class="journey-column">
-        <h4 class="text-warning">📞 Callbacks ({{ isset($callbacks) ? $callbacks->count() : 0 }})</h4>
+        <h4 class="text-warning">📞 Callbacks ({{ isset($callbacksTotal) ? $callbacksTotal : 0 }})</h4>
         @if(isset($callbacks) && $callbacks->count() > 0)
         @foreach($callbacks as $callback)
         <div class="journey-card" data-date="{{ $callback->callback_date }}" data-name="{{ strtolower($callback->name) }}" data-meta="{{ strtolower($callback->number) }}">
@@ -1298,13 +1305,20 @@ body {
             </div>
         </div>
         @endforeach
+        @if(isset($callbacksTotal) && $callbacksTotal > 5)
+        <div class="journey-card bg-light">
+            <div class="journey-header text-center">
+                <small class="text-muted">+{{ $callbacksTotal - 5 }} Others</small>
+            </div>
+        </div>
+        @endif
         @endif
         <a href="{{ url('/admin/callbacks') }}" class="btn btn-sm btn-warning w-100">View All</a>
     </div>
 
     <!-- Interested Column -->
     <div class="journey-column">
-        <h4 class="text-success">✅ Interested ({{ isset($interestedCandidates) ? $interestedCandidates->count() : 0 }})</h4>
+        <h4 class="text-success">✅ Interested ({{ isset($interestedTotal) ? $interestedTotal : 0 }})</h4>
         @if(isset($interestedCandidates) && $interestedCandidates->count() > 0)
         @foreach($interestedCandidates as $candidate)
         <div class="journey-card" data-date="{{ $candidate->created_at }}" data-name="{{ strtolower($candidate->name) }}" data-meta="{{ strtolower(($candidate->phone ?? $candidate->number) . ' ' . ($candidate->role ?? '')) }}">
@@ -1321,13 +1335,20 @@ body {
             </div>
         </div>
         @endforeach
+        @if(isset($interestedTotal) && $interestedTotal > 5)
+        <div class="journey-card bg-light">
+            <div class="journey-header text-center">
+                <small class="text-muted">+{{ $interestedTotal - 5 }} Others</small>
+            </div>
+        </div>
+        @endif
         @endif
         <a href="{{ url('/admin/leads/interested') }}" class="btn btn-sm btn-success w-100">View All</a>
     </div>
 
     <!-- Interviews Column -->
     <div class="journey-column">
-        <h4 class="text-info">🎤 Interviews ({{ isset($interviews) ? $interviews->count() : 0 }})</h4>
+        <h4 class="text-info">🎤 Interviews ({{ isset($interviewsTotal) ? $interviewsTotal : 0 }})</h4>
         @if(isset($interviews) && $interviews->count() > 0)
         @foreach($interviews as $interview)
         <div class="journey-card" data-date="{{ $interview->interview_date }}" data-name="{{ strtolower($interview->lead->name ?? '') }}" data-meta="{{ strtolower($interview->interview_round ?? '') }}">
@@ -1348,13 +1369,20 @@ body {
             </div>
         </div>
         @endforeach
+        @if(isset($interviewsTotal) && $interviewsTotal > 5)
+        <div class="journey-card bg-light">
+            <div class="journey-header text-center">
+                <small class="text-muted">+{{ $interviewsTotal - 5 }} Others</small>
+            </div>
+        </div>
+        @endif
         @endif
         <a href="{{ url('/admin/interviews') }}" class="btn btn-sm btn-info w-100">View All</a>
     </div>
 
     <!-- Selected Column -->
     <div class="journey-column">
-        <h4 class="text-dark">🎯 Selected ({{ isset($selectedInterviews) ? $selectedInterviews->count() : 0 }})</h4>
+        <h4 class="text-dark">🎯 Selected ({{ isset($selectedTotal) ? $selectedTotal : 0 }})</h4>
         @if(isset($selectedInterviews) && $selectedInterviews->count() > 0)
         @foreach($selectedInterviews as $interview)
         <div class="journey-card" data-date="{{ $interview->updated_at }}" data-name="{{ strtolower($interview->lead->name ?? '') }}" data-meta="{{ strtolower(($interview->candidate_email ?? '') . ' ' . ($interview->job_role ?? '')) }}">
@@ -1371,13 +1399,20 @@ body {
             </div>
         </div>
         @endforeach
+        @if(isset($selectedTotal) && $selectedTotal > 5)
+        <div class="journey-card bg-light">
+            <div class="journey-header text-center">
+                <small class="text-muted">+{{ $selectedTotal - 5 }} Others</small>
+            </div>
+        </div>
+        @endif
         @endif
         <a href="{{ url('/admin/interviews/selected') }}" class="btn btn-sm btn-dark w-100">View All</a>
     </div>
 
     <!-- Documents Column -->
     <div class="journey-column">
-        <h4 class="text-secondary">📄 Documents ({{ isset($employeesWithDocuments) ? $employeesWithDocuments->count() : 0 }})</h4>
+        <h4 class="text-secondary">📄 Documents ({{ isset($documentsTotal) ? $documentsTotal : 0 }})</h4>
         @if(isset($employeesWithDocuments) && $employeesWithDocuments->count() > 0)
         @foreach($employeesWithDocuments as $employee)
         <div class="journey-card" data-date="{{ $employee->created_at }}" data-name="{{ strtolower($employee->first_name . ' ' . $employee->last_name) }}" data-meta="{{ strtolower(($employee->email ?? '') . ' ' . ($employee->department ?? '')) }}">
@@ -1394,13 +1429,20 @@ body {
             </div>
         </div>
         @endforeach
+        @if(isset($documentsTotal) && $documentsTotal > 5)
+        <div class="journey-card bg-light">
+            <div class="journey-header text-center">
+                <small class="text-muted">+{{ $documentsTotal - 5 }} Others</small>
+            </div>
+        </div>
+        @endif
         @endif
         <a href="{{ url('/admin/employees/documents') }}" class="btn btn-sm btn-secondary w-100">View All</a>
     </div>
 
     <!-- Hired Column -->
     <div class="journey-column">
-        <h4 style="color: #667eea;">👔 Hired ({{ isset($hiredEmployees) ? $hiredEmployees->count() : 0 }})</h4>
+        <h4 style="color: #667eea;">👔 Hired ({{ isset($hiredTotal) ? $hiredTotal : 0 }})</h4>
         @if(isset($hiredEmployees) && $hiredEmployees->count() > 0)
         @foreach($hiredEmployees as $employee)
         <div class="journey-card" data-date="{{ $employee->created_at }}" data-name="{{ strtolower($employee->first_name . ' ' . $employee->last_name) }}" data-meta="{{ strtolower(($employee->email ?? '') . ' ' . ($employee->department ?? '')) }}">
@@ -1413,6 +1455,13 @@ body {
             </div>
         </div>
         @endforeach
+        @if(isset($hiredTotal) && $hiredTotal > 5)
+        <div class="journey-card bg-light">
+            <div class="journey-header text-center">
+                <small class="text-muted">+{{ $hiredTotal - 5 }} Others</small>
+            </div>
+        </div>
+        @endif
         @endif
         <a href="{{ url('/admin/employees/hired') }}" class="btn btn-sm w-100" style="background: #667eea; color: white;">View All</a>
     </div>
