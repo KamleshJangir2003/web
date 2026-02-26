@@ -1,4 +1,4 @@
-@extends('auth.layouts.app')
+﻿@extends('auth.layouts.app')
 
 @section('title', 'Bill Management')
 <style>
@@ -207,12 +207,12 @@ function markBillAsPaid(billId) {
         if (data.success) {
             location.reload();
         } else {
-            alert('Error marking bill as paid');
+            alert('âŒ Error marking bill as paid');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error marking bill as paid');
+        alert('âŒ Error marking bill as paid');
     });
 }
 
@@ -233,12 +233,12 @@ function deleteBill(billId) {
         if (data.success) {
             document.getElementById(`bill-row-${billId}`).remove();
         } else {
-            alert('Error deleting bill');
+            alert('âŒ Error deleting bill');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error deleting bill');
+        alert('âŒ Error deleting bill');
     });
 }
 </script>

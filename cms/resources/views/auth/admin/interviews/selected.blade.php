@@ -407,13 +407,39 @@
 
 @section('scripts')
 <script>
+function showNotif(msg, type='success') {
+    const n = document.createElement('div');
+    n.style.cssText = `position:fixed;top:20px;right:20px;background:${type==='error'?'#dc3545':type==='warning'?'#ffc107':'#28a745'};color:white;padding:15px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:9999;font-size:14px;max-width:350px;white-space:pre-line`;
+    n.textContent = msg;
+    document.body.appendChild(n);
+    setTimeout(() => n.remove(), 3500);
+}
+
+function showConfirm(msg, onYes) {
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+        <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10000;display:flex;align-items:center;justify-content:center">
+            <div style="background:white;padding:25px;border-radius:10px;max-width:400px;text-align:center">
+                <div style="font-size:40px;margin-bottom:15px">❓</div>
+                <p style="margin-bottom:20px;color:#333;font-size:15px">${msg}</p>
+                <div style="display:flex;gap:10px;justify-content:center">
+                    <button onclick="this.closest('div').parentElement.parentElement.remove()" style="padding:10px 20px;background:#6c757d;color:white;border:none;border-radius:5px;cursor:pointer">Cancel</button>
+                    <button id="confirmYes" style="padding:10px 20px;background:#28a745;color:white;border:none;border-radius:5px;cursor:pointer">Yes, Send</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    modal.querySelector('#confirmYes').onclick = () => { modal.remove(); onYes(); };
+}
+
 function saveEmploymentDetails(interviewId) {
     const joiningDate = document.getElementById(`joining_date_${interviewId}`).value;
     const currentCtc = document.getElementById(`current_ctc_${interviewId}`).value;
     const inHandSalary = document.getElementById(`in_hand_salary_${interviewId}`).value;
     
     if (!joiningDate || !currentCtc || !inHandSalary) {
-        alert('Please fill all employment details (Joining Date, CTC, and In Hand Salary)');
+        showNotif('Please fill all employment details\n\nRequired fields:\n• Joining Date\n• CTC\n• In Hand Salary', 'warning');
         return;
     }
     
@@ -432,14 +458,13 @@ function saveEmploymentDetails(interviewId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('✅ Employment details saved successfully!');
-            location.reload();
+            showNotif('Employment details saved successfully!');
         } else {
-            alert('Error: ' + data.message);
+            showNotif('Error: ' + data.message, 'error');
         }
     })
     .catch(error => {
-        alert('Error saving employment details');
+        showNotif('Error saving employment details', 'error');
         console.error(error);
     });
 }
@@ -450,7 +475,7 @@ function saveDirectEmployeeDetails(employeeId) {
     const inHandSalary = document.getElementById(`emp_in_hand_salary_${employeeId}`).value;
     
     if (!joiningDate || !currentCtc || !inHandSalary) {
-        alert('Please fill all employment details (Joining Date, CTC, and In Hand Salary)');
+        showNotif('Please fill all employment details\n\nRequired fields:\n• Joining Date\n• CTC\n• In Hand Salary', 'warning');
         return;
     }
     
@@ -469,14 +494,13 @@ function saveDirectEmployeeDetails(employeeId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('✅ Employee details saved successfully!');
-            location.reload();
+            showNotif('Employee details saved successfully!');
         } else {
-            alert('Error: ' + data.message);
+            showNotif('Error: ' + data.message, 'error');
         }
     })
     .catch(error => {
-        alert('Error saving employee details');
+        showNotif('Error saving employee details', 'error');
         console.error(error);
     });
 }
@@ -487,7 +511,7 @@ function sendDirectWelcomeLetter(employeeId) {
     const inHandSalary = document.getElementById(`emp_in_hand_salary_${employeeId}`).value;
     
     if (!joiningDate || !currentCtc || !inHandSalary) {
-        alert('⚠️ Please save employment details first!\n\nYou need to:\n1. Fill Joining Date, CTC, and In Hand Salary\n2. Click "Save Details" button\n3. Then send welcome letter');
+        showNotif('Please save employment details first!\n\nYou need to:\n1. Fill Joining Date, CTC, and In Hand Salary\n2. Click "Save Details" button\n3. Then send welcome letter', 'warning');
         return;
     }
     
@@ -501,14 +525,11 @@ function sendDirectWelcomeLetter(employeeId) {
     .then(response => response.json())
     .then(checkData => {
         if (!checkData.details_saved) {
-            alert('⚠️ Please click "Save Details" button first before sending welcome letter!');
+            showNotif('Please click "Save Details" button first before sending welcome letter!', 'warning');
             return;
         }
         
-        if (!confirm('Send welcome letter to this employee?')) {
-            return;
-        }
-        
+        showConfirm('Send welcome letter to this employee?', () => {
         const loadingModal = document.createElement('div');
         loadingModal.innerHTML = `
             <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1001; display: flex; align-items: center; justify-content: center;">
@@ -538,20 +559,21 @@ function sendDirectWelcomeLetter(employeeId) {
             loadingModal.remove();
             
             if (data.success) {
-                alert('✅ Welcome letter sent successfully!');
-                window.location.href = '/admin/employees/documents';
+                showNotif('Welcome letter sent successfully!');
+                location.reload();
             } else {
-                alert('Error: ' + data.message);
+                showNotif('Error: ' + data.message, 'error');
             }
         })
         .catch(error => {
             loadingModal.remove();
-            alert('Error sending welcome letter');
+            showNotif('Error sending welcome letter', 'error');
             console.error(error);
+        });
         });
     })
     .catch(error => {
-        alert('Error checking details status');
+        showNotif('Error checking details status', 'error');
         console.error(error);
     });
 }
@@ -562,14 +584,12 @@ function sendWelcomeLetter(interviewId) {
     const inHandSalary = document.getElementById(`in_hand_salary_${interviewId}`).value;
     
     if (!joiningDate || !currentCtc || !inHandSalary) {
-        alert('⚠️ Please save employment details first before sending welcome letter!');
+        showNotif('Please save employment details first before sending welcome letter!', 'warning');
         return;
     }
     
-    if (!confirm('Send welcome letter to ' + document.querySelector(`#joining_date_${interviewId}`).closest('tr').querySelector('strong').textContent + '?')) {
-        return;
-    }
-    
+    const candidateName = document.querySelector(`#joining_date_${interviewId}`).closest('tr').querySelector('strong').textContent;
+    showConfirm(`Send welcome letter to ${candidateName}?`, () => {
     const loadingModal = document.createElement('div');
     loadingModal.innerHTML = `
         <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1001; display: flex; align-items: center; justify-content: center;">
@@ -599,16 +619,17 @@ function sendWelcomeLetter(interviewId) {
         loadingModal.remove();
         
         if (data.success) {
-            alert('✅ Welcome letter sent successfully!');
-            window.location.href = data.redirect || '/admin/employees/documents';
+            showNotif('Welcome letter sent successfully!');
+            location.reload();
         } else {
-            alert('Error: ' + data.message);
+            showNotif('Error: ' + data.message, 'error');
         }
     })
     .catch(error => {
         loadingModal.remove();
-        alert('Error sending welcome letter');
+        showNotif('Error sending welcome letter', 'error');
         console.error(error);
+    });
     });
 }
 </script>

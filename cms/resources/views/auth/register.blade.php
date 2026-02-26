@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -455,14 +455,14 @@
                     // Basic email validation
                     if (!email.includes('@') || !email.includes('.')) {
                         e.preventDefault();
-                        alert('Please enter a valid email address');
+                        alert('âš ï¸ Please enter a valid email address');
                         return false;
                     }
                     
                     // Department validation
                     if (!department) {
                         e.preventDefault();
-                        alert('Please select your department');
+                        alert('âš ï¸ Please select your department');
                         return false;
                     }
                     
@@ -483,7 +483,7 @@
                     // Check terms accepted
                     if (!terms) {
                         e.preventDefault();
-                        alert('Please accept the Employee Terms of Service');
+                        alert('âš ï¸ Please accept the Employee Terms of Service');
                         return false;
                     }
                     

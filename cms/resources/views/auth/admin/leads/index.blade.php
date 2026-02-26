@@ -1,4 +1,4 @@
-@extends('auth.layouts.app')
+﻿@extends('auth.layouts.app')
 
 @section('styles')
 <style>
@@ -448,7 +448,7 @@ document.addEventListener('DOMContentLoaded', function() {
         saveBtn.addEventListener('click', function() {
             const reason = reasonText.value.trim();
             if (!reason) {
-                alert('Please provide a reason');
+                alert('âš ï¸ Please provide a reason');
                 return;
             }
             
@@ -514,7 +514,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Network error occurred');
+            alert('âŒ Network error occurred');
             const select = row.querySelector('.status-select');
             select.value = '';
         });

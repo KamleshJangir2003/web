@@ -1,4 +1,4 @@
-@extends('auth.layouts.app')
+﻿@extends('auth.layouts.app')
 <style>
     .main-content{
         padding-top: 15px;
@@ -490,7 +490,7 @@ function toggleLinkInput() {
 function generateMeetingLink() {
     const platform = document.querySelector('input[name="meeting_platform"]:checked');
     if (!platform) {
-        alert('Please select a meeting platform first');
+        alert('âš ï¸ Please select a meeting platform first');
         return;
     }
     
@@ -501,7 +501,7 @@ function generateMeetingLink() {
     switch(platform.value) {
         case 'Google Meet':
             if (!interviewDate || !startTime || !endTime) {
-                alert('Please fill interview date and time first');
+                alert('âš ï¸ Please fill interview date and time first');
                 return;
             }
             
@@ -603,7 +603,7 @@ function handleFormSubmit() {
     if (mode === 'Online') {
         const meetingLink = document.getElementById('meeting_link').value;
         if (!meetingLink) {
-            alert('Please generate a meeting link for online interview');
+            alert('âš ï¸ Please generate a meeting link for online interview');
             return false;
         }
     }
@@ -685,7 +685,7 @@ function handleFormSubmit() {
     const meetingLink = document.getElementById('meeting_link').value;
     
     if (interviewMode === 'Online' && !meetingLink.trim()) {
-        alert('Please enter a meeting link for online interview');
+        alert('âš ï¸ Please enter a meeting link for online interview');
         return false;
     }
     
@@ -761,13 +761,13 @@ function saveNewInterviewer() {
         alert(exists ? 'Interviewer selected!' : 'Interviewer added successfully!');
     } else {
         if (!name) {
-            alert('Please enter interviewer name');
+            alert('âš ï¸ Please enter interviewer name');
             input.focus();
         } else if (!email) {
-            alert('Please enter email');
+            alert('âš ï¸ Please enter email');
             emailInput.focus();
         } else if (!phone) {
-            alert('Please enter phone number');
+            alert('âš ï¸ Please enter phone number');
             phoneInput.focus();
         }
     }
@@ -811,7 +811,7 @@ function addInterviewerOnComplete(value) {
         emailInput.value = '';
         phoneInput.value = '';
     } else {
-        alert('Please fill all fields: Name, Email, and Phone');
+        alert('âš ï¸ Please fill all fields: Name, Email, and Phone');
         console.log('Missing fields - Name:', !!value.trim(), 'Email:', !!emailInput.value.trim(), 'Phone:', !!phoneInput.value.trim());
     }
 }

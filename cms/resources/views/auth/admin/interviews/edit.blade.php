@@ -1,4 +1,4 @@
-@extends('auth.layouts.app')
+﻿@extends('auth.layouts.app')
 
 @section('title', 'Edit Interview')
 
@@ -307,7 +307,7 @@ function toggleMeetingSection(mode) {
 function generateMeetingLink() {
     const platform = document.querySelector('input[name="meeting_platform"]:checked');
     if (!platform) {
-        alert('Please select a meeting platform first');
+        alert('âš ï¸ Please select a meeting platform first');
         return;
     }
     
@@ -327,7 +327,7 @@ function generateMeetingLink() {
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error generating meeting link');
+        alert('âŒ Error generating meeting link');
     });
 }
 </script>

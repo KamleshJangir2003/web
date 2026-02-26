@@ -1,4 +1,4 @@
-@extends('auth.layouts.app')
+﻿@extends('auth.layouts.app')
 
 @section('title', 'Interns Management')
 
@@ -614,7 +614,7 @@ function closeReasonModal() {
 function saveStatusWithReason() {
     const reason = document.getElementById('reasonText').value.trim();
     if (!reason) {
-        alert('Please provide a reason');
+        alert('âš ï¸ Please provide a reason');
         return;
     }
     

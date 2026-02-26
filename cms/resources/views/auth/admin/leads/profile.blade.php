@@ -1,4 +1,4 @@
-@extends('auth.layouts.app')
+﻿@extends('auth.layouts.app')
 
 @section('content')
 <div class="main-content">
@@ -344,12 +344,12 @@ document.getElementById('resumeUploadForm').addEventListener('submit', function(
             alert('Resume uploaded successfully!');
             location.reload();
         } else {
-            alert('Upload failed: ' + data.message);
+            alert('âŒ Upload failed: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Upload failed. Please try again.');
+        alert('âŒ Upload failed. Please try again.');
     })
     .finally(() => {
         submitBtn.disabled = false;

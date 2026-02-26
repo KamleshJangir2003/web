@@ -1,4 +1,4 @@
-@extends('auth.layouts.app')
+﻿@extends('auth.layouts.app')
 <style>
     .main-content{
         margin-top: 70px;
@@ -453,7 +453,7 @@ function savePayment() {
             let errors = xhr.responseJSON?.errors;
             if(errors) {
                 let errorMsg = Object.values(errors).flat().join('\n');
-                alert('Validation Errors:\n' + errorMsg);
+                alert('âš ï¸ Validation Errors:\n' + errorMsg);
             } else {
                 showNotification('An error occurred. Please try again.', 'error');
             }
@@ -490,7 +490,7 @@ function saveStipend() {
             let errors = xhr.responseJSON?.errors;
             if(errors) {
                 let errorMsg = Object.values(errors).flat().join('\n');
-                alert('Validation Errors:\n' + errorMsg);
+                alert('âš ï¸ Validation Errors:\n' + errorMsg);
             } else {
                 showNotification('An error occurred. Please try again.', 'error');
             }
@@ -556,7 +556,7 @@ function saveCompleteInternship() {
             let errors = xhr.responseJSON?.errors;
             if(errors) {
                 let errorMsg = Object.values(errors).flat().join('\n');
-                alert('Validation Errors:\n' + errorMsg);
+                alert('âš ï¸ Validation Errors:\n' + errorMsg);
             } else {
                 showNotification('An error occurred. Please try again.', 'error');
             }
@@ -599,7 +599,7 @@ function saveCancelInternship() {
             let errors = xhr.responseJSON?.errors;
             if(errors) {
                 let errorMsg = Object.values(errors).flat().join('\n');
-                alert('Validation Errors:\n' + errorMsg);
+                alert('âš ï¸ Validation Errors:\n' + errorMsg);
             } else {
                 showNotification('An error occurred. Please try again.', 'error');
             }

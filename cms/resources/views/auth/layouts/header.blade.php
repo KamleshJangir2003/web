@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+﻿<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
     :root{
@@ -1487,12 +1487,12 @@ function markBillAsPaidFromHeader(billId) {
             // Refresh bills in header
             checkDueBillsForHeader();
         } else {
-            alert('Error marking bill as paid');
+            alert('âŒ Error marking bill as paid');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error marking bill as paid');
+        alert('âŒ Error marking bill as paid');
     });
 }
 
@@ -1502,7 +1502,7 @@ function selectExcelFile(e) {
 
     const role = document.getElementById('roleSelect').value;
     if (!role) {
-        alert('Please select role first!');
+        alert('âš ï¸ Please select role first!');
         return;
     }
 
@@ -1599,7 +1599,7 @@ function saveManualEntry() {
     const platform = document.getElementById('platformSelect').value;
 
     if (!name || !number) {
-        alert('Please enter both name and number!');
+        alert('âš ï¸ Please enter both name and number!');
         return;
     }
       // ✅ Only 10 digit number allowed
@@ -1608,7 +1608,7 @@ function saveManualEntry() {
         return;
     }
     if (!role) {
-        alert('Please select role first!');
+        alert('âš ï¸ Please select role first!');
         return;
     }
 
@@ -1631,10 +1631,10 @@ function saveManualEntry() {
             document.getElementById('manualNumber').value = '';
             document.getElementById('manualEntryForm').style.display = 'none';
         } else {
-            alert('Error saving lead!');
+            alert('âŒ Error saving lead!');
         }
     })
-    .catch(() => alert('Network error!'));
+    .catch(() => alert('âŒ Network error!'));
 }
 </script>
 <script>
@@ -1963,7 +1963,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const inHand = parseFloat(document.getElementById('modalInHandSalary').value);
             
             if (!inHand || inHand <= 0) {
-                alert('Please enter a valid salary amount');
+                alert('âš ï¸ Please enter a valid salary amount');
                 return;
             }
             

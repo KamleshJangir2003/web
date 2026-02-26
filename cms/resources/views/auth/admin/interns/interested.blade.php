@@ -1,4 +1,4 @@
-@extends('auth.layouts.app')
+﻿@extends('auth.layouts.app')
 
 @section('title', 'Interested Interns')
 
@@ -95,7 +95,7 @@ $(document).ready(function() {
             },
             error: function(xhr, status, error) {
                 console.error('Error:', xhr.responseText);
-                alert('Error updating status');
+                alert('âŒ Error updating status');
             }
         });
     }

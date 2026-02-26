@@ -1,4 +1,4 @@
-@extends('auth.layouts.app')
+﻿@extends('auth.layouts.app')
 
 <style>
 /* ================================
@@ -176,7 +176,7 @@
 function openForPrint(url) {
     const win = window.open(url, '_blank');
     if (!win) {
-        alert('Popup blocked. Please allow popups to print the PDF.');
+        alert('âš ï¸ Popup blocked. Please allow popups to print the PDF.');
     }
 }
 

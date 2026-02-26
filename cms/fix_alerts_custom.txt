@@ -1,0 +1,13 @@
+// Custom notification function - add at start of script section
+function showNotif(msg, type='success') {
+    const n = document.createElement('div');
+    n.style.cssText = `position:fixed;top:20px;right:20px;background:${type==='error'?'#dc3545':type==='warning'?'#ffc107':'#28a745'};color:white;padding:15px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:9999;font-size:14px;max-width:350px;white-space:pre-line`;
+    n.textContent = msg;
+    document.body.appendChild(n);
+    setTimeout(() => n.remove(), 3500);
+}
+
+// Replace all alert() calls with showNotif()
+// alert('⚠️ ...') → showNotif('⚠️ ...', 'warning')
+// alert('✅ ...') → showNotif('✅ ...')
+// alert('❌ ...') → showNotif('❌ ...', 'error')

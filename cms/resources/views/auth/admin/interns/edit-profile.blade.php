@@ -1,4 +1,4 @@
-@extends('auth.layouts.app')
+﻿@extends('auth.layouts.app')
 
 @section('title', 'Edit Intern Profile')
 
@@ -290,14 +290,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert(data.message + '\n\nCertificate URL: ' + data.certificate_url);
                 window.location.href = '{{ route("admin.interns.profiles") }}';
             } else {
-                alert('Error: ' + data.message);
+                alert('âŒ Error: ' + data.message);
                 this.disabled = false;
                 this.textContent = 'Complete & Generate Certificate';
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Failed to complete internship');
+            alert('âŒ Failed to complete internship');
             this.disabled = false;
             this.textContent = 'Complete & Generate Certificate';
         });
@@ -324,14 +324,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert(data.message);
                 window.location.href = '{{ route("admin.interns.profiles") }}';
             } else {
-                alert('Error: ' + data.message);
+                alert('âŒ Error: ' + data.message);
                 this.disabled = false;
                 this.textContent = 'Confirm Cancellation';
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Failed to cancel internship');
+            alert('âŒ Failed to cancel internship');
             this.disabled = false;
             this.textContent = 'Confirm Cancellation';
         });

@@ -1,4 +1,4 @@
-@extends('auth.layouts.app')
+﻿@extends('auth.layouts.app')
 <style>
     /* ===== FIX CONTENT SHIFT WITH SIDEBAR ===== */
 
@@ -413,7 +413,7 @@ body {
 
 <script>
 function setDefaultSalaries() {
-    alert('Please set CTC and In-Hand salary manually in employee records from Admin Panel!');
+    alert('âš ï¸ Please set CTC and In-Hand salary manually in employee records from Admin Panel!');
 }
 
 function showBreakdown(name, ctc, inHandSalary, basicSalary, netSalary, workingDays, deduction, advance, incentive, employeePf, employeeEsi, employerPf, employerEsi) {

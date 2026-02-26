@@ -1,4 +1,4 @@
-@extends('auth.layouts.app')
+﻿@extends('auth.layouts.app')
 
 @section('content')
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -1596,13 +1596,13 @@ function submitLeadStatus() {
     const reason = document.getElementById('leadReason').value;
     
     if (!reason) {
-        alert('Please enter a reason');
+        alert('âš ï¸ Please enter a reason');
         return;
     }
     
     const csrfToken = document.querySelector('meta[name="csrf-token"]');
     if (!csrfToken) {
-        alert('CSRF token not found');
+        alert('âŒ CSRF token not found');
         return;
     }
     
@@ -1622,12 +1622,12 @@ function submitLeadStatus() {
             alert(data.message);
             location.reload();
         } else {
-            alert('Error: ' + data.message);
+            alert('âŒ Error: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error updating status');
+        alert('âŒ Error updating status');
     });
 }
 
@@ -1645,13 +1645,13 @@ function submitCallbackStatus() {
     const reason = document.getElementById('callbackReason').value;
     
     if (!reason) {
-        alert('Please enter a reason');
+        alert('âš ï¸ Please enter a reason');
         return;
     }
     
     const csrfToken = document.querySelector('meta[name="csrf-token"]');
     if (!csrfToken) {
-        alert('CSRF token not found');
+        alert('âŒ CSRF token not found');
         return;
     }
     
@@ -1671,12 +1671,12 @@ function submitCallbackStatus() {
             alert(data.message);
             location.reload();
         } else {
-            alert('Error: ' + data.message);
+            alert('âŒ Error: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error updating status');
+        alert('âŒ Error updating status');
     });
 }
 
@@ -1701,13 +1701,13 @@ function submitInterviewResult() {
     const reason = document.getElementById('rejectionReason').value;
     
     if (result === 'Rejected' && !reason) {
-        alert('Please enter rejection reason');
+        alert('âš ï¸ Please enter rejection reason');
         return;
     }
     
     const csrfToken = document.querySelector('meta[name="csrf-token"]');
     if (!csrfToken) {
-        alert('CSRF token not found');
+        alert('âŒ CSRF token not found');
         return;
     }
     
@@ -1727,12 +1727,12 @@ function submitInterviewResult() {
             alert(data.message);
             location.reload();
         } else {
-            alert('Error: ' + data.message);
+            alert('âŒ Error: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error updating result');
+        alert('âŒ Error updating result');
     });
 }
 
@@ -1751,13 +1751,13 @@ function submitWelcomeLetter() {
     const inHand = document.getElementById('inHandSalary').value;
     
     if (!joiningDate || !ctc || !inHand) {
-        alert('Please fill all fields');
+        alert('âš ï¸ Please fill all fields');
         return;
     }
     
     const csrfToken = document.querySelector('meta[name="csrf-token"]');
     if (!csrfToken) {
-        alert('CSRF token not found');
+        alert('âŒ CSRF token not found');
         return;
     }
     
@@ -1785,12 +1785,12 @@ function submitWelcomeLetter() {
                 location.reload();
             }
         } else {
-            alert('Error: ' + data.message);
+            alert('âŒ Error: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error sending welcome letter');
+        alert('âŒ Error sending welcome letter');
     });
 }
 </script>
@@ -2485,12 +2485,12 @@ function markBillAsPaidFromDashboard(billId) {
                 showBillsModal();
             }
         } else {
-            alert('Error marking bill as paid');
+            alert('âŒ Error marking bill as paid');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error marking bill as paid');
+        alert('âŒ Error marking bill as paid');
     });
 }
 </script>

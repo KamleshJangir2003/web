@@ -1,4 +1,4 @@
-@extends('auth.layouts.app')
+﻿@extends('auth.layouts.app')
 
 @section('content')
 <div class="main-content">
@@ -633,12 +633,12 @@ document.getElementById('resumeUploadForm').addEventListener('submit', function(
             alert('Resume uploaded successfully!');
             location.reload();
         } else {
-            alert('Upload failed: ' + data.message);
+            alert('âŒ Upload failed: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Upload failed. Please try again.');
+        alert('âŒ Upload failed. Please try again.');
     })
     .finally(() => {
         submitBtn.disabled = false;
@@ -683,12 +683,12 @@ function editReason(leadId, currentReason) {
             if (data.success) {
                 reasonSpan.innerHTML = `<small class="text-muted">${newReason || '-'}</small><i class="fa-solid fa-edit" style="font-size: 10px; margin-left: 5px; color: #6c757d;"></i>`;
             } else {
-                alert('Failed to update reason');
+                alert('âŒ Failed to update reason');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error updating reason');
+            alert('âŒ Error updating reason');
         });
     }
     

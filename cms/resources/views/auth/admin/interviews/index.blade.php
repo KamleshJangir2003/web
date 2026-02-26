@@ -3,7 +3,7 @@
 @section('content')
 <div class="main-content">
     <div class="page-header">
-        <h1>📅 Interview Management</h1>
+        <h1>?? Interview Management</h1>
         <div class="header-actions">
             <a href="{{ route('admin.interviews.selected') }}" class="btn btn-success">
                 <i class="fas fa-users"></i> Selected Employees
@@ -53,11 +53,11 @@
                             <td>{{ $interview->interviewer }}</td>
                             <td id="status-{{ $interview->id }}">
                                 @if($interview->status == 'Completed' && $interview->result == 'Pending')
-                                    <span class="badge badge-warning">⏳ Pending Decision</span>
+                                    <span class="badge badge-warning">? Pending Decision</span>
                                 @elseif($interview->result == 'Selected')
-                                    <span class="badge badge-success">✅ Selected</span>
+                                    <span class="badge badge-success">? Selected</span>
                                 @elseif($interview->result == 'Rejected')
-                                    <span class="badge badge-danger">❌ Rejected</span>
+                                    <span class="badge badge-danger">? Rejected</span>
                                 @else
                                     <span class="badge badge-primary">{{ $interview->status }}</span>
                                 @endif
@@ -120,6 +120,25 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" onclick="confirmReject()">Reject Candidate</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Complete Interview Modal -->
+<div class="modal fade" id="completeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Complete Interview</h5>
+                <button type="button" class="close" onclick="closeCompleteModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Mark this interview as completed?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeCompleteModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="confirmComplete()">Yes, Complete</button>
             </div>
         </div>
     </div>
@@ -369,45 +388,55 @@
 let currentInterviewId = null;
 
 function markCompleted(interviewId) {
-    if (confirm('Mark this interview as completed?')) {
-        fetch(`/admin/interviews/${interviewId}/complete`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update status
-                document.getElementById(`status-${interviewId}`).innerHTML = 
-                    '<span class="badge badge-warning">⏳ Pending Decision</span>';
-                
-                // Update actions
-                document.getElementById(`actions-${interviewId}`).innerHTML = `
-                    <button class="btn btn-sm btn-success select-btn" onclick="selectCandidate(${interviewId})">
-                        <i class="fas fa-check"></i> Select
-                    </button>
-                    <button class="btn btn-sm btn-danger reject-btn" onclick="rejectCandidate(${interviewId})">
-                        <i class="fas fa-times"></i> Reject
-                    </button>
-                `;
-                
-                showAlert('Interview marked as completed!', 'success');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showAlert('Error updating interview status', 'error');
-        });
-    }
+    currentInterviewId = interviewId;
+    document.getElementById('completeModal').classList.add('show');
+    document.getElementById('completeModal').style.display = 'flex';
+}
+
+function confirmComplete() {
+    const interviewId = currentInterviewId;
+    closeCompleteModal();
+    
+    fetch(`/admin/interviews/${interviewId}/complete`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update status
+            document.getElementById(`status-${interviewId}`).innerHTML = 
+                '<span class="badge badge-warning">? Pending Decision</span>';
+            
+            // Update actions
+            document.getElementById(`actions-${interviewId}`).innerHTML = `
+                <button class="btn btn-sm btn-success select-btn" onclick="selectCandidate(${interviewId})">
+                    <i class="fas fa-check"></i> Select
+                </button>
+                <button class="btn btn-sm btn-danger reject-btn" onclick="rejectCandidate(${interviewId})">
+                    <i class="fas fa-times"></i> Reject
+                </button>
+            `;
+            
+            showAlert('Interview marked as completed!', 'success');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('❌ Error updating interview status', 'error');
+    });
+}
+
+function closeCompleteModal() {
+    document.getElementById('completeModal').classList.remove('show');
+    document.getElementById('completeModal').style.display = 'none';
 }
 
 function selectCandidate(interviewId) {
-    if (confirm('Select this candidate?')) {
-        updateResult(interviewId, 'Selected');
-    }
+    updateResult(interviewId, 'Selected');
 }
 
 function rejectCandidate(interviewId) {
@@ -419,7 +448,7 @@ function rejectCandidate(interviewId) {
 function confirmReject() {
     const reason = document.getElementById('rejectionReason').value.trim();
     if (!reason) {
-        alert('Please provide a rejection reason');
+        alert('⚠️ Please provide a rejection reason');
         return;
     }
     
@@ -455,8 +484,8 @@ function updateResult(interviewId, result, rejectionReason = null) {
         if (data.success) {
             // Update status
             const statusBadge = result === 'Selected' 
-                ? '<span class="badge badge-success">✅ Selected</span>'
-                : '<span class="badge badge-danger">❌ Rejected</span>';
+                ? '<span class="badge badge-success">? Selected</span>'
+                : '<span class="badge badge-danger">? Rejected</span>';
             
             document.getElementById(`status-${interviewId}`).innerHTML = statusBadge;
             
@@ -479,7 +508,7 @@ function updateResult(interviewId, result, rejectionReason = null) {
     })
     .catch(error => {
         console.error('Error:', error);
-        showAlert('Error updating result: ' + error.message, 'error');
+        showAlert('❌ Error updating result: ' + error.message, 'error');
     });
 }
 
@@ -514,6 +543,12 @@ document.getElementById('rejectModal').addEventListener('click', function(e) {
     }
 });
 
+document.getElementById('completeModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCompleteModal();
+    }
+});
+
 // Close modal with close button
 document.querySelector('.close').addEventListener('click', closeModal);
 
@@ -534,7 +569,7 @@ function saveReason(interviewId, reason) {
     })
     .catch(error => {
         console.error('Error:', error);
-        showAlert('Error saving reason', 'error');
+        showAlert('❌ Error saving reason', 'error');
     });
 }
 </script>
