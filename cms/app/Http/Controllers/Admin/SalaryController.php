@@ -8,6 +8,10 @@ use App\Models\Attendance;
 use App\Models\SalaryRecord;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Exports\SalaryExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Mail\SalarySlipMail;
+use Illuminate\Support\Facades\Mail;
 
 class SalaryController extends Controller
 {
@@ -267,5 +271,84 @@ class SalaryController extends Controller
         }
         
         return round($gross, 2);
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $month = $request->get('month', date('m'));
+        $year = $request->get('year', date('Y'));
+        $monthName = date('F', mktime(0, 0, 0, $month, 1));
+        
+        return Excel::download(new SalaryExport($month, $year), "Salary_{$monthName}_{$year}.xlsx");
+    }
+
+    public function sendEmail(Request $request)
+    {
+        $request->validate([
+            'salary_ids' => 'nullable|array',
+            'salary_ids.*' => 'exists:salary_records,id',
+            'custom_emails' => 'nullable|string'
+        ]);
+
+        $sentCount = 0;
+        $failedCount = 0;
+        $salaryRecord = null;
+
+        // Get first salary record for custom emails
+        if ($request->has('salary_ids') && count($request->salary_ids) > 0) {
+            $salaryRecord = SalaryRecord::with('employee')->find($request->salary_ids[0]);
+        } else {
+            // If no employee selected, get any salary record from current month
+            $month = $request->get('month', date('m'));
+            $year = $request->get('year', date('Y'));
+            $salaryRecord = SalaryRecord::with('employee')
+                ->where('month', $month)
+                ->where('year', $year)
+                ->first();
+        }
+
+        // Send to selected employees
+        if ($request->has('salary_ids')) {
+            foreach ($request->salary_ids as $salaryId) {
+                $record = SalaryRecord::with('employee')->find($salaryId);
+                
+                if ($record && $record->employee->email) {
+                    try {
+                        Mail::to($record->employee->email)->send(new SalarySlipMail($record));
+                        $sentCount++;
+                    } catch (\Exception $e) {
+                        $failedCount++;
+                    }
+                }
+            }
+        }
+
+        // Send to custom emails
+        if ($request->custom_emails && $salaryRecord) {
+            $customEmails = array_map('trim', explode(',', $request->custom_emails));
+            $customEmails = array_filter($customEmails, function($email) {
+                return filter_var($email, FILTER_VALIDATE_EMAIL);
+            });
+
+            foreach ($customEmails as $email) {
+                try {
+                    Mail::to($email)->send(new SalarySlipMail($salaryRecord));
+                    $sentCount++;
+                } catch (\Exception $e) {
+                    $failedCount++;
+                }
+            }
+        }
+
+        if ($sentCount == 0 && $failedCount == 0) {
+            return redirect()->back()->with('error', 'Please select employees or enter custom emails');
+        }
+
+        $message = "Emails sent successfully to {$sentCount} recipient(s)";
+        if ($failedCount > 0) {
+            $message .= ". Failed: {$failedCount}";
+        }
+
+        return redirect()->back()->with('success', $message);
     }
 }

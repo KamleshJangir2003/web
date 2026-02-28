@@ -815,20 +815,16 @@ body {
             </div>
         </div>
 
+       
+       
         <div class="col-xl-3 col-md-6">
-            <a href="{{ url('/admin/interns/ongoing-list') }}" class="text-decoration-none">
-                <div class="card stat-card bg-success">
-                    <div class="card-body"> 
-                        <div class="stat-title">Intern Payment</div>
-                        <div class="stat-number" style="font-size: 16px; line-height: 1.4;">
-                            Total: ₹{{ number_format($stats['totalInternPayment'] ?? 0) }}<br>
-                            <small style="font-size: 13px; opacity: 0.9;">Received: ₹{{ number_format($stats['receivedInternPayment'] ?? 0) }}</small><br>
-                            <small style="font-size: 13px; opacity: 0.85;">Pending: ₹{{ number_format(($stats['totalInternPayment'] ?? 0) - ($stats['receivedInternPayment'] ?? 0)) }}</small>
-                        </div>
-                        <i class="bi bi-cash-stack"></i>
-                    </div>
+            <div class="card stat-card bg-warning">
+                <div class="card-body">
+                    <div class="stat-title">Reimbursement</div>
+                    <div class="stat-number">₹{{ number_format($stats['totalReimbursement'] ?? 0) }}</div>
+                    <i class="bi bi-ticket-perforated"></i>
                 </div>
-            </a>
+            </div>
         </div>
         <div class="col-xl-3 col-md-6">
             <div class="card stat-card bg-danger">
@@ -843,15 +839,6 @@ body {
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
-            <div class="card stat-card bg-warning">
-                <div class="card-body">
-                    <div class="stat-title">Reimbursement</div>
-                    <div class="stat-number">₹{{ number_format($stats['totalReimbursement'] ?? 0) }}</div>
-                    <i class="bi bi-ticket-perforated"></i>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
             <div class="card stat-card bg-secondary">
                 <div class="card-body">
                     <div class="stat-title">Expenses</div>
@@ -859,6 +846,21 @@ body {
                     <i class="bi bi-ticket-detailed"></i>
                 </div>
             </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <a href="{{ url('/admin/interns/ongoing-list') }}" class="text-decoration-none">
+                <div class="card stat-card bg-success">
+                    <div class="card-body"> 
+                        <div class="stat-title">Intern Payment</div>
+                        <div class="stat-number" style="font-size: 16px; line-height: 1.4;">
+                            Total: ₹{{ number_format($stats['totalInternPayment'] ?? 0) }}<br>
+                            <small style="font-size: 13px; opacity: 0.9;">Received: ₹{{ number_format($stats['receivedInternPayment'] ?? 0) }}</small><br>
+                            <small style="font-size: 13px; opacity: 0.85;">Pending: ₹{{ number_format(($stats['totalInternPayment'] ?? 0) - ($stats['receivedInternPayment'] ?? 0)) }}</small>
+                        </div>
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+                </div>
+            </a>
         </div>
     </div>
   

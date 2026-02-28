@@ -111,19 +111,31 @@ body {
                                         </button>
                                     </form>
                                 </div>
-                                <div class="col-md-3">
-                                    <button type="button" class="btn btn-warning" onclick="setDefaultSalaries()">
-                                        <i class="fas fa-cog me-2"></i>Set Default Salaries
-                                    </button>
-                                </div>
-                                <div class="col-md-3">
-                                    <form method="POST" action="{{ route('admin.salary.auto-generate') }}" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="btn btn-info" onclick="return confirm('This will auto-generate salary for last month. Continue?')">
-                                            <i class="fas fa-magic me-2"></i>Auto Generate
-                                        </button>
-                                    </form>
-                                </div>
+                                <div class="salary-actions">
+
+    <button type="button" class="btn btn-warning" onclick="setDefaultSalaries()">
+        <i class="fas fa-cog me-2"></i>Set Default Salaries
+    </button>
+
+    <form method="POST" action="{{ route('admin.salary.auto-generate') }}">
+        @csrf
+        <button type="submit" class="btn btn-info"
+            onclick="return confirm('This will auto-generate salary for last month. Continue?')">
+            <i class="fas fa-magic me-2"></i>Auto Generate
+        </button>
+    </form>
+
+    <a href="{{ route('admin.salary.export.excel', ['month' => $month, 'year' => $year]) }}"
+       class="btn btn-primary">
+        <i class="fas fa-file-excel me-2"></i>Download Excel
+    </a>
+
+    <button type="button" class="btn btn-secondary"
+        onclick="showCustomEmailModal()">
+        <i class="fas fa-envelope me-2"></i>Send to Custom Email
+    </button>
+
+</div>
                             </form>
                         </div>
                     </div>
@@ -134,6 +146,7 @@ body {
                             <table class="table table-striped table-hover">
                                 <thead class="table-dark">
                                     <tr>
+                                        <th><input type="checkbox" id="selectAll" class="form-check-input"></th>
                                         <th>SN</th>
                                         <th>Name</th>
                                         <th>Designation</th>
@@ -148,6 +161,9 @@ body {
                                 <tbody>
                                     @foreach($salaryRecords as $index => $record)
                                         <tr>
+                                            <td>
+                                                <input type="checkbox" class="form-check-input salary-checkbox" value="{{ $record->id }}" data-email="{{ $record->employee->email }}">
+                                            </td>
                                             <td>{{ $index + 1 }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center">
@@ -200,6 +216,7 @@ body {
                                 </tbody>
                                 <tfoot class="table-light">
                                     <tr>
+                                        <th></th>
                                         <th colspan="5">Total</th>
                                         <th>₹{{ number_format($salaryRecords->sum('basic_salary'), 2) }}</th>
                                         <th>₹{{ number_format($salaryRecords->sum('net_salary'), 2) }}</th>
@@ -411,6 +428,59 @@ body {
     </div>
 </div>
 
+<!-- Custom Email Modal -->
+<div class="modal fade" id="customEmailModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h5 class="modal-title"><i class="fas fa-envelope me-2"></i>Send Salary Slips</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="customEmailForm" method="POST" action="{{ route('admin.salary.send.email') }}">
+                @csrf
+                <input type="hidden" name="month" value="{{ $month }}">
+                <input type="hidden" name="year" value="{{ $year }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            Select Employees
+                            <span class="float-end">
+                                <input type="checkbox" id="selectAllModal" class="form-check-input me-1">
+                                <small>Select All</small>
+                            </span>
+                        </label>
+                        <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                            @foreach($salaryRecords as $record)
+                                <div class="form-check">
+                                    <input class="form-check-input email-employee-checkbox" type="checkbox" 
+                                           name="salary_ids[]" value="{{ $record->id }}" 
+                                           id="emp{{ $record->id }}">
+                                    <label class="form-check-label" for="emp{{ $record->id }}">
+                                        {{ $record->employee->first_name }} {{ $record->employee->last_name }}
+                                        <small class="text-muted">({{ $record->employee->email ?? 'No Email' }})</small>
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="customEmails" class="form-label fw-bold">Additional Emails (Optional)</label>
+                        <textarea class="form-control" id="customEmails" name="custom_emails" rows="3" 
+                                  placeholder="Enter emails separated by comma&#10;Example: email1@example.com, email2@example.com"></textarea>
+                        <small class="text-muted">Comma-separated email addresses</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-2"></i>Send Emails
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 function setDefaultSalaries() {
     alert('âš ï¸ Please set CTC and In-Hand salary manually in employee records from Admin Panel!');
@@ -443,7 +513,6 @@ function showBreakdown(name, ctc, inHandSalary, basicSalary, netSalary, workingD
 }
 
 function calculateGrossFromInHand(inHand) {
-    // Iterative approach to find gross that results in desired in-hand
     var gross = inHand;
     
     for (var i = 0; i < 10; i++) {
@@ -463,5 +532,65 @@ function calculateGrossFromInHand(inHand) {
     }
     
     return Math.round(gross * 100) / 100;
+}
+
+function showCustomEmailModal() {
+    new bootstrap.Modal(document.getElementById('customEmailModal')).show();
+}
+
+document.getElementById('selectAllModal')?.addEventListener('change', function() {
+    document.querySelectorAll('.email-employee-checkbox').forEach(checkbox => {
+        checkbox.checked = this.checked;
+    });
+});
+
+document.getElementById('selectAll')?.addEventListener('change', function() {
+    document.querySelectorAll('.salary-checkbox').forEach(checkbox => {
+        checkbox.checked = this.checked;
+    });
+});
+
+function showEmailModal() {
+    const selected = document.querySelectorAll('.salary-checkbox:checked');
+    if (selected.length === 0) {
+        alert('⚠️ Please select at least one employee');
+        return;
+    }
+    
+    let emailList = [];
+    selected.forEach(checkbox => {
+        const email = checkbox.getAttribute('data-email');
+        if (email && email !== 'N/A') {
+            emailList.push(email);
+        }
+    });
+    
+    if (emailList.length === 0) {
+        alert('⚠️ Selected employees do not have email addresses');
+        return;
+    }
+    
+    if (confirm(`Send salary slips to ${emailList.length} employee(s)?`)) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route('admin.salary.send.email') }}';
+        
+        const csrf = document.createElement('input');
+        csrf.type = 'hidden';
+        csrf.name = '_token';
+        csrf.value = '{{ csrf_token() }}';
+        form.appendChild(csrf);
+        
+        selected.forEach(checkbox => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'salary_ids[]';
+            input.value = checkbox.value;
+            form.appendChild(input);
+        });
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
 }
 </script>
