@@ -715,6 +715,7 @@ body {
 ================================ */
 .leads-card {
     width: 100%;
+    
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 6px 18px rgba(0,0,0,0.08);
@@ -885,6 +886,7 @@ body {
 
     .main-content {
         padding: 16px;
+        
     }
 
     .leads-table {

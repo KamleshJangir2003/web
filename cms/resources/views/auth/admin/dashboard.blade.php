@@ -1324,7 +1324,7 @@ body {
 
     <!-- Interested Column -->
     <div class="journey-column">
-        <h4 class="text-success">✅ Interested ({{ isset($interestedTotal) ? $interestedTotal : 0 }})</h4>
+        <h4 class="text-success">✅ ShortListed ({{ isset($interestedTotal) ? $interestedTotal : 0 }})</h4>
         @if(isset($interestedCandidates) && $interestedCandidates->count() > 0)
         @foreach($interestedCandidates as $candidate)
         <div class="journey-card" data-date="{{ $candidate->created_at }}" data-name="{{ strtolower($candidate->name) }}" data-meta="{{ strtolower(($candidate->phone ?? $candidate->number) . ' ' . ($candidate->role ?? '')) }}">
