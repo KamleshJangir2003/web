@@ -190,7 +190,7 @@
     <div class="journey-column">
         <h4 class="text-info mb-3">Call Backs ({{ $journeys->where('final_status','callback')->count() }})</h4>
 
-        @foreach($journeys->where('final_status','callback') as $journey)
+        @foreach($journeys->where('final_status','callback')->take(10) as $journey)
 
         <div class="journey-card">
 
@@ -246,13 +246,21 @@
         </div>
 
         @endforeach
+
+        @if($journeys->where('final_status','callback')->count() > 10)
+        <div class="journey-card bg-light">
+            <div class="text-center py-3">
+                <strong>Others ({{ $journeys->where('final_status','callback')->count() - 10 }})</strong>
+            </div>
+        </div>
+        @endif
     </div>
 
     {{-- ================= NOT INTERESTED ================= --}}
     <div class="journey-column">
         <h4 class="text-secondary mb-3">Not Interested ({{ $journeys->where('final_status','not_interested')->count() }})</h4>
 
-        @foreach($journeys->where('final_status','not_interested') as $journey)
+        @foreach($journeys->where('final_status','not_interested')->take(10) as $journey)
 
         <div class="journey-card">
 
@@ -309,13 +317,21 @@
         </div>
 
         @endforeach
+
+        @if($journeys->where('final_status','not_interested')->count() > 10)
+        <div class="journey-card bg-light">
+            <div class="text-center py-3">
+                <strong>Others ({{ $journeys->where('final_status','not_interested')->count() - 10 }})</strong>
+            </div>
+        </div>
+        @endif
     </div>
 
     {{-- ================= HIRED ================= --}}
     <div class="journey-column">
         <h4 class="text-success mb-3">Hired ({{ $journeys->where('current_stage','hired')->count() }})</h4>
 
-        @foreach($journeys->where('current_stage','hired') as $journey)
+        @foreach($journeys->where('current_stage','hired')->take(10) as $journey)
 
         <div class="journey-card">
 
@@ -383,15 +399,21 @@
         </div>
 
         @endforeach
+
+        @if($journeys->where('current_stage','hired')->count() > 10)
+        <div class="journey-card bg-light">
+            <div class="text-center py-3">
+                <strong>Others ({{ $journeys->where('current_stage','hired')->count() - 10 }})</strong>
+            </div>
+        </div>
+        @endif
     </div>
-
-
 
     {{-- ================= INTERVIEW REJECT ================= --}}
     <div class="journey-column">
         <h4 class="text-warning mb-3">Interview Reject ({{ $journeys->where('final_status','interview_reject')->count() }})</h4>
 
-        @foreach($journeys->where('final_status','interview_reject') as $journey)
+        @foreach($journeys->where('final_status','interview_reject')->take(10) as $journey)
 
         <div class="journey-card">
 
@@ -444,13 +466,21 @@
         </div>
 
         @endforeach
+
+        @if($journeys->where('final_status','interview_reject')->count() > 10)
+        <div class="journey-card bg-light">
+            <div class="text-center py-3">
+                <strong>Others ({{ $journeys->where('final_status','interview_reject')->count() - 10 }})</strong>
+            </div>
+        </div>
+        @endif
     </div>
 
     {{-- ================= NOT SELECTED ================= --}}
     <div class="journey-column">
         <h4 class="text-danger mb-3">Not Selected ({{ $journeys->where('final_status','rejected')->count() }})</h4>
 
-        @foreach($journeys->where('final_status','rejected') as $journey)
+        @foreach($journeys->where('final_status','rejected')->take(10) as $journey)
 
         <div class="journey-card">
 
@@ -515,6 +545,14 @@
         </div>
 
         @endforeach
+
+        @if($journeys->where('final_status','rejected')->count() > 10)
+        <div class="journey-card bg-light">
+            <div class="text-center py-3">
+                <strong>Others ({{ $journeys->where('final_status','rejected')->count() - 10 }})</strong>
+            </div>
+        </div>
+        @endif
     </div>
 
 </div>
