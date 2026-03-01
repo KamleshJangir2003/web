@@ -687,21 +687,7 @@ body {
         </div>
     </div>
 
-    <!-- 💸 Auto-Generated Salary Alert -->
-    <!-- <div id="autoSalaryAlert" class="alert alert-success bill-alert mb-4" style="background: linear-gradient(135deg, #28a745, #20c997); color: white; border: none; border-radius: 12px; display: none;">
-        <div class="d-flex align-items-center justify-content-between">
-            <div class="d-flex align-items-center">
-                <i class="fa-solid fa-money-bill-wave fa-2x me-3"></i>
-                <div>
-                    <h5 class="mb-1">💸 Monthly Salary Generated!</h5>
-                    <p class="mb-0" id="autoSalaryText">Checking for auto-generated salaries...</p>
-                </div>
-            </div>
-            <button class="btn btn-light btn-sm" onclick="viewSalaryRecords()">
-                <i class="fa-solid fa-eye"></i> View Salary
-            </button>
-        </div>
-    </div> -->
+   
 
     <!-- 📞 Today's Callbacks Alert -->
     @if(isset($todayCallbacks) && $todayCallbacks->count() > 0)
@@ -2661,11 +2647,22 @@ function filterData() {
 .cal-date:hover{background:#e8e8e8}
 .cal-date.today{background:#4f46e5;color:#fff;font-weight:600}
 .cal-date.has-interview{background:#fef3c7;color:#92400e;font-weight:600}
+.cal-date.has-birthday{background:#ffcccb;color:#8b0000;font-weight:600}
+.cal-date.has-callback{background:#ffe4b5;color:#ff6b35;font-weight:600}
+.cal-date.has-bill{background:#ffd4a3;color:#d97706;font-weight:600}
+.cal-date.has-multiple{background:linear-gradient(135deg,#ffcccb 25%,#ffe4b5 25%,#ffe4b5 50%,#ffd4a3 50%,#ffd4a3 75%,#fef3c7 75%);color:#333;font-weight:700}
 .cal-date.has-interview::after{content:'🎤';position:absolute;top:2px;right:2px;font-size:10px}
+.cal-date.has-birthday::after{content:'🎂';position:absolute;top:2px;right:2px;font-size:10px}
+.cal-date.has-callback::after{content:'📞';position:absolute;top:2px;right:2px;font-size:10px}
+.cal-date.has-bill::after{content:'💰';position:absolute;top:2px;right:2px;font-size:10px}
+.cal-date.has-multiple::after{content:'📌';position:absolute;top:2px;right:2px;font-size:10px}
 .cal-date.other-month{opacity:0.3}
-.cal-tooltip{position:absolute;background:#1f2937;color:#fff;padding:8px 12px;border-radius:8px;font-size:12px;white-space:nowrap;z-index:1000;pointer-events:none;opacity:0;transition:opacity 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+.cal-tooltip{position:absolute;background:#1f2937;color:#fff;padding:10px 14px;border-radius:8px;font-size:12px;white-space:pre-line;z-index:1000;pointer-events:none;opacity:0;transition:opacity 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.3);max-width:250px}
 .cal-tooltip.show{opacity:1}
 .cal-tooltip::before{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:4px solid #1f2937}
+.cal-legend{display:flex;gap:10px;margin-top:15px;flex-wrap:wrap;font-size:11px}
+.cal-legend-item{display:flex;align-items:center;gap:5px}
+.cal-legend-box{width:16px;height:16px;border-radius:4px}
 </style>
 
 <div id="calTooltip" class="cal-tooltip"></div>
@@ -2673,6 +2670,12 @@ function filterData() {
 <script>
 const interviewDates=@json($interviewDates??[]);
 const interviewDetails=@json($interviewDetails??[]);
+const birthdayDates=@json($birthdayDates??[]);
+const birthdayDetails=@json($birthdayDetails??[]);
+const callbackDates=@json($callbackDates??[]);
+const callbackDetails=@json($callbackDetails??[]);
+const billDates=@json($billDates??[]);
+const billDetails=@json($billDetails??[]);
 if(document.getElementById('miniCalendar')){
 document.addEventListener('DOMContentLoaded',function(){
 const cal=document.getElementById('miniCalendar');
@@ -2693,20 +2696,31 @@ for(let d=1;d<=daysInMonth;d++){
 const dateStr=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 const isToday=dateStr===new Date().toISOString().split('T')[0];
 const hasInterview=interviewDates.includes(dateStr);
+const hasBirthday=birthdayDates.includes(dateStr);
+const hasCallback=callbackDates.includes(dateStr);
+const hasBill=billDates.includes(dateStr);
+const eventCount=[hasInterview,hasBirthday,hasCallback,hasBill].filter(Boolean).length;
 let cls='cal-date';
 if(isToday)cls+=' today';
-if(hasInterview)cls+=' has-interview';
+if(eventCount>1)cls+=' has-multiple';
+else if(hasInterview)cls+=' has-interview';
+else if(hasBirthday)cls+=' has-birthday';
+else if(hasCallback)cls+=' has-callback';
+else if(hasBill)cls+=' has-bill';
 html+=`<div class="${cls}" data-date="${dateStr}">${d}</div>`;}
-html+='</div>';
+html+=`</div><div class="cal-legend"><div class="cal-legend-item"><div class="cal-legend-box" style="background:#fef3c7"></div><span>🎤 Interview</span></div><div class="cal-legend-item"><div class="cal-legend-box" style="background:#ffcccb"></div><span>🎂 Birthday</span></div><div class="cal-legend-item"><div class="cal-legend-box" style="background:#ffe4b5"></div><span>📞 Callback</span></div><div class="cal-legend-item"><div class="cal-legend-box" style="background:#ffd4a3"></div><span>💰 Bill</span></div></div>`;
 cal.innerHTML=html;
 attachTooltips();}
 function attachTooltips(){
-document.querySelectorAll('.cal-date.has-interview').forEach(el=>{el.addEventListener('mouseenter',function(e){
+document.querySelectorAll('.cal-date[data-date]').forEach(el=>{el.addEventListener('mouseenter',function(e){
 const date=this.dataset.date;
-if(interviewDetails[date]){
-const details=interviewDetails[date];
-let text=details.map(d=>`${d.name} (${d.round})`).join('<br>');
-tooltip.innerHTML=text;
+let tooltipText=[];
+if(interviewDetails[date])tooltipText.push('🎤 Interviews:\n'+interviewDetails[date].map(d=>`  ${d.name} (${d.round})`).join('\n'));
+if(birthdayDetails[date])tooltipText.push('🎂 Birthdays:\n'+birthdayDetails[date].map(d=>`  ${d.name} (${d.dept})`).join('\n'));
+if(callbackDetails[date])tooltipText.push('📞 Callbacks:\n'+callbackDetails[date].map(d=>`  ${d.name}`).join('\n'));
+if(billDetails[date])tooltipText.push('💰 Bills:\n'+billDetails[date].map(d=>`  ${d.type} - ₹${d.amount}`).join('\n'));
+if(tooltipText.length>0){
+tooltip.innerHTML=tooltipText.join('\n\n').replace(/\n/g,'<br>');
 tooltip.classList.add('show');
 const rect=this.getBoundingClientRect();
 tooltip.style.left=rect.left+(rect.width/2)-(tooltip.offsetWidth/2)+'px';

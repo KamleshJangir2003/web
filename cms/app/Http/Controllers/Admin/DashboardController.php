@@ -137,6 +137,47 @@ class DashboardController extends Controller
 
         $interviewDates = $interviewDatesWithDetails->keys()->toArray();
 
+        // Birthday dates for calendar
+        $birthdayDatesWithDetails = Employee::whereNotNull('dob')
+            ->select('first_name', 'last_name', 'dob', 'department')
+            ->get()
+            ->groupBy(fn($e) => \Carbon\Carbon::parse($e->dob)->format('m-d'))
+            ->map(fn($employees) => $employees->map(fn($e) => [
+                'name' => $e->first_name . ' ' . $e->last_name,
+                'dept' => $e->department ?? 'N/A'
+            ])->toArray());
+
+        $birthdayDates = $birthdayDatesWithDetails->keys()->map(fn($md) => date('Y') . '-' . $md)->toArray();
+        $birthdayDetails = $birthdayDatesWithDetails->mapWithKeys(fn($v, $k) => [date('Y') . '-' . $k => $v]);
+
+        // Callback dates for calendar
+        $callbackDatesWithDetails = Callback::where('status', 'call_backs')
+            ->whereNotNull('callback_date')
+            ->select('name', 'callback_date')
+            ->get()
+            ->groupBy(fn($c) => \Carbon\Carbon::parse($c->callback_date)->format('Y-m-d'))
+            ->map(fn($callbacks) => $callbacks->map(fn($c) => ['name' => $c->name])->toArray());
+
+        $callbackDates = $callbackDatesWithDetails->keys()->toArray();
+
+        // Bill dates for calendar (if you have bills table)
+        $billDatesWithDetails = collect([]);
+        $billDates = [];
+        if (\Schema::hasTable('bills')) {
+            $billDatesWithDetails = \DB::table('bills')
+                ->whereNotNull('due_date')
+                ->where('status', '!=', 'paid')
+                ->select('bill_type', 'amount', 'due_date')
+                ->get()
+                ->groupBy(fn($b) => \Carbon\Carbon::parse($b->due_date)->format('Y-m-d'))
+                ->map(fn($bills) => $bills->map(fn($b) => [
+                    'type' => $b->bill_type,
+                    'amount' => number_format($b->amount, 0)
+                ])->toArray());
+
+            $billDates = $billDatesWithDetails->keys()->toArray();
+        }
+
         return view('auth.admin.dashboard', [
             'user' => Auth::user(),
             'stats' => $stats,
@@ -162,6 +203,12 @@ class DashboardController extends Controller
             'hiredTotal' => $hiredTotal,
             'interviewDates' => $interviewDates,
             'interviewDetails' => $interviewDatesWithDetails,
+            'birthdayDates' => $birthdayDates,
+            'birthdayDetails' => $birthdayDetails,
+            'callbackDates' => $callbackDates,
+            'callbackDetails' => $callbackDatesWithDetails,
+            'billDates' => $billDates,
+            'billDetails' => $billDatesWithDetails,
         ]);
     }
 
