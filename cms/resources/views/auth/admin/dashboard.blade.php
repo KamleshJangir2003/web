@@ -1922,7 +1922,6 @@ function submitWelcomeLetter() {
     </div>
     
     <!-- 🔹 All Employees Table -->
-    @if(isset($allEmployees) && $allEmployees->count() > 0)
 
 <style>
 /* Scroll Wrapper */
@@ -1993,7 +1992,7 @@ function submitWelcomeLetter() {
                 </thead>
                 <tbody id="employeeTableBody">
                     
-                    @foreach($allEmployees as $employee)
+                    @forelse($allEmployees as $employee)
                     <tr>
                         <td>
                             <strong>
@@ -2049,7 +2048,13 @@ function submitWelcomeLetter() {
 
                         </td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            No employees found
+                        </td>
+                    </tr>
+                    @endforelse
 
                 </tbody>
             </table>
@@ -2080,8 +2085,6 @@ document.getElementById("employeeSearch").addEventListener("keyup", function () 
 
 });
 </script>
-
-@endif
 
     </div>
 
