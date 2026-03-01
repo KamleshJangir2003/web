@@ -864,7 +864,6 @@ body {
         </div>
     </div>
   
-    @if(isset($interviewDates) && count($interviewDates) > 0)
     <!-- Interview Calendar -->
     <div class="card mb-4" style="border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); max-width: 400px;">
         <div class="card-body">
@@ -872,7 +871,6 @@ body {
             <div id="miniCalendar"></div>
         </div>
     </div>
-    @endif
 
 <style>
  .filter-container {
