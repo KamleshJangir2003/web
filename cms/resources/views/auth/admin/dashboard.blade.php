@@ -864,7 +864,15 @@ body {
         </div>
     </div>
   
-    
+    @if(isset($interviewDates) && count($interviewDates) > 0)
+    <!-- Interview Calendar -->
+    <div class="card mb-4" style="border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); max-width: 400px;">
+        <div class="card-body">
+            <h5 class="card-title mb-3"><i class="bi bi-calendar-event"></i> Interview Schedule</h5>
+            <div id="miniCalendar"></div>
+        </div>
+    </div>
+    @endif
 
 <style>
  .filter-container {
@@ -2625,6 +2633,75 @@ function filterData() {
     
     window.location.href = url.toString();
 }
+</script>
+
+<style>
+#miniCalendar{background:#fff;border-radius:12px;padding:15px;font-family:system-ui}
+.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.cal-header h6{margin:0;font-size:15px;font-weight:600}
+.cal-nav{display:flex;gap:8px}
+.cal-nav button{border:none;background:#f0f0f0;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:14px}
+.cal-nav button:hover{background:#e0e0e0}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;text-align:center}
+.cal-day-name{font-size:11px;font-weight:600;color:#666;padding:8px 0}
+.cal-date{padding:10px;border-radius:8px;font-size:13px;cursor:pointer;background:#f8f8f8;position:relative}
+.cal-date:hover{background:#e8e8e8}
+.cal-date.today{background:#4f46e5;color:#fff;font-weight:600}
+.cal-date.has-interview{background:#fef3c7;color:#92400e;font-weight:600}
+.cal-date.has-interview::after{content:'🎤';position:absolute;top:2px;right:2px;font-size:10px}
+.cal-date.other-month{opacity:0.3}
+.cal-tooltip{position:absolute;background:#1f2937;color:#fff;padding:8px 12px;border-radius:8px;font-size:12px;white-space:nowrap;z-index:1000;pointer-events:none;opacity:0;transition:opacity 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+.cal-tooltip.show{opacity:1}
+.cal-tooltip::before{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:4px solid #1f2937}
+</style>
+
+<div id="calTooltip" class="cal-tooltip"></div>
+
+<script>
+const interviewDates=@json($interviewDates??[]);
+const interviewDetails=@json($interviewDetails??[]);
+if(document.getElementById('miniCalendar')){
+document.addEventListener('DOMContentLoaded',function(){
+const cal=document.getElementById('miniCalendar');
+const tooltip=document.getElementById('calTooltip');
+let currentDate=new Date();
+function renderCalendar(){
+const year=currentDate.getFullYear();
+const month=currentDate.getMonth();
+const firstDay=new Date(year,month,1).getDay();
+const daysInMonth=new Date(year,month+1,0).getDate();
+const prevDays=new Date(year,month,0).getDate();
+const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+let html=`<div class="cal-header"><h6>${monthNames[month]} ${year}</h6><div class="cal-nav"><button onclick="prevMonth()">◀</button><button onclick="nextMonth()">▶</button></div></div><div class="cal-days">`;
+const dayNames=['S','M','T','W','T','F','S'];
+dayNames.forEach(d=>html+=`<div class="cal-day-name">${d}</div>`);
+for(let i=firstDay-1;i>=0;i--)html+=`<div class="cal-date other-month">${prevDays-i}</div>`;
+for(let d=1;d<=daysInMonth;d++){
+const dateStr=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+const isToday=dateStr===new Date().toISOString().split('T')[0];
+const hasInterview=interviewDates.includes(dateStr);
+let cls='cal-date';
+if(isToday)cls+=' today';
+if(hasInterview)cls+=' has-interview';
+html+=`<div class="${cls}" data-date="${dateStr}">${d}</div>`;}
+html+='</div>';
+cal.innerHTML=html;
+attachTooltips();}
+function attachTooltips(){
+document.querySelectorAll('.cal-date.has-interview').forEach(el=>{el.addEventListener('mouseenter',function(e){
+const date=this.dataset.date;
+if(interviewDetails[date]){
+const details=interviewDetails[date];
+let text=details.map(d=>`${d.name} (${d.round})`).join('<br>');
+tooltip.innerHTML=text;
+tooltip.classList.add('show');
+const rect=this.getBoundingClientRect();
+tooltip.style.left=rect.left+(rect.width/2)-(tooltip.offsetWidth/2)+'px';
+tooltip.style.top=rect.top-tooltip.offsetHeight-8+'px';}});
+el.addEventListener('mouseleave',()=>tooltip.classList.remove('show'));});}
+window.prevMonth=()=>{currentDate.setMonth(currentDate.getMonth()-1);renderCalendar();};
+window.nextMonth=()=>{currentDate.setMonth(currentDate.getMonth()+1);renderCalendar();};
+renderCalendar();});}
 </script>
 
 @endsection

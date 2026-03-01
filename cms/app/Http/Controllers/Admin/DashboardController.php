@@ -121,6 +121,22 @@ class DashboardController extends Controller
         $hiredTotal = $hiredQuery->count();
         $hiredEmployees = $hiredQuery->limit(4)->get();
 
+        // Get scheduled interview dates for calendar with candidate names
+        $interviewDatesWithDetails = Interview::with('lead:id,name')
+            ->whereNotNull('interview_date')
+            ->where('result', '!=', 'Selected')
+            ->where('result', '!=', 'Rejected')
+            ->where('status', '!=', 'Rescheduled')
+            ->select('interview_date', 'lead_id', 'interview_round')
+            ->get()
+            ->groupBy(fn($i) => \Carbon\Carbon::parse($i->interview_date)->format('Y-m-d'))
+            ->map(fn($interviews) => $interviews->map(fn($i) => [
+                'name' => $i->lead->name ?? 'N/A',
+                'round' => $i->interview_round ?? 'Interview'
+            ])->toArray());
+
+        $interviewDates = $interviewDatesWithDetails->keys()->toArray();
+
         return view('auth.admin.dashboard', [
             'user' => Auth::user(),
             'stats' => $stats,
@@ -144,6 +160,8 @@ class DashboardController extends Controller
             'documentsTotal' => $documentsTotal,
             'hiredEmployees' => $hiredEmployees,
             'hiredTotal' => $hiredTotal,
+            'interviewDates' => $interviewDates,
+            'interviewDetails' => $interviewDatesWithDetails,
         ]);
     }
 

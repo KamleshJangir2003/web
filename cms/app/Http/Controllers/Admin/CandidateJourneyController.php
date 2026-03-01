@@ -332,7 +332,17 @@ class CandidateJourneyController extends Controller
             $journeys->push($journey);
         }
         
-        return view('auth.admin.candidate-journey.index', compact('journeys', 'query'));
+        // Get all interview dates for scheduled interviews only
+        $interviewDates = Interview::whereNotNull('interview_date')
+            ->where('result', '!=', 'Selected')
+            ->where('result', '!=', 'Rejected')
+            ->where('status', '!=', 'Rescheduled')
+            ->pluck('interview_date')
+            ->map(fn($date) => \Carbon\Carbon::parse($date)->format('Y-m-d'))
+            ->unique()
+            ->values();
+        
+        return view('auth.admin.candidate-journey.index', compact('journeys', 'query', 'interviewDates'));
     }
     
     public function show($id)
