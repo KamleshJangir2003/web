@@ -51,27 +51,35 @@
 }
 .stat-card{
     border: none;
-    border-radius: 14px;
+    border-radius: 12px;
     color: #fff;
     position: relative;
     overflow: hidden;
-    min-height: 130px;
-    
+    min-height: 100px;
+    transition: transform 0.2s;
+}
+.stat-card:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+.stat-card .card-body{
+    padding: 16px 20px;
 }
 .stat-card i{
     position: absolute;
-    right: 20px;
-    bottom: 20px;
-    font-size: 45px;
-    opacity: 0.3;
+    right: 15px;
+    bottom: 15px;
+    font-size: 36px;
+    opacity: 0.25;
 }
 .stat-title{
-    font-size: 14px;
+    font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    margin-bottom: 8px;
 }
 .stat-number{
-    font-size: 32px;
+    font-size: 26px;
     font-weight: 700;
 }
 .table-card{
@@ -680,7 +688,7 @@ body {
     </div>
 
     <!-- 💸 Auto-Generated Salary Alert -->
-    <div id="autoSalaryAlert" class="alert alert-success bill-alert mb-4" style="background: linear-gradient(135deg, #28a745, #20c997); color: white; border: none; border-radius: 12px; display: none;">
+    <!-- <div id="autoSalaryAlert" class="alert alert-success bill-alert mb-4" style="background: linear-gradient(135deg, #28a745, #20c997); color: white; border: none; border-radius: 12px; display: none;">
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
                 <i class="fa-solid fa-money-bill-wave fa-2x me-3"></i>
@@ -693,7 +701,7 @@ body {
                 <i class="fa-solid fa-eye"></i> View Salary
             </button>
         </div>
-    </div>
+    </div> -->
 
     <!-- 📞 Today's Callbacks Alert -->
     @if(isset($todayCallbacks) && $todayCallbacks->count() > 0)
@@ -720,8 +728,10 @@ body {
 
     <!-- 🔹 Stats Cards -->
     <div class="row g-4 mb-4">
-    <div class="col-xl-3 col-md-6">
-            <div class="card stat-card bg-info">
+        <div class="col-lg-8">
+            <div class="row g-4">
+    <div class="col-md-6">
+            <div class="card stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                 <div class="card-body">
                     <div class="stat-title">Apllicant Database</div>
                     <div class="stat-number">{{ $stats['totalLeads'] ?? 0 }}</div>
@@ -729,8 +739,8 @@ body {
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card stat-card bg-primary">
+        <div class="col-md-6">
+            <div class="card stat-card" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);">
                 <div class="card-body">
                     <div class="stat-title">active Employees</div>
                     <div class="stat-number">{{ $allEmployees->count() }}</div>
@@ -796,8 +806,8 @@ body {
                 </div>
             </div>
         </div> -->
-        <div class="col-xl-3 col-md-6">
-            <div class="card stat-card bg-warning">
+        <div class="col-md-6">
+            <div class="card stat-card" style="background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);">
                 <div class="card-body">
                     <div class="stat-title">New Tickets</div>
                     <div class="stat-number">{{ $stats['newTickets'] ?? 0 }}</div>
@@ -805,8 +815,8 @@ body {
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card stat-card bg-secondary">
+        <div class="col-md-6">
+            <div class="card stat-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);">
                 <div class="card-body">
                     <div class="stat-title">Active Interns</div>
                     <div class="stat-number">{{ $stats['activeInterns'] ?? 0 }}</div>
@@ -817,8 +827,8 @@ body {
 
        
        
-        <div class="col-xl-3 col-md-6">
-            <div class="card stat-card bg-warning">
+        <div class="col-md-6">
+            <div class="card stat-card" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
                 <div class="card-body">
                     <div class="stat-title">Reimbursement</div>
                     <div class="stat-number">₹{{ number_format($stats['totalReimbursement'] ?? 0) }}</div>
@@ -826,20 +836,17 @@ body {
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card stat-card bg-danger">
+        <div class="col-md-6">
+            <div class="card stat-card" style="background: linear-gradient(135deg, #ec4899 0%, #d946ef 100%);">
                 <div class="card-body">
                     <div class="stat-title">Total Employee Salary</div>
-                    <div class="stat-number" style="font-size: 16px; line-height: 1.4;">
-                        
-                        <small style="font-size: 20px; opacity: 0.9;"> ₹{{ number_format($stats['totalEmployeeSalary'] ?? 0) }}</small>
-                    </div>
+                    <div class="stat-number">₹{{ number_format($stats['totalEmployeeSalary'] ?? 0) }}</div>
                     <i class="bi bi-cash-coin"></i>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card stat-card bg-secondary">
+        <div class="col-md-6">
+            <div class="card stat-card" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%);">
                 <div class="card-body">
                     <div class="stat-title">Expenses</div>
                     <div class="stat-number">₹{{ number_format($stats['totalExpenses'] ?? 0) }}</div>
@@ -847,30 +854,35 @@ body {
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
+        <div class="col-md-6">
             <a href="{{ url('/admin/interns/ongoing-list') }}" class="text-decoration-none">
-                <div class="card stat-card bg-success">
+                <div class="card stat-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
                     <div class="card-body"> 
                         <div class="stat-title">Intern Payment</div>
-                        <div class="stat-number" style="font-size: 16px; line-height: 1.4;">
-                            Total: ₹{{ number_format($stats['totalInternPayment'] ?? 0) }}<br>
-                            <small style="font-size: 13px; opacity: 0.9;">Received: ₹{{ number_format($stats['receivedInternPayment'] ?? 0) }}</small><br>
-                            <small style="font-size: 13px; opacity: 0.85;">Pending: ₹{{ number_format(($stats['totalInternPayment'] ?? 0) - ($stats['receivedInternPayment'] ?? 0)) }}</small>
+                        <div class="stat-number" style="font-size: 13px; line-height: 1.2;">
+                            ₹{{ number_format($stats['totalInternPayment'] ?? 0) }}<br>
+                            <small style="font-size: 13px;">Rcvd: ₹{{ number_format($stats['receivedInternPayment'] ?? 0) }} | Pend: ₹{{ number_format(($stats['totalInternPayment'] ?? 0) - ($stats['receivedInternPayment'] ?? 0)) }}</small>
                         </div>
                         <i class="bi bi-cash-stack"></i>
                     </div>
                 </div>
             </a>
         </div>
-    </div>
-  
-    <!-- Interview Calendar -->
-    <div class="card mb-4" style="border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); max-width: 400px;">
-        <div class="card-body">
-            <h5 class="card-title mb-3"><i class="bi bi-calendar-event"></i> Interview Schedule</h5>
-            <div id="miniCalendar"></div>
+            </div>
+        </div>
+        
+        <!-- Interview Calendar -->
+        <div class="col-lg-4">
+            <div class="card" style="border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); height: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title mb-3"><i class="bi bi-calendar-event"></i> Interview Schedule</h5>
+                    <div id="miniCalendar"></div>
+                </div>
+            </div>
         </div>
     </div>
+  
+    
 
 <style>
  .filter-container {
