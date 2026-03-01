@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .sidebar .submenu {
+            display: none;
+        }
+        .sidebar .has-sub.open > .submenu {
+            display: block;
+        }
+        .sidebar {
+            width: 260px;
+            background: white;
+            border: 1px solid #ccc;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #2eacb3;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .sidebar-menu a:hover {
+            background: #2eacb3;
+            color: white;
+        }
+        .sidebar .submenu {
+            background: rgb(242, 244, 245);
+        }
+        .sidebar .submenu a {
+            padding-left: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="has-sub">
+                <a href="javascript:void(0)" class="submenu-toggle">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <span>Test Menu</span>
+                </a>
+                <ul class="submenu">
+                    <li><a href="#">Item 1</a></li>
+                    <li><a href="#">Item 2</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggles = document.querySelectorAll('.submenu-toggle');
+            
+            console.log('Found toggles:', toggles.length);
+            
+            toggles.forEach(function(toggle) {
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Clicked!');
+                    
+                    const parent = this.closest('.has-sub');
+                    if (!parent) {
+                        console.log('No parent found');
+                        return;
+                    }
+                    
+                    parent.classList.toggle('open');
+                    console.log('Toggled, open:', parent.classList.contains('open'));
+                });
+            });
+        });
+    </script>
+</body>
+</html>

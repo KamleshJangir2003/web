@@ -11,7 +11,7 @@
         overflow-x: hidden;
     }
 
-   .top-header{
+.top-header{
     position: fixed;
     top: 0;
     left: 260px;
@@ -25,7 +25,7 @@
     justify-content: space-between;
 
     padding: 0 35px;
-    z-index: 9999;            /* 🔥 header upar */
+    z-index: 9999;
     box-sizing: border-box;
 }
 .header-right{
@@ -51,7 +51,12 @@
     padding: 8px;
     border-radius: 6px;
     transition: background 0.2s;
-    display: none;
+}
+
+#fullscreenToggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .header-icon:hover,
@@ -1016,9 +1021,9 @@ function showStatusPopup(type, title, message, details = null) {
 
 <header class="top-header">
     <div class="header-left">
-        <!-- MOBILE MENU BUTTON -->
-        <button class="menu-btn" id="menuToggle">
-            <i class="fa-solid fa-bars"></i>
+        <!-- FULLSCREEN TOGGLE BUTTON -->
+        <button class="menu-btn" id="fullscreenToggle" title="Toggle Fullscreen">
+            <i class="fa-solid fa-expand"></i>
         </button>
         
         <!-- MOBILE LOGO -->
@@ -1735,6 +1740,35 @@ searchInput.addEventListener('focus', function() {
         searchResults.style.display = 'block';
     }
 });
+
+// Fullscreen Toggle Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const fullscreenBtn = document.getElementById('fullscreenToggle');
+    const sidebar = document.getElementById('sidebar');
+    const header = document.querySelector('.top-header');
+    const mainContent = document.querySelector('.main-content');
+    let isFullscreen = false;
+
+    if (fullscreenBtn) {
+        fullscreenBtn.addEventListener('click', function() {
+            isFullscreen = !isFullscreen;
+            
+            if (isFullscreen) {
+                // Fullscreen mode ON
+                sidebar.classList.add('sidebar-collapsed');
+                header.classList.add('header-fullscreen');
+                if (mainContent) mainContent.classList.add('content-fullscreen');
+                this.querySelector('i').classList.replace('fa-expand', 'fa-compress');
+            } else {
+                // Fullscreen mode OFF
+                sidebar.classList.remove('sidebar-collapsed');
+                header.classList.remove('header-fullscreen');
+                if (mainContent) mainContent.classList.remove('content-fullscreen');
+                this.querySelector('i').classList.replace('fa-compress', 'fa-expand');
+            }
+        });
+    }
+});
 </script>
 
 <!-- ================= SALARY CALCULATOR MODAL ================= -->
@@ -1928,6 +1962,58 @@ searchInput.addEventListener('focus', function() {
 .salary-modal-body .table-info td {
     background: #e7f1ff !important;
     color: #084298;
+}
+
+/* Fullscreen Mode Styles */
+.sidebar.sidebar-collapsed {
+    width: 70px;
+    transition: width 0.3s ease;
+}
+
+.sidebar.sidebar-collapsed .company-info,
+.sidebar.sidebar-collapsed .sidebar-menu a > span,
+.sidebar.sidebar-collapsed .submenu,
+.sidebar.sidebar-collapsed .arrow,
+.sidebar.sidebar-collapsed .float-end {
+    display: none !important;
+}
+
+.sidebar.sidebar-collapsed .sidebar-header {
+    padding: 10px;
+}
+
+.sidebar.sidebar-collapsed .company-logo1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sidebar.sidebar-collapsed .company-logo1 img {
+    width: 50px;
+    height: auto;
+}
+
+.sidebar.sidebar-collapsed .sidebar-menu li a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 0;
+}
+
+.sidebar.sidebar-collapsed .sidebar-menu i {
+    margin-right: 0 !important;
+    font-size: 22px;
+}
+
+.top-header.header-fullscreen {
+    left: 70px;
+    width: calc(100% - 70px);
+    transition: all 0.3s ease;
+}
+
+.main-content.content-fullscreen {
+    margin-left: 70px;
+    transition: margin-left 0.3s ease;
 }
 </style>
 

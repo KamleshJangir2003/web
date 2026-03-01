@@ -1,19 +1,21 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
-    .sidebar .submenu {
-    display: none;
-    padding-left: 15px;
+.sidebar .submenu {
+    display: none !important;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
 }
 
-.sidebar .has-submenu.open > .submenu {
-    display: block;
+.sidebar .has-sub.open > .submenu {
+    display: block !important;
+    max-height: 1000px;
 }
 
 .sidebar .submenu-toggle {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    cursor: pointer;
+    gap: 11px;
 }
 
 .sidebar .arrow {
@@ -21,7 +23,7 @@
     transition: transform 0.3s ease;
 }
 
-.sidebar .has-submenu.open .arrow {
+.sidebar .has-sub.open .arrow {
     transform: rotate(180deg);
 }
 
@@ -29,11 +31,13 @@
     position: fixed;
     top: 0;
     left: 0;
-    height: 100vh;              /* full screen height */
-    width: 260px;               /* sidebar width */
-    background: white;          /* white background */
-    overflow-y: auto;           /* 🔥 vertical scroll */
+    height: 100vh;
+    width: 260px;
+    background: white;
+    overflow-y: auto;
     overflow-x: hidden;
+    z-index: 1000;
+    transition: transform 0.35s ease-in-out;
 }
 
 /* smooth scrollbar (Chrome / Edge) */
@@ -53,7 +57,7 @@
 /* Company Info Styles */
 .sidebar-header {
     padding: 1.4px 20px;
-    border-bottom: 1px solidrgb(79, 124, 212);
+    border-bottom: 1px solid rgb(79, 124, 212);
 }
 
 .company-info {
@@ -84,19 +88,9 @@
     letter-spacing: 0.5px;
 }
 
-
-/* ===============================
-   AUTO HIDE SIDEBAR ON CURSOR
-================================ */
-
-.sidebar {
-    transition: transform 0.35s ease-in-out;
-    z-index: 1000;
-}
-
 /* sidebar hide state */
 .sidebar.sidebar-hidden {
-    transform: translateX(-230px); /* thoda edge visible */
+    transform: translateX(-230px);
 }
 
 /* invisible hover strip (trigger area) */
@@ -104,16 +98,13 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 30px;      /* cursor sensitive area */
+    width: 30px;
     height: 100vh;
     z-index: 999;
     background: transparent;
 }
-
-
 </style>
 <style>
-    /* 1. Professional Blue */
 /* Sidebar Menu Styles */
 .sidebar-menu {
     list-style: none;
@@ -133,6 +124,10 @@
     text-decoration: none;
     transition: all 0.3s ease;
     cursor: pointer;
+}
+
+.sidebar-menu a > span {
+    display: inline;
 }
 
 .sidebar-menu a:hover,
@@ -156,12 +151,28 @@
 
 .sidebar .submenu {
     background:rgb(242, 244, 245);
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.sidebar .submenu li {
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
 }
 
 .sidebar .submenu a {
     padding-left: 50px;
     font-size: 14px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.sidebar .submenu a span {
+    display: inline;
 }
 
 .sidebar .submenu a:hover,
@@ -179,18 +190,14 @@
 
 .sidebar .submenu i {
     color: #2eacb3 !important;
+    margin-right: 10px;
 }
-
-
-
 
 .company-logo1 img {
     width: 200px;
-    /* height: 20px; */
     object-fit: contain;
     align-items: center
 }
-
 </style>
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
@@ -215,27 +222,24 @@
     <li>
     <a href="{{ route('admin.dashboard') }}">
         <i class="fa-solid fa-gauge-high"></i>
-        Dashboard
+        <span>Dashboard</span>
     </a>
 </li>
-<li class="has-submenu">
-<a class="submenu-toggle">
-    <span>
-        <i class="fa-solid fa-folder-open"></i>
-        Applicant Database
-    </span>
-    <i class="fa-solid fa-chevron-down arrow"></i>
+<li class="has-sub">
+<a href="javascript:void(0)" class="submenu-toggle">
+    <i class="fa-solid fa-folder-open"></i>
+    <span>Applicant Database</span>
 </a>
 
     <ul class="submenu">
-       
+        <li>
             <a href="{{ route('admin.leads.index') }}">
                 <i class="fa-solid fa-address-book"></i>
                 All Leads
             </a>
-        
+        </li>
 
-        
+        <li>
             <a href="{{ route('admin.callbacks.index') }}">
                 <i class="fa-solid fa-phone-volume"></i>
                 
@@ -247,85 +251,108 @@
                     0
                 </span>
             </a>
-            <a href="{{ route('admin.interns.index') }}" class="nav-link">
-    <i class="bi bi-people-fill me-2"></i> Intern Leads
-</a>
+        </li>
 
-<a href="{{ route('admin.interns.callbacks') }}" class="nav-link">
-    <i class="bi bi-telephone-fill me-2"></i> Intern Callbacks
-</a>
-        
+        <li>
+            <a href="{{ route('admin.interns.index') }}">
+                <i class="bi bi-people-fill"></i> Intern Leads
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ route('admin.interns.callbacks') }}">
+                <i class="bi bi-telephone-fill"></i> Intern Callbacks
+            </a>
+        </li>
     </ul>
 </li>
 
-        <li class="has-submenu">
-        <a class="submenu-toggle">
-    <span>
-        <i class="fa-solid fa-clipboard-list"></i>
-        Screening Stage
-    </span>
-    <i class="fa-solid fa-chevron-down arrow"></i>
+<li class="has-sub">
+        <a href="javascript:void(0)" class="submenu-toggle">
+    <i class="fa-solid fa-clipboard-list"></i>
+    <span>Screening Stage</span>
 </a>
 
 
     <ul class="submenu">
-       
+        <li>
             <a href="{{ route('admin.leads.interested') }}">
                 <i class="fa-solid fa-star"></i>
                 ShortListed
             </a>
-       
+        </li>
+
+        <li>
             <a href="{{ route('admin.interviews.index') }}">
                 <i class="fa-solid fa-calendar-check"></i>
                 Interview In Process
             </a>
-        
+        </li>
+
+        <li>
             <a href="{{ route('admin.interviews.selected') }}">
                 <i class="fa-solid fa-user-check"></i>
                 Offer Released
             </a>
-        
+        </li>
 
-        
+        <li>
             <a href="{{ route('admin.employees.documents.index') }}">
                 <i class="fa-solid fa-file-lines"></i>
                 Document Check
             </a>
-        
-        
+        </li>
+
+        <li>
             <a href="{{ route('admin.employees.hired.index') }}">
                 <i class="fa-solid fa-user-check"></i>
                 Certification Period
             </a>
-       
-        
+        </li>
     </ul>
 </li>
 
-        <li class="has-submenu">
-        <a href="#" class="submenu-toggle">
-    <span>
+<li class="has-sub">
+<a href="javascript:void(0)" class="submenu-toggle">
         <i class="fa-solid fa-bars-progress"></i>
-        Applicant Status
-    </span>
-    <i class="fa-solid fa-chevron-down arrow"></i>
-</a>
+        <span>Applicant Status</span>
+    </a>
 
     <ul class="submenu">
-        
-       
-            <a href="{{ route('admin.leads.rejected') }}">Rejected</a>
-        
-            <a href="{{ route('admin.leads.not-interested') }}">Not Interested</a>
-        
-            <a href="{{ route('admin.leads.wrong-number') }}">Wrong Number</a>
-        
-            <a href="/admin/employees/not-selected">
-               
-                Not Selected Employee
+        <li>
+            <a href="{{ route('admin.leads.rejected') }}">
+                <i class="fa-solid fa-xmark"></i>
+                <span>Rejected</span>
             </a>
-            <a href="{{ route('admin.interviews.rejected') }}">Rejected Interview</a>
-        
+        </li>
+
+        <li>
+            <a href="{{ route('admin.leads.not-interested') }}">
+                <i class="fa-solid fa-thumbs-down"></i>
+                <span>Not Interested</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ route('admin.leads.wrong-number') }}">
+                <i class="fa-solid fa-phone-slash"></i>
+                <span>Wrong Number</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="/admin/employees/not-selected">
+                <i class="fa-solid fa-user-xmark"></i>
+                <span>Not Selected Employee</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ route('admin.interviews.rejected') }}">
+                <i class="fa-solid fa-ban"></i>
+                <span>Rejected Interview</span>
+            </a>
+        </li>
     </ul>
 </li>
 
@@ -335,46 +362,90 @@
        
         <!-- Employee -->
         <li class="has-sub">
-            <a href="#">
-            <i class="fa-solid fa-users"></i> Employee</a>
+        <a href="javascript:void(0)" class="submenu-toggle">
+            <i class="fa-solid fa-users"></i> <span>Employee</span>
+        </a>
             <ul class="submenu">
-                <a href="{{ route('admin.employees.index') }}">Active Employees</a>
-                <a href="{{ route('admin.employee.credentials') }}">Employee Login</a>
-                
+                <li>
+                    <a href="{{ route('admin.employees.index') }}">
+                        <i class="fa-solid fa-user-check"></i>
+                        Active Employees
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.employee.credentials') }}">
+                        <i class="fa-solid fa-key"></i>
+                        Employee Login
+                    </a>
+                </li>
             </ul>
         </li>
 
         <!-- Interns Management -->
         <li class="has-sub">
-            <a href="#">
-            <i class="fa-solid fa-graduation-cap"></i> Interns</a>
+        <a href="javascript:void(0)" class="submenu-toggle">
+            <i class="fa-solid fa-graduation-cap"></i> <span>Interns</span>
+            
+        </a>
             <ul class="submenu">
-                
-                <a href="{{ route('admin.interns.interested') }}">Interested Interns</a>
-                <a href="{{ route('admin.interns.ongoing-list') }}">Ongoing Interns</a>
-                <a href="{{ route('admin.interns.rejected') }}">Rejected Interns</a>
-                <a href="{{ route('admin.interns.not-interested') }}">Not Interested</a>
-                <a href="{{ route('admin.interns.wrong-number') }}">Wrong Number</a>
-                <a href="{{ route('admin.interns.profiles') }}">Intern Profiles</a>
+                <li>
+                    <a href="{{ route('admin.interns.interested') }}">
+                        <i class="fa-solid fa-star"></i>
+                        Interested Interns
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.interns.ongoing-list') }}">
+                        <i class="fa-solid fa-spinner"></i>
+                        Ongoing Interns
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.interns.rejected') }}">
+                        <i class="fa-solid fa-xmark"></i>
+                        Rejected Interns
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.interns.not-interested') }}">
+                        <i class="fa-solid fa-thumbs-down"></i>
+                        Not Interested
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.interns.wrong-number') }}">
+                        <i class="fa-solid fa-phone-slash"></i>
+                        Wrong Number
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.interns.profiles') }}">
+                        <i class="fa-solid fa-id-card"></i>
+                        Intern Profiles
+                    </a>
+                </li>
             </ul>
         </li>
 
       
         <li class="has-sub">
-            
-            <a href="#">
-            <i class="fa-solid fa-file-invoice-dollar"></i> Payroll</a>
+        <a href="javascript:void(0)" class="submenu-toggle">
+            <i class="fa-solid fa-file-invoice-dollar"></i> <span>Payroll</span>
+           
+        </a>
             <ul class="submenu">
-               
-                <a href="{{ route('admin.salary.index') }}">
-                    <i class="fa-solid fa-money-bill-wave"></i>
-                    Salary Management
-                </a>
-                <a href="{{ route('admin.attendance.index') }}">
-                    <i class="fa-solid fa-calendar-check"></i>
-                    Attendance
-                </a>
-                
+                <li>
+                    <a href="{{ route('admin.salary.index') }}">
+                        <i class="fa-solid fa-money-bill-wave"></i>
+                        Salary Management
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.attendance.index') }}">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        Attendance
+                    </a>
+                </li>
             </ul>
         </li>
 
@@ -403,26 +474,51 @@
 
         <!-- <li><a href="#">Maps</a></li> -->
         <li><a href="{{ route('admin.hr-notes.index') }}">
-        <i class="fa-solid fa-clipboard"></i> HR Notes</a></li>
+        <i class="fa-solid fa-clipboard"></i> <span>HR Notes</span></a></li>
         <li><a href="{{ route('admin.candidate-journey.index') }}">
-        <i class="fa-solid fa-diagram-project"></i> Candidate Journey</a></li>
-        <li class="menu-item has-submenu">
-    <a href="javascript:void(0);" class="menu-toggle">
-        <i class="fa-solid fa-users"></i> HR Management
-        <i class="fa-solid fa-chevron-down float-end"></i>
+        <i class="fa-solid fa-diagram-project"></i> <span>Candidate Journey</span></a></li>
+        <li class="has-sub">
+        <a href="javascript:void(0)" class="submenu-toggle">
+        <i class="fa-solid fa-users"></i> <span>HR Management</span>
+        
     </a>
 
     <ul class="submenu">
-        <li><a href="{{ route('admin.job-openings.index') }}">Job Opening Management</a></li>
-        <li><a href="{{ route('admin.birthdays.index') }}">Birthday</a></li>
-        <li><a href="{{ route('admin.employees.all') }}">All Emails</a></li>
-        <li><a href="{{ route('admin.letters.index') }}">Employee Letters</a></li>
-        <li><a href="{{ route('admin.bills.index') }}">Bill Management</a></li>
+        <li>
+            <a href="{{ route('admin.job-openings.index') }}">
+                <i class="fa-solid fa-briefcase"></i>
+                Job Opening Management
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.birthdays.index') }}">
+                <i class="fa-solid fa-cake-candles"></i>
+                Birthday
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.employees.all') }}">
+                <i class="fa-solid fa-envelope"></i>
+                All Emails
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.letters.index') }}">
+                <i class="fa-solid fa-file-contract"></i>
+                Employee Letters
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.bills.index') }}">
+                <i class="fa-solid fa-file-invoice"></i>
+                Bill Management
+            </a>
+        </li>
     </ul>
 </li>
-        <li><a href="{{ route('admin.expenses.index') }}"><i class="fa-solid fa-money-bill-wave"></i> Expenses</a></li>
-        <li><a href="{{ route('admin.tickets.index') }}"><i class="fa-solid fa-ticket-alt"></i> Employee Tickets</a></li>
-        <li><a href="{{ route('admin.employee-expenses.index') }}"><i class="fa-solid fa-receipt"></i> Reimbursement</a></li>
+        <li><a href="{{ route('admin.expenses.index') }}"><i class="fa-solid fa-money-bill-wave"></i> <span>Expenses</span></a></li>
+        <li><a href="{{ route('admin.tickets.index') }}"><i class="fa-solid fa-ticket-alt"></i> <span>Employee Tickets</span></a></li>
+        <li><a href="{{ route('admin.employee-expenses.index') }}"><i class="fa-solid fa-receipt"></i> <span>Reimbursement</span></a></li>
         <!-- <li class="logout"><a href="#">Logout</a></li> -->
     </ul>
     
@@ -477,24 +573,7 @@
         </ul>
     </div>
 </div>
-<style>
-    .submenu {
-    display: none;
-    padding-left: 15px;
-}
 
-.menu-item.active .submenu {
-    display: block;
-}
-</style>
-<script>
-document.querySelectorAll('.menu-toggle').forEach(function(menu) {
-    menu.addEventListener('click', function() {
-        let parent = this.closest('.menu-item');
-        parent.classList.toggle('active');
-    });
-});
-</script>
 <script>
 // Update callback count in sidebar
 window.updateCallbackCount = function() {
@@ -611,24 +690,63 @@ function loadEmployeeList() {
 }
 </script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.submenu-toggle').forEach(toggle => {
-        toggle.addEventListener('click', function (e) {
-            e.preventDefault(); // 🚫 page reload stop
-
-            const parent = this.closest('.has-submenu');
-
-            // close other open menus (optional – premium feel)
-            document.querySelectorAll('.has-submenu').forEach(item => {
-                if (item !== parent) {
-                    item.classList.remove('open');
+(function() {
+    'use strict';
+    
+    console.log('Sidebar script loading...');
+    
+    function initSubmenuToggle() {
+        const toggles = document.querySelectorAll('.submenu-toggle');
+        console.log('Found toggles:', toggles.length);
+        
+        toggles.forEach(function(toggle, index) {
+            // Remove any existing listeners
+            const newToggle = toggle.cloneNode(true);
+            toggle.parentNode.replaceChild(newToggle, toggle);
+            
+            newToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                
+                console.log('Toggle clicked!', index);
+                
+                const parent = this.closest('.has-sub');
+                
+                if (!parent) {
+                    console.log('No parent found');
+                    return false;
                 }
-            });
-
-            parent.classList.toggle('open');
+                
+                const isOpen = parent.classList.contains('open');
+                console.log('Was open:', isOpen);
+                
+                // Close all
+                document.querySelectorAll('.has-sub').forEach(function(item){
+                    item.classList.remove('open');
+                });
+                
+                // Open current if it was closed
+                if (!isOpen) {
+                    parent.classList.add('open');
+                    console.log('Added open class');
+                }
+                
+                setTimeout(function() {
+                    console.log('After timeout - Parent has open class:', parent.classList.contains('open'));
+                }, 100);
+                
+                return false;
+            }, true);
         });
-    });
-});
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSubmenuToggle);
+    } else {
+        initSubmenuToggle();
+    }
+})();
 </script>
 <!-- <script>
 document.addEventListener('DOMContentLoaded', function () {
