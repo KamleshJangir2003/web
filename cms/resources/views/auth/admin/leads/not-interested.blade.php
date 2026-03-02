@@ -73,7 +73,7 @@
                             </td>
                             <td>
                                 <select class="status-select" data-id="{{ $lead->id }}" data-status="not_interested">
-                                    <option value="not_interested" selected>Not ShortListed</option>
+                                    <option value="not_interested" selected>Not Interested</option>
                                     <option value="call_backs">Call Backs</option>
                                     <option value="rejected">Rejected</option>
                                     <option value="wrong_number">Wrong Number</option>

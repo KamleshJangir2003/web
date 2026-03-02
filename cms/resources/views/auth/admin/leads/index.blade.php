@@ -221,7 +221,7 @@
                             <td>
                                 <select class="status-select" data-id="{{ $lead->id }}">
                                     <option value="" selected>Select Status</option>
-                                    <option value="Not Interested">Not ShortListed</option>
+                                    <option value="Not Interested">Not Interested</option>
                                     <option value="Call Back">Call Back</option>
                                     <!-- <option value="Picked">Pickup</option> -->
                                     <option value="Interested">ShortListed</option>

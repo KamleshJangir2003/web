@@ -1115,11 +1115,11 @@ function showStatusPopup(type, title, message, details = null) {
     <label style="font-size: 12px; color: #555;">Select Field</label>
     <select class="form-select form-select-sm" id="roleSelect">
         <option value="">-- Select Role --</option>
-        <option value="python">Python Developer</option>
+        <option value="python_developer">Python Developer</option>
         <option value="python_intern">Python Intern</option>
-        <option value="php">PHP Developer</option>
+        <option value="php_developer">PHP Developer</option>
         <option value="php_intern">PHP Intern</option>
-        <option value="frontend">Frontend Developer</option>
+        <option value="frontend_developer">Frontend Developer</option>
         <option value="leads_consultant">lead consultant</option>
         <option value="manager">Manager</option>
         <option value="team_leader">Team Leader</option>
@@ -1130,7 +1130,7 @@ function showStatusPopup(type, title, message, details = null) {
         <option value="admin">Admin</option>
         <option value="tele_caller">Tele Caller</option>
         <option value="receptionist">Receptionist</option>
-        <option value="customer_care">Customer Care Executive</option>
+        <option value="customer_care_executive">Customer Care Executive</option>
     </select>
 </li>
 
