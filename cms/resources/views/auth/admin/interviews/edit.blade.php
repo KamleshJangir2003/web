@@ -111,9 +111,15 @@
                 </div>
             </div>
 
-            <!-- Notes -->
+            <!-- Interviewer Notes -->
             <div class="section">
-                <div class="section-title">Instructions / Notes</div>
+                <div class="section-title">Interviewer Notes (Only visible to interviewer)</div>
+                <textarea name="interviewer_notes" placeholder="Notes for interviewer only">{{ $interview->interviewer_notes }}</textarea>
+            </div>
+
+            <!-- Candidate Instructions -->
+            <div class="section">
+                <div class="section-title">Candidate Instructions (Visible to candidate)</div>
                 <textarea name="instructions" placeholder="Please join 10 minutes early. Keep portfolio ready.">{{ $interview->instructions }}</textarea>
             </div>
 

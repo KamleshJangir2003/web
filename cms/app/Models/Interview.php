@@ -25,6 +25,7 @@ class Interview extends Model
         'meeting_platform',
         'meeting_link',
         'instructions',
+        'interviewer_notes',
         'email_candidate',
         'email_interviewer',
         'whatsapp_notification',

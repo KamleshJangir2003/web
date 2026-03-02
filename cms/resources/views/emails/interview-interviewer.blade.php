@@ -245,6 +245,13 @@
             </div>
             @endif
             
+            @if($interview->interviewer_notes)
+            <div class="instructions">
+                <h3>📝 Interviewer Notes</h3>
+                <p>{{ $interview->interviewer_notes }}</p>
+            </div>
+            @endif
+            
             <div class="reminder">
                 👍 Please be prepared and join on time. Thank you for your cooperation!
             </div>
