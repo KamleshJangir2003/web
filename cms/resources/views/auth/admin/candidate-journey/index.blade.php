@@ -10,7 +10,7 @@
 <style>
 .main-content{
     padding-left: 130px;
-    margin-top: 70px;
+   
     
 }
 .journey-card {

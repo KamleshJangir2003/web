@@ -3,7 +3,7 @@
 @section('content')
 <div class="main-content">
     <div class="page-header">
-        <h1>?? Interview Management</h1>
+        <h1>Interview Management</h1>
         <div class="header-actions">
             <a href="{{ route('admin.interviews.selected') }}" class="btn btn-success">
                 <i class="fas fa-users"></i> Selected Employees

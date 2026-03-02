@@ -21,7 +21,7 @@
 
             <p>Congratulations! We are thrilled to welcome you to the Kwikster family! 🎊</p>
 
-            <p>You have successfully completed your certification period and have been selected as a permanent member of our team.</p>
+            <p>You have successfully completed your certification period and have been selected as a  member of our team.</p>
 
             <p><strong>Your Details:</strong></p>
             <ul>

@@ -8,7 +8,7 @@
 .dashboard-wrapper{
    padding: 0%;
     margin-left: 65px;
-    margin-top: 60px;
+    margin-top: 10px;
 }
 
 /* Mobile Dashboard Responsive */

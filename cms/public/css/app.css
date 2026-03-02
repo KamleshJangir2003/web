@@ -1,7 +1,9 @@
 /* ================================
    ADMIN DASHBOARD UI (KUBER STYLE)
 ================================ */
-
+.main-content{
+    margin-top: 45px;
+}
 /* Stat Cards */
 .dashboard-card {
     display: flex;
