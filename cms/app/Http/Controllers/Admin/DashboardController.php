@@ -119,7 +119,7 @@ class DashboardController extends Controller
             ->whereRaw('DATE_ADD(joining_date, INTERVAL certification_period DAY) <= CURDATE()')
             ->orderBy('first_name');
         $hiredTotal = $hiredQuery->count();
-        $hiredEmployees = $hiredQuery->limit(4)->get();
+        $hiredEmployees = $hiredQuery->get();
 
         // Get scheduled interview dates for calendar with candidate names
         $interviewDatesWithDetails = Interview::with('lead:id,name')
