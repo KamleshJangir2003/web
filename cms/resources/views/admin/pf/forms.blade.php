@@ -12,7 +12,7 @@
 /* Page wrapper */
 .pf-page {
     margin-left: 0 !important;
-    padding: 15px;
+   
     width: 100%;
     box-sizing: border-box;
 }

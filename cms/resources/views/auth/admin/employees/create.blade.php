@@ -3,14 +3,14 @@
 @section('content')
 <style>
     .container-fluid{
-    margin-top: 60px !important;
+   
     padding-left: 130px !important;
 }
 </style>
 <div class="container-fluid">
 
     <!-- Page Header -->
-    <div class="row mb-4">
+    <div class="row">
         <div class="col">
             <!-- <h4 class="page-title">Add Employee</h4> -->
         </div>

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="main-content">
-    <div class="page-header">
+    <!-- <div class="page-header">
         <h1>Interview Management</h1>
         <div class="header-actions">
             <a href="{{ route('admin.interviews.selected') }}" class="btn btn-success">
@@ -12,7 +12,7 @@
                 <i class="fas fa-plus"></i> Schedule New Interview
             </a>
         </div>
-    </div>
+    </div> -->
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -53,7 +53,7 @@
                             <td>{{ $interview->interviewer }}</td>
                             <td id="status-{{ $interview->id }}">
                                 @if($interview->status == 'Completed' && $interview->result == 'Pending')
-                                    <span class="badge badge-warning">? Pending Decision</span>
+                                    <span class="badge badge-warning"> Pending Decision</span>
                                 @elseif($interview->result == 'Selected')
                                     <span class="badge badge-success">? Selected</span>
                                 @elseif($interview->result == 'Rejected')
@@ -422,6 +422,7 @@ function confirmComplete() {
             `;
             
             showAlert('Interview marked as completed!', 'success');
+            
         }
     })
     .catch(error => {
@@ -490,8 +491,7 @@ function updateResult(interviewId, result, rejectionReason = null) {
             document.getElementById(`status-${interviewId}`).innerHTML = statusBadge;
             
             // Update actions
-            document.getElementById(`actions-${interviewId}`).innerHTML = 
-                '<span class="text-muted">Process Complete</span>';
+            document.getElementById(`interview-row-${interviewId}`).remove();
             
             const message = result === 'Selected' ? 'Candidate selected!' : 'Candidate rejected!';
             showAlert(message, 'success');

@@ -4,6 +4,10 @@
 
 @section('styles')
 <style>
+    .main-contentq{
+        
+        margin-left: 130px;
+    }
 .interns-card {
     border: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -187,7 +191,7 @@
 </style>
 <style>
     .card-header{
-        margin-top: 50px;
+        
         display: flex;
     }
     .btn-secondary{
@@ -279,7 +283,7 @@
 @endsection
 
 @section('content')
-<div class="main-content">
+<div class="main-contentq">
     <div class="card interns-card">
         <div class="card-header">
             <h4>Interns List</h4>

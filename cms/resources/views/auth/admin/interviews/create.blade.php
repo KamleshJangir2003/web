@@ -1,8 +1,6 @@
 ﻿@extends('auth.layouts.app')
 <style>
-    .main-content{
-        padding-top: 15px;
-    }
+ 
     .page-header{
     display: flex;
        /* Horizontal center */
