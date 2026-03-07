@@ -173,7 +173,7 @@
 }
 
 .main-content{
-    margin-top: 70px;
+    margin-top: 50px;
 }
 .card-header{
     display: flex;

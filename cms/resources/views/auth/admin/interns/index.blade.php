@@ -187,7 +187,7 @@
 </style>
 <style>
     .card-header{
-        margin-top: 70px;
+        margin-top: 50px;
         display: flex;
     }
     .btn-secondary{

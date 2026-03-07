@@ -8,7 +8,7 @@
 .employee-list-wrapper {
     padding: 25px;
     margin-left: 130px;
-    margin-top: 60px;
+    margin-top: 50px;
 }
 .employee-card {
     border-radius: 12px;

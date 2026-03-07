@@ -32,7 +32,7 @@
 @section('content')
 <div class="main-content">
     <div class="page-header">
-        <h1>✅ Selected Employees</h1>
+        <h1></h1>
         <a href="{{ route('admin.interviews.index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Back to Interviews
         </a>
