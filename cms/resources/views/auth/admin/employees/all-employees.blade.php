@@ -4,9 +4,9 @@
 
 <style>
 .emp-email-wrapper {
-    padding: 25px;
+    
     margin-left: 130px;
-    margin-top: 60px;
+    
 }
 
 /* Mobile All Employees Page Responsive */
@@ -81,7 +81,7 @@
 <div class="emp-email-wrapper">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold">All Employees - Send Email</h3>
+        <h4 class="fw-bold">All Employees - Send Email</h4>
         <button class="btn btn-primary" onclick="selectAll()">
             Select All
         </button>

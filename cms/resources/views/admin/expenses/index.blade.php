@@ -3,7 +3,7 @@
 <style>
     .main-content{
         padding-left: 130px;
-        padding-top: 80px;
+        
     }
     
     /* Mobile Expenses Page Responsive */

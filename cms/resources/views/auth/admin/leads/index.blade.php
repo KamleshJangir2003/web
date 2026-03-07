@@ -2,6 +2,9 @@
 
 @section('styles')
 <style>
+    .main-content{
+        margin-top: 40px;
+    }
 .status-select {
     padding: 5px 10px;
     border: 1px solid #ddd;

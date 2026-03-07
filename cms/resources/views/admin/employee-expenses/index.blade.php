@@ -2,7 +2,7 @@
 <style>
     .main-content{
         padding-left: 130px;
-        padding-top: 80px;
+        
     }
     
     /* Mobile Employee Expenses Page Responsive */

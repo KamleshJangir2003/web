@@ -7,7 +7,7 @@
 
 <style>
     .card-header{
-        margin-top: 50px;
+        
         display: flex;
     }
     .btn-secondary{

@@ -2,8 +2,8 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 <style>
 .container-fluid {
-    margin-top: 50px !important;
-    padding: 10 40px 40px 150px !important;
+
+    padding: 1px 40px 40px 150px !important;
     background: #f5f7fa;
     min-height: 100vh;
 }

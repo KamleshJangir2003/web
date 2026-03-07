@@ -4,8 +4,8 @@
 
 .container-fluid {
     padding-left: 130px !important;
-    padding-right: 25px !important;
-    margin-top: 50px;
+    
+    
 }
 
 /* Agar sidebar fixed width 250px hai */
@@ -42,7 +42,7 @@ body {
 </style>
 
 @section('content')
-<div class="container-fluid py-4">
+<div class="container-fluid">
     <div class="row">
         <div class="col-12">
             <div class="card shadow">

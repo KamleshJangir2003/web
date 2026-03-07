@@ -10,7 +10,7 @@
    padding-left: 130px;
     min-height: 100vh;
     transition: margin-left 0.3s ease;
-    margin-top: 80px;
+    
 }
 
 /* Mobile HR Notes Page Responsive */
@@ -60,10 +60,10 @@
 }
 
 /* ===== PAGE CONTENT PROPER SPACING ===== */
-.page-content,
+/* .page-content,
 .container-fluid {
     padding: 20px;
-}
+} */
 
 /* ===== AGAR SIDEBAR COLLAPSE HO ===== */
 body.sidebar-collapsed .main-content {

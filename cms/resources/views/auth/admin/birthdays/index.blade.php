@@ -15,9 +15,9 @@
 }
 
 .dashboard-wrapper{
-    padding: 25px;
+    
     margin-left: 130px;
-    margin-top: 60px;
+   
 }
 
 /* Mobile Birthday Page Responsive */
@@ -132,7 +132,7 @@
 
 <div class="dashboard-wrapper">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>🎂 Birthday Management</h2>
+        <h4>Birthday Management</h4>
         <div class="d-flex gap-3 align-items-center">
             <button class="btn btn-sm" id="togglePopupBtn" onclick="toggleBirthdayPopup()" style="background: linear-gradient(135deg, #ff6b6b, #ffa500); color: white; border: none; padding: 8px 16px; border-radius: 8px;">
                 <i class="fa-solid fa-bell"></i> <span id="popupStatusText">Loading...</span>

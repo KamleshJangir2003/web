@@ -6,7 +6,7 @@
 <style>
 .main-content{
     padding-left:130px;
-    padding-top:80px;
+    
 }
 
 /* Table UI Improve */

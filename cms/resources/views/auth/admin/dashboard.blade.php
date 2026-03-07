@@ -5,6 +5,9 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
 <style>
+    .main-content{
+        margin-top: 50px;
+    }
 .dashboard-wrapper{
    padding: 0%;
     margin-left: 65px;
@@ -1851,427 +1854,564 @@ function submitWelcomeLetter() {
 </script>
 
   <!---employee male - female--->
-  <div class="male-all-employee">
-    <div class="employee-card">
+ <!---employee male - female--->
+<div class="dashboard-container">
+    <!-- Three Column Layout -->
+    <div class="three-column-layout">
         
-        <!-- Header -->
-        <div class="card-header">
-            <div class="icon-badge">👥</div>
-            <h2>Employee Structure</h2>
-        </div>
-
-        <!-- Total row (highlighted) -->
-        <div class="info-row total-row">
-            <span class="label">📋 Total</span>
-            <span class="value">{{ $allEmployees->count() }}</span>
-        </div>
-
-        <!-- Male -->
-        <div class="info-row">
-            <span class="label"><span>♂️</span> Male</span>
-            <span class="value">{{ $stats['malePercentage'] ?? 0 }}% <small>({{ $stats['maleEmployees'] ?? 0 }})</small></span>
-        </div>
-
-        <!-- Female -->
-        <div class="info-row">
-            <span class="label"><span>♀️</span> Female</span>
-            <span class="value">{{ $stats['femalePercentage'] ?? 0 }}% <small>({{ $stats['femaleEmployees'] ?? 0 }})</small></span>
-        </div>
-
-        <!-- Visual progress bars (extra, but keeps UI rich) -->
-        <div class="progress-section">
-            <div class="progress-item">
-                <div class="progress-header">
-                    <span>👨 Male</span>
-                    <span>{{ $stats['malePercentage'] ?? 0 }}%</span>
+        <!-- Column 1: Employee Structure Card -->
+        <div class="column">
+            <div class="card employee-card">
+                <div class="card-header">
+                    <span class="header-icon">👥</span>
+                    <h3>Employee Structure</h3>
                 </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-fill-male" style="width: {{ $stats['malePercentage'] ?? 0 }}%;"></div>
-                </div>
-            </div>
-            <div class="progress-item">
-                <div class="progress-header">
-                    <span>👩 Female</span>
-                    <span>{{ $stats['femalePercentage'] ?? 0 }}%</span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-fill-female" style="width: {{ $stats['femalePercentage'] ?? 0 }}%;"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Summary footer -->
-        <div class="footer-note">
-            👤 <strong>{{ $stats['maleEmployees'] ?? 0 }} Male</strong> · <strong>{{ $stats['femaleEmployees'] ?? 0 }} Female</strong> · Total {{ $allEmployees->count() }}
-        </div>
-
-    </div>
-    
-    <!-- 🔹 All Employees Table -->
-
-<style>
-/* Scroll Wrapper */
-.employee-table-wrapper {
-    max-height: 400px; /* Height control yaha se */
-    overflow-y: auto;
-}
-
-/* Sticky Header */
-.employee-table-wrapper thead th {
-    position: sticky;
-    top: 0;
-    background: #ffffff;
-    z-index: 2;
-    box-shadow: 0 2px 2px rgba(0,0,0,0.05);
-}
-
-/* Name wrap fix */
-.table td {
-    white-space: nowrap;
-}
-
-/* Search box styling */
-.employee-search {
-    max-width: 250px;
-}
-
-/* Smooth scrollbar */
-.employee-table-wrapper::-webkit-scrollbar {
-    width: 6px;
-}
-
-.employee-table-wrapper::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 10px;
-}
-</style>
-
-
-<div class="card table-card mb-4 shadow-sm">
-    
-    <!-- Header -->
-    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-        
-        <h5 class="mb-0 fw-semibold">
-            👥 All Employees ({{ $allEmployees->count() }})
-        </h5>
-
-        <!-- Search -->
-        <input type="text"
-               id="employeeSearch"
-               class="form-control form-control-sm employee-search"
-               placeholder="🔍 Search employee...">
-    </div>
-
-
-    <!-- Table -->
-    <div class="card-body p-0">
-        <div class="table-responsive employee-table-wrapper">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Name</th>
-                        <th>Department</th>
-                        <th>Platform</th>
-                        <th class="text-center">Contact</th>
-                    </tr>
-                </thead>
-                <tbody id="employeeTableBody">
+                
+                <div class="stats-container">
+                    <!-- Total -->
+                    <div class="stat-row total">
+                        <span class="stat-label">📋 Total</span>
+                        <span class="stat-value">{{ $allEmployees->count() }}</span>
+                    </div>
                     
-                    @forelse($allEmployees as $employee)
-                    <tr>
-                        <td>
-                            <strong>
-                                {{ $employee->first_name }}
-                            </strong>
-                            @if($employee->phone)
-                            <br>
-                            <small class="text-muted">{{ $employee->phone }}</small>
-                            @endif
-                        </td>
-
-                        <td>
-                            {{ $employee->department ?? 'N/A' }}
-                        </td>
-
-                       <td>
-    @if($employee->platform)
-        <span class="badge bg-info">
-            {{ ucfirst(str_replace('_', ' ', $employee->platform)) }}
-        </span>
-    @else
-        <span class="text-muted">N/A</span>
-    @endif
-</td>
-
-
-                        <td class="text-center">
-                            
-                            @if($employee->phone)
-                            <a href="tel:{{ $employee->phone }}"
-                               class="btn btn-sm btn-success me-1"
-                               title="Call">
-                                <i class="bi bi-telephone-fill"></i>
-                            </a>
-                            @endif
-
-                            @if($employee->email)
-                            <a href="mailto:{{ $employee->email }}"
-                               class="btn btn-sm btn-primary me-1"
-                               title="Email">
-                                <i class="bi bi-envelope-fill"></i>
-                            </a>
-                            @endif
-
-                            @if($employee->phone)
-                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $employee->phone) }}"
-                               target="_blank"
-                               class="btn btn-sm btn-success"
-                               title="WhatsApp">
-                                <i class="bi bi-whatsapp"></i>
-                            </a>
-                            @endif
-
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="4" class="text-center text-muted py-4">
-                            No employees found
-                        </td>
-                    </tr>
-                    @endforelse
-
-                </tbody>
-            </table>
+                    <!-- Male -->
+                    <div class="stat-row">
+                        <span class="stat-label"><span class="male-icon">♂️</span> Male</span>
+                        <span class="stat-value">{{ $stats['malePercentage'] ?? 0 }}% <span class="count">({{ $stats['maleEmployees'] ?? 0 }})</span></span>
+                    </div>
+                    
+                    <!-- Female -->
+                    <div class="stat-row">
+                        <span class="stat-label"><span class="female-icon">♀️</span> Female</span>
+                        <span class="stat-value">{{ $stats['femalePercentage'] ?? 0 }}% <span class="count">({{ $stats['femaleEmployees'] ?? 0 }})</span></span>
+                    </div>
+                    
+                    <!-- Progress Bars -->
+                    <div class="progress-wrapper">
+                        <div class="progress-item">
+                            <div class="progress-label">
+                                <span>👨 Male</span>
+                                <span>{{ $stats['malePercentage'] ?? 0 }}%</span>
+                            </div>
+                            <div class="progress-bg">
+                                <div class="progress-fill male-fill" style="width: {{ $stats['malePercentage'] ?? 0 }}%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-label">
+                                <span>👩 Female</span>
+                                <span>{{ $stats['femalePercentage'] ?? 0 }}%</span>
+                            </div>
+                            <div class="progress-bg">
+                                <div class="progress-fill female-fill" style="width: {{ $stats['femalePercentage'] ?? 0 }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer Summary -->
+                    <div class="stats-footer">
+                        👤 <strong>{{ $stats['maleEmployees'] ?? 0 }} Male</strong> · <strong>{{ $stats['femaleEmployees'] ?? 0 }} Female</strong> · Total {{ $allEmployees->count() }}
+                    </div>
+                </div>
+            </div>
         </div>
+        
+        <!-- Column 2: All Employees Table -->
+        <div class="column">
+            <div class="card employees-card">
+                <div class="card-header">
+                    <span class="header-icon">👥</span>
+                    <h3>All Employees <span class="badge">{{ $allEmployees->count() }}</span></h3>
+                    <div class="search-box">
+                        <input type="text" id="employeeSearch" placeholder="🔍 Search employee...">
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name & Department</th>
+                                <th>Platform</th>
+                                <th>Contact</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeeTableBody">
+                            @forelse($allEmployees as $employee)
+                            <tr>
+                                <td>
+                                    <div class="name-dept">
+                                        <strong>{{ $employee->first_name }}</strong>
+                                        <span class="dept">{{ $employee->department ?? 'No Department' }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if($employee->platform)
+                                    <span class="platform-tag">{{ ucfirst(str_replace('_', ' ', $employee->platform)) }}</span>
+                                    @else
+                                    <span class="na">—</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div class="contact-actions">
+                                        @if($employee->phone)
+                                        <a href="tel:{{ $employee->phone }}" class="action-btn call" title="Call">📞</a>
+                                        @endif
+                                        @if($employee->email)
+                                        <a href="mailto:{{ $employee->email }}" class="action-btn email" title="Email">✉️</a>
+                                        @endif
+                                        @if($employee->phone)
+                                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $employee->phone) }}" class="action-btn whatsapp" title="WhatsApp" target="_blank">💬</a>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="3" class="empty-message">No employees found</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Column 3: Recent Activity Logs -->
+        <div class="column">
+            <div class="card activity-card">
+                <div class="card-header">
+                    <span class="header-icon">📋</span>
+                    <h3>Recent Activity Logs</h3>
+                </div>
+                
+                <div class="logs-container">
+                    <div class="logs-header">
+                        <span>User</span>
+                        <span>Action</span>
+                        <span>Module</span>
+                        <span>Time</span>
+                    </div>
+                    
+                    <div class="logs-list">
+                        @if(isset($recentLogs) && $recentLogs->count() > 0)
+                            @foreach($recentLogs as $log)
+                            <div class="log-entry">
+                                <span class="log-user">{{ $log->user_name ?? 'System' }}</span>
+                                <span class="log-action 
+                                    @if(str_contains(strtolower($log->action), 'create')) create
+                                    @elseif(str_contains(strtolower($log->action), 'update')) update
+                                    @elseif(str_contains(strtolower($log->action), 'delete')) delete
+                                    @else default
+                                    @endif">
+                                    {{ $log->action }}
+                                </span>
+                                <span class="log-module">{{ $log->module ?? 'General' }}</span>
+                                <span class="log-time">{{ $log->created_at ? $log->created_at->diffForHumans() : 'N/A' }}</span>
+                            </div>
+                            @endforeach
+                        @else
+                            <div class="no-logs">No recent activity logs found</div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        
     </div>
 </div>
 
-
-<!-- Live Search Script -->
+<!-- Search Script -->
 <script>
-document.getElementById("employeeSearch").addEventListener("keyup", function () {
-
-    let value = this.value.toLowerCase();
+document.getElementById("employeeSearch")?.addEventListener("keyup", function() {
+    let searchTerm = this.value.toLowerCase();
     let rows = document.querySelectorAll("#employeeTableBody tr");
-
-    rows.forEach(function (row) {
-
-        let name = row.cells[0].innerText.toLowerCase();
-        let department = row.cells[1].innerText.toLowerCase();
-        let platform = row.cells[2].innerText.toLowerCase();
-
-        if (name.includes(value) || department.includes(value) || platform.includes(value)) {
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
-        }
+    
+    rows.forEach(row => {
+        let text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? "" : "none";
     });
-
 });
 </script>
 
-    </div>
-
-   <!-- 🔹 Activity Logs Section -->
-<div class="activity-card">
-    <div class="activity-header">
-        <h3>📋 Recent Activity Logs</h3>
-    </div>
-
-    <div class="activity-table">
-
-        <div class="activity-row activity-head">
-            <div>User</div>
-            <div>Action</div>
-            <div>Module</div>
-            <div>Time</div>
-        </div>
-
-        @if(isset($recentLogs) && $recentLogs->count() > 0)
-            @foreach($recentLogs as $log)
-            <div class="activity-row">
-                <div class="user-name">
-                    {{ $log->user_name ?? 'System' }}
-                </div>
-
-                <div>
-                    <span class="status-badge
-                        @if(str_contains(strtolower($log->action), 'create')) badge-success
-                        @elseif(str_contains(strtolower($log->action), 'update')) badge-warning
-                        @elseif(str_contains(strtolower($log->action), 'delete')) badge-danger
-                        @else badge-info
-                        @endif">
-                        {{ $log->action }}
-                    </span>
-                </div>
-
-                <div class="module-name">
-                    {{ $log->module ?? 'General' }}
-                </div>
-
-                <div class="time-text">
-                    {{ $log->created_at ? $log->created_at->diffForHumans() : 'N/A' }}
-                </div>
-            </div>
-            @endforeach
-        @else
-            <div class="no-data">
-                No recent activity logs found
-            </div>
-        @endif
-
-    </div>
-</div>
 <style>
-    /* Card */
-.activity-card {
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
-    overflow: hidden;
-    margin-bottom: 25px;
-    margin-top: 30px;
-}
-
-/* Header */
-.activity-header {
-    padding: 20px 25px;
-    border-bottom: 1px solid #f1f1f1;
-}
-
-.activity-header h3 {
+/* Reset & Base */
+* {
     margin: 0;
-    font-size: 18px;
-    font-weight: 600;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* Table Wrapper */
-.activity-table {
-    width: 100%;
-}
-
-/* Row Layout */
-.activity-row {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr 1fr 1fr;
-    padding: 18px 25px;
-    align-items: center;
-    border-bottom: 1px solid #f3f3f3;
-    transition: all 0.2s ease;
-}
-
-/* Header Row */
-.activity-head {
+.dashboard-container {
+    padding: 15px;
     background: #f8fafc;
-    font-size: 13px;
+    /* min-height: 100vh; */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Three Column Layout */
+.three-column-layout {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    align-items: start;
+}
+
+/* Column Styles */
+.column {
+    min-width: 0; /* Prevents overflow */
+}
+
+/* Card Styles */
+.card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    border: 1px solid #eef2f6;
+    overflow: hidden;
+    height: fit-content;
+}
+
+.card-header {
+    padding: 16px 18px;
+    border-bottom: 1px solid #eef2f6;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-icon {
+    font-size: 20px;
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 15px;
     font-weight: 600;
-    text-transform: uppercase;
-    color: #6c757d;
+    color: #1e293b;
+    flex: 1;
 }
 
-/* Hover */
-.activity-row:hover {
-    background: #f9fbff;
-}
-
-/* User */
-.user-name {
-    font-weight: 600;
-    color: #2c3e50;
-}
-
-/* Module */
-.module-name {
-    color: #555;
-}
-
-/* Time */
-.time-text {
-    font-size: 13px;
-    color: #888;
-}
-
-/* Badge */
-.status-badge {
-    padding: 6px 14px;
+.badge {
+    background: #e2e8f0;
+    color: #475569;
+    padding: 2px 8px;
     border-radius: 30px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
+    margin-left: 6px;
 }
 
-/* Badge Colors */
-.badge-success {
-    background: #e6f9f0;
-    color: #0f9d58;
+/* Employee Structure Card */
+.stats-container {
+    padding: 16px;
 }
 
-.badge-warning {
-    background: #fff4e5;
-    color: #f57c00;
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
 }
 
-.badge-danger {
-    background: #fdecea;
-    color: #d93025;
+.stat-row.total {
+    background: linear-gradient(135deg, #667eea08 0%, #764ba208 100%);
+    padding: 14px 12px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    margin-bottom: 8px;
 }
 
-.badge-info {
-    background: #e8f0fe;
-    color: #1a73e8;
+.stat-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #475569;
+    font-size: 14px;
 }
 
-/* No Data */
-.no-data {
-    padding: 30px;
+.male-icon, .female-icon {
+    font-size: 16px;
+}
+
+.stat-value {
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 14px;
+}
+
+.stat-value .count {
+    font-weight: 400;
+    color: #64748b;
+    font-size: 12px;
+}
+
+/* Progress Bars */
+.progress-wrapper {
+    margin: 18px 0 12px;
+}
+
+.progress-item {
+    margin-bottom: 14px;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #475569;
+    margin-bottom: 5px;
+}
+
+.progress-bg {
+    height: 6px;
+    background: #f1f5f9;
+    border-radius: 100px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 100px;
+}
+
+.male-fill {
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+}
+
+.female-fill {
+    background: linear-gradient(90deg, #ec4899, #d946ef);
+}
+
+.stats-footer {
     text-align: center;
-    color: #999;
+    font-size: 12px;
+    color: #64748b;
+    padding-top: 14px;
+    border-top: 1px dashed #e2e8f0;
+    margin-top: 8px;
+}
+
+/* Employees Card */
+.employees-card .card-header {
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 150px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 8px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 30px;
+    font-size: 13px;
+    outline: none;
+    transition: all 0.3s;
+    background: white;
+}
+
+.search-box input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+}
+
+.table-container {
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    position: sticky;
+    top: 0;
+    background: #f8fafc;
+    padding: 12px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    text-align: left;
+    border-bottom: 2px solid #e2e8f0;
+    z-index: 5;
+}
+
+td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 13px;
+}
+
+.name-dept {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.name-dept strong {
+    color: #0f172a;
+    font-size: 13px;
+}
+
+.name-dept .dept {
+    color: #64748b;
+    font-size: 11px;
+}
+
+.platform-tag {
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 30px;
+    font-size: 11px;
+    color: #475569;
+    white-space: nowrap;
+}
+
+.contact-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.action-btn {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s;
+    background: #f8fafc;
+}
+
+.action-btn.call { color: #10b981; }
+.action-btn.email { color: #3b82f6; }
+.action-btn.whatsapp { color: #25d366; }
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    background: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+/* Activity Logs Card */
+.logs-container {
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.logs-header {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1fr 1fr;
+    padding: 12px 14px;
+    background: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.log-entry {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1fr 1fr;
+    padding: 12px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 12px;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.log-entry:hover {
+    background: #f8fafc;
+}
+
+.log-user {
+    font-weight: 500;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 6px;
+}
+
+.log-action {
+    padding: 3px 8px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 500;
+    text-align: center;
+    width: fit-content;
+    white-space: nowrap;
+}
+
+.log-action.create { background: #d4edda; color: #155724; }
+.log-action.update { background: #fff3cd; color: #856404; }
+.log-action.delete { background: #f8d7da; color: #721c24; }
+.log-action.default { background: #e2e8f0; color: #475569; }
+
+.log-module {
+    color: #475569;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 6px;
+}
+
+.log-time {
+    color: #64748b;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.empty-message, .no-logs {
+    text-align: center;
+    padding: 40px 20px;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.na {
+    color: #94a3b8;
+}
+
+/* Scrollbar */
+.table-container::-webkit-scrollbar,
+.logs-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.table-container::-webkit-scrollbar-track,
+.logs-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.table-container::-webkit-scrollbar-thumb,
+.logs-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .three-column-layout {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
 }
 </style>
-    <style>
-        /* 🔹 Activity Log Card Styling */
-.table-card {
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-}
-
-/* Header spacing */
-.table-card .card-header {
-    padding: 20px 24px !important;
-    border-bottom: 1px solid #f1f1f1;
-}
-
-/* Table header */
-.table-card .table thead th {
-    padding: 18px 24px !important;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    background: #f8fafc;
-    border-bottom: 1px solid #e9ecef;
-}
-
-/* Table body cells */
-.table-card .table tbody td {
-    padding: 18px 24px !important;
-    border-bottom: 1px solid #f3f3f3;
-}
-
-/* Row hover effect */
-.table-card .table tbody tr:hover {
-    background-color: #f9fbfd !important;
-}
-
-/* Badge modern look */
-.table-card .badge {
-    padding: 6px 14px;
-    border-radius: 50px;
-    font-weight: 500;
-    font-size: 12px;
-}
-    </style>
     <!-- 🔹 Pending Approvals Table -->
     @if(isset($pendingUsers) && $pendingUsers->count() > 0)
     <div class="card table-card mb-4">

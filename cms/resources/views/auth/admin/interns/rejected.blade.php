@@ -1,7 +1,7 @@
 @extends('auth.layouts.app')
 <style>
     .card-header{
-        margin-top: 70px;
+       
         display: flex;
     }
     .btn-secondary{
