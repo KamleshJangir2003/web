@@ -1941,7 +1941,7 @@ function submitWelcomeLetter() {
                             <tr>
                                 <td>
                                     <div class="name-dept">
-                                        <strong>{{ $employee->first_name }}</strong>
+                                        <strong>{{ $employee->first_name }} | {{ $lead->phone ?? $lead->number }}</strong>
                                         <span class="dept">{{ $employee->department ?? 'No Department' }}</span>
                                     </div>
                                 </td>
