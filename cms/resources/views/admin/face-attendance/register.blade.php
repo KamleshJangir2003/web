@@ -148,39 +148,49 @@ async function captureFace() {
     captureFaceBtn.disabled = true;
     showStatus('Detecting face...', 'info');
     
-    const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
-        .withFaceLandmarks()
-        .withFaceDescriptor();
-    
-    if (!detection) {
-        showStatus('No face detected. Please try again.', 'warning');
-        captureFaceBtn.disabled = false;
-        return;
-    }
-    
-    showStatus('Face detected. Saving...', 'info');
-    
-    const descriptor = Array.from(detection.descriptor);
-    
-    const response = await fetch('/admin/face-attendance/save-face', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({
-            employee_id: employeeId,
-            face_descriptor: JSON.stringify(descriptor)
-        })
-    });
-    
-    const result = await response.json();
-    
-    if (result.success) {
-        showStatus('Face registered successfully!', 'success');
-        setTimeout(() => location.reload(), 2000);
-    } else {
-        showStatus(result.message, 'danger');
+    try {
+        const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+        
+        if (!detection) {
+            showStatus('No face detected. Please try again.', 'warning');
+            captureFaceBtn.disabled = false;
+            return;
+        }
+        
+        showStatus('Face detected. Saving...', 'info');
+        
+        const descriptor = Array.from(detection.descriptor);
+        
+        const response = await fetch('/admin/face-attendance/save-face', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                employee_id: employeeId,
+                face_descriptor: descriptor
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Server error: ' + response.status);
+        }
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showStatus('Face registered successfully!', 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showStatus(result.message || 'Registration failed', 'danger');
+            captureFaceBtn.disabled = false;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showStatus('Error: ' + error.message, 'danger');
         captureFaceBtn.disabled = false;
     }
 }

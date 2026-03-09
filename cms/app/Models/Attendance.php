@@ -11,19 +11,16 @@ class Attendance extends Model
 
     protected $fillable = [
         'employee_id',
-        'date',
-        'check_in',
-        'check_out',
-        'late_minutes',
-        'working_hours',
+        'attendance_date',
+        'in_time',
+        'out_time',
         'status',
-        'shift_id'
+        'shift_id',
+        'reason'
     ];
 
     protected $casts = [
-        'date' => 'date',
-        'check_in' => 'datetime:H:i:s',
-        'check_out' => 'datetime:H:i:s'
+        'attendance_date' => 'date',
     ];
 
     public function employee()

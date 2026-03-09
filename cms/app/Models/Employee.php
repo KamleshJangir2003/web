@@ -161,4 +161,12 @@ class Employee extends Authenticatable
     {
         return $this->belongsTo(ShiftType::class, 'shift_id');
     }
+
+    // ==========================
+    // RELATION: SHIFT (ALIAS)
+    // ==========================
+    public function shift()
+    {
+        return $this->belongsTo(ShiftType::class, 'shift_id');
+    }
 }

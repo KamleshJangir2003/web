@@ -66,6 +66,22 @@
 
 <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 <script>
+// Check WebGL support
+function checkWebGLSupport() {
+    try {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (!gl) {
+            showStatus('WebGL is not supported. Using CPU backend (slower).', 'warning');
+            return false;
+        }
+        return true;
+    } catch (e) {
+        showStatus('WebGL check failed. Using CPU backend.', 'warning');
+        return false;
+    }
+}
+
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const startCameraBtn = document.getElementById('startCamera');
@@ -75,18 +91,24 @@ const statusMessage = document.getElementById('status-message');
 let modelsLoaded = false;
 let stream = null;
 
+// Set backend before loading models
+checkWebGLSupport();
+
 async function loadModels() {
     const MODEL_URL = '/models';
     try {
-        await Promise.all([
-            faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-            faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-            faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
-        ]);
+        // Force CPU backend if WebGL fails
+        await faceapi.tf.setBackend('cpu');
+        await faceapi.tf.ready();
+        
+        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+        await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+        await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
         modelsLoaded = true;
         showStatus('Models loaded successfully', 'success');
     } catch (error) {
         showStatus('Error loading models: ' + error.message, 'danger');
+        console.error('Model loading error:', error);
     }
 }
 
@@ -107,11 +129,15 @@ async function startCamera() {
 }
 
 async function detectFace() {
-    const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
-        .withFaceLandmarks()
-        .withFaceDescriptor();
-    
-    return detection;
+    try {
+        const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 }))
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+        return detection;
+    } catch (error) {
+        console.error('Face detection error:', error);
+        return null;
+    }
 }
 
 async function markAttendance() {
@@ -128,69 +154,96 @@ async function markAttendance() {
     
     showStatus('Face detected. Matching...', 'info');
     
-    const response = await fetch('/admin/face-attendance/all-faces');
-    const data = await response.json();
-    
-    if (!data.success || data.employees.length === 0) {
-        showStatus('No registered faces found. Please register first.', 'warning');
-        markAttendanceBtn.disabled = false;
-        return;
-    }
-    
-    let bestMatch = null;
-    let minDistance = 0.6;
-    
-    for (const emp of data.employees) {
-        const savedDescriptor = JSON.parse(emp.descriptor);
-        const distance = faceapi.euclideanDistance(detection.descriptor, savedDescriptor);
+    try {
+        const response = await fetch('/admin/face-attendance/all-faces');
         
-        if (distance < minDistance) {
-            minDistance = distance;
-            bestMatch = emp;
+        if (!response.ok) {
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const errorData = await response.json();
+                console.error('Server error:', errorData);
+                showStatus(`Server error: ${errorData.message || 'Unknown error'}`, 'danger');
+            } else {
+                const text = await response.text();
+                console.error('Server returned HTML:', text.substring(0, 500));
+                showStatus('Server error: Expected JSON but got HTML. Check Laravel logs.', 'danger');
+            }
+            markAttendanceBtn.disabled = false;
+            return;
         }
-    }
-    
-    if (!bestMatch) {
-        showStatus('Face not recognized. Please register or try again.', 'danger');
-        markAttendanceBtn.disabled = false;
-        return;
-    }
-    
-    const markResponse = await fetch('/admin/face-attendance/mark', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({
-            employee_id: bestMatch.id,
-            face_descriptor: JSON.stringify(Array.from(detection.descriptor))
-        })
-    });
-    
-    if (!markResponse.ok) {
-        const errorText = await markResponse.text();
-        console.error('Server error:', errorText);
-        showStatus('Server error. Check console for details.', 'danger');
-        markAttendanceBtn.disabled = false;
-        return;
-    }
-    
-    const result = await markResponse.json();
-    console.log('Server response:', result);
-    
-    if (result.success) {
-        const actionType = result.type === 'check_in' ? 'Check-In' : 'Check-Out';
-        let statusBadge = result.type === 'check_in' 
-            ? (result.status === 'Late' 
-                ? `<span class="badge bg-warning">Late (${result.late_minutes} min)</span>` 
-                : '<span class="badge bg-success">On Time</span>')
-            : '<span class="badge bg-info">Checked Out</span>';
         
-        showStatus(`${actionType} successful for ${result.employee_name} at ${result.time}`, 'success');
-        addToAttendanceList(bestMatch.employee_id, result.employee_name, result.time, statusBadge, actionType);
-    } else {
-        showStatus(result.message, 'danger');
+        const data = await response.json();
+        console.log('Response data:', data);
+    
+        if (!data.success || data.employees.length === 0) {
+            showStatus('No registered faces found. Please register first.', 'warning');
+            markAttendanceBtn.disabled = false;
+            return;
+        }
+        
+        let bestMatch = null;
+        let minDistance = 0.65;
+        
+        for (const emp of data.employees) {
+            const savedDescriptor = JSON.parse(emp.descriptor);
+            const distance = faceapi.euclideanDistance(detection.descriptor, savedDescriptor);
+            console.log(`${emp.name}: distance = ${distance.toFixed(3)}`);
+            
+            if (distance < minDistance) {
+                minDistance = distance;
+                bestMatch = emp;
+            }
+        }
+        
+        console.log('Best match:', bestMatch?.name, 'Distance:', minDistance.toFixed(3));
+        
+        if (!bestMatch) {
+            showStatus('Face not recognized. Distance too high. Please try again or register.', 'danger');
+            markAttendanceBtn.disabled = false;
+            return;
+        }
+        
+        const markResponse = await fetch('/admin/face-attendance/mark', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                employee_id: bestMatch.id,
+                face_descriptor: JSON.stringify(Array.from(detection.descriptor))
+            })
+        });
+        
+        if (!markResponse.ok) {
+            const errorText = await markResponse.text();
+            console.error('Mark attendance error:', errorText);
+            showStatus('Server error marking attendance. Check console.', 'danger');
+            markAttendanceBtn.disabled = false;
+            return;
+        }
+        
+        const result = await markResponse.json();
+        console.log('Mark response:', result);
+        
+        if (result.success) {
+            const actionType = result.type === 'check_in' ? 'Check-In' : 'Check-Out';
+            let statusBadge = result.type === 'check_in' 
+                ? (result.status === 'Late' 
+                    ? `<span class="badge bg-warning">Late (${result.late_minutes} min)</span>` 
+                    : (result.status === 'Half Day' 
+                        ? '<span class="badge bg-info">Half Day</span>'
+                        : '<span class="badge bg-success">On Time</span>'))
+                : '<span class="badge bg-info">Checked Out</span>';
+            
+            showStatus(`${actionType} successful for ${result.employee_name} at ${result.time}. <a href="/admin/attendance" class="alert-link">View Attendance Page</a>`, 'success');
+            addToAttendanceList(bestMatch.employee_id, result.employee_name, result.time, statusBadge, actionType);
+        } else {
+            showStatus(result.message, 'danger');
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+        showStatus('Network error: ' + error.message, 'danger');
     }
     
     markAttendanceBtn.disabled = false;

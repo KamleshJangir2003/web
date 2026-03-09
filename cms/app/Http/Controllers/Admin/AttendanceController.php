@@ -58,7 +58,8 @@ class AttendanceController extends Controller
                      ->where('attendance.attendance_date', '=', $selected_date)
                      ->where('attendance.shift', '=', $selected_shift);
             })
-            ->select('employees.*', 'attendance.created_at as attendance_created_at')
+            ->select('employees.*', 'attendance.created_at as attendance_created_at', 'attendance.updated_at as attendance_updated_at')
+            ->orderByDesc('attendance.updated_at')
             ->orderByDesc('attendance.created_at')
             ->orderBy('employees.first_name')
             ->get();

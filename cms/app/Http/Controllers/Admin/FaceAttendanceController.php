@@ -23,19 +23,28 @@ class FaceAttendanceController extends Controller
 
     public function saveFaceData(Request $request)
     {
-        $request->validate([
-            'employee_id' => 'required|exists:employees,id',
-            'face_descriptor' => 'required|string'
-        ]);
+        try {
+            $request->validate([
+                'employee_id' => 'required|exists:employees,id',
+                'face_descriptor' => 'required'
+            ]);
 
-        $employee = Employee::findOrFail($request->employee_id);
-        $employee->face_descriptor = $request->face_descriptor;
-        $employee->save();
+            $employee = Employee::findOrFail($request->employee_id);
+            $employee->face_data = is_string($request->face_descriptor) 
+                ? $request->face_descriptor 
+                : json_encode($request->face_descriptor);
+            $employee->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Face registered successfully'
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Face registered successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function getEmployeeFaceData($id)
@@ -44,13 +53,40 @@ class FaceAttendanceController extends Controller
         
         return response()->json([
             'success' => true,
-            'descriptor' => $employee->face_descriptor
+            'descriptor' => $employee->face_data
         ]);
     }
 
     public function getAllFaceData()
     {
-        return $this->getAllFaces();
+        try {
+            \Log::info('getAllFaceData called');
+            $employees = Employee::whereNotNull('face_data')
+                ->where('face_data', '!=', '')
+                ->get(['id', 'employee_id', 'first_name', 'last_name', 'face_data'])
+                ->map(function($emp) {
+                    return [
+                        'id' => $emp->id,
+                        'employee_id' => $emp->employee_id,
+                        'name' => $emp->first_name . ' ' . $emp->last_name,
+                        'descriptor' => $emp->face_data
+                    ];
+                });
+            
+            \Log::info('Found employees: ' . $employees->count());
+            
+            return response()->json([
+                'success' => true,
+                'employees' => $employees
+            ], 200, [], JSON_UNESCAPED_SLASHES);
+        } catch (\Exception $e) {
+            \Log::error('getAllFaceData error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
     }
 
     public function markAttendance(Request $request)
@@ -60,45 +96,69 @@ class FaceAttendanceController extends Controller
 
     public function getAllFaces()
     {
-        $employees = Employee::whereNotNull('face_descriptor')->get(['id', 'employee_id', 'name', 'face_descriptor as descriptor']);
-        
-        return response()->json([
-            'success' => true,
-            'employees' => $employees
-        ]);
+        try {
+            $employees = Employee::whereNotNull('face_data')
+                ->where('face_data', '!=', '')
+                ->get(['id', 'employee_id', 'first_name', 'last_name', 'face_data'])
+                ->map(function($emp) {
+                    return [
+                        'id' => $emp->id,
+                        'employee_id' => $emp->employee_id,
+                        'name' => $emp->first_name . ' ' . $emp->last_name,
+                        'descriptor' => $emp->face_data
+                    ];
+                });
+            
+            return response()->json([
+                'success' => true,
+                'employees' => $employees
+            ], 200, [], JSON_UNESCAPED_SLASHES);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function mark(Request $request)
     {
-        $request->validate([
-            'employee_id' => 'required|exists:employees,id',
-            'face_descriptor' => 'required|string'
-        ]);
+        try {
+            $request->validate([
+                'employee_id' => 'required|exists:employees,id',
+                'face_descriptor' => 'required|string'
+            ]);
 
-        $employee = Employee::with('shift')->findOrFail($request->employee_id);
-        $today = Carbon::today();
-        $now = Carbon::now();
+            $employee = Employee::with('shift')->findOrFail($request->employee_id);
+            $today = Carbon::today()->format('Y-m-d');
+            $now = Carbon::now();
 
-        // Check existing attendance
-        $attendance = Attendance::where('employee_id', $employee->id)
-            ->where('date', $today)
-            ->first();
+            // Check existing attendance
+            $attendance = Attendance::where('employee_id', $employee->id)
+                ->where('attendance_date', $today)
+                ->first();
 
-        // Case 1: No attendance record - Mark Check-In
-        if (!$attendance) {
-            return $this->markCheckIn($employee, $today, $now);
+            // Case 1: No attendance record - Mark Check-In
+            if (!$attendance) {
+                return $this->markCheckIn($employee, $today, $now);
+            }
+
+            // Case 2: Check-in exists, check-out is null - Mark Check-Out
+            if ($attendance->in_time && !$attendance->out_time) {
+                return $this->markCheckOut($attendance, $now);
+            }
+
+            // Case 3: Both check-in and check-out exist
+            return response()->json([
+                'success' => false,
+                'message' => 'Attendance already completed for today'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        // Case 2: Check-in exists, check-out is null - Mark Check-Out
-        if ($attendance->check_in && !$attendance->check_out) {
-            return $this->markCheckOut($attendance, $now);
-        }
-
-        // Case 3: Both check-in and check-out exist
-        return response()->json([
-            'success' => false,
-            'message' => 'Attendance already completed for today'
-        ]);
     }
 
     private function markCheckIn($employee, $today, $now)
@@ -108,10 +168,11 @@ class FaceAttendanceController extends Controller
         $status = 'Present';
 
         // Calculate late minutes if shift exists
-        if ($employee->shift) {
-            $shiftStart = Carbon::parse($employee->shift->start_time);
-            $checkInCarbon = Carbon::parse($checkInTime);
+        if ($employee->shift && is_object($employee->shift) && isset($employee->shift->start_time)) {
 
+            $shiftStart = Carbon::createFromFormat('H:i:s', $employee->shift->start_time);
+            $checkInCarbon = Carbon::createFromFormat('H:i:s', $checkInTime);
+        
             if ($checkInCarbon->gt($shiftStart)) {
                 $lateMinutes = $checkInCarbon->diffInMinutes($shiftStart);
                 $status = 'Late';
@@ -125,45 +186,44 @@ class FaceAttendanceController extends Controller
 
         $attendance = Attendance::create([
             'employee_id' => $employee->id,
-            'date' => $today,
-            'check_in' => $checkInTime,
-            'late_minutes' => $lateMinutes,
+            'attendance_date' => $today,
+            'in_time' => $checkInTime,
             'status' => $status,
+            'shift' => $employee->shift ?? 'Day',
             'shift_id' => $employee->shift_id
         ]);
 
         return response()->json([
             'success' => true,
             'type' => 'check_in',
-            'employee_name' => $employee->name,
-            'time' => $now->format('h:i A'),
+            'employee_name' => $employee->first_name . ' ' . $employee->last_name,
+            'time' => $checkInTime,
             'status' => $status,
-            'late_minutes' => $lateMinutes,
-            'message' => 'Check-in successful'
+            'late_minutes' => $lateMinutes
         ]);
     }
 
     private function markCheckOut($attendance, $now)
     {
+        $employee = Employee::find($attendance->employee_id);
+    
         $checkOutTime = $now->format('H:i:s');
-        
+    
         // Calculate working hours
-        $checkIn = Carbon::parse($attendance->check_in);
+        $checkIn = Carbon::parse($attendance->in_time);
         $checkOut = Carbon::parse($checkOutTime);
         $workingHours = $checkOut->diffInMinutes($checkIn) / 60;
-
+    
         $attendance->update([
-            'check_out' => $checkOutTime,
-            'working_hours' => round($workingHours, 2)
+            'out_time' => $checkOutTime
         ]);
-
+    
         return response()->json([
             'success' => true,
             'type' => 'check_out',
-            'employee_name' => $attendance->employee->name,
-            'time' => $now->format('h:i A'),
-            'working_hours' => round($workingHours, 2),
-            'message' => 'Check-out successful'
+            'employee_name' => $employee->first_name . ' ' . $employee->last_name,
+            'time' => $checkOutTime,
+            'working_hours' => round($workingHours, 2)
         ]);
     }
 }
