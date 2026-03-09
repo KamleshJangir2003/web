@@ -446,6 +446,18 @@
                         Attendance
                     </a>
                 </li>
+                <li>
+                    <a href="{{ route('admin.face-attendance.index') }}">
+                        <i class="fa-solid fa-face-smile"></i>
+                        Face Attendance
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.face-attendance.register') }}">
+                        <i class="fa-solid fa-user-plus"></i>
+                        Register Face
+                    </a>
+                </li>
             </ul>
         </li>
 

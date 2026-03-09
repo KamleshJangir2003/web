@@ -11,7 +11,10 @@ class EmployeeCredentialsController extends Controller
 {
     public function index()
     {
-        $employees = Employee::where('user_type', 'employee')->get();
+        $employees = Employee::where('user_type', 'employee')
+                    ->where('hired_status', 'hired')
+                    ->get();
+    
         return view('employee-credentials', compact('employees'));
     }
 

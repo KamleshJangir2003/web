@@ -433,6 +433,18 @@ Route::middleware(['auth'])->group(function () {
             
             /*
             |--------------------------------------------------------------------------
+            | FACE ATTENDANCE
+            |--------------------------------------------------------------------------
+            */
+            Route::get('/face-attendance', [App\Http\Controllers\Admin\FaceAttendanceController::class, 'index'])->name('face-attendance.index');
+            Route::get('/face-attendance/register', [App\Http\Controllers\Admin\FaceAttendanceController::class, 'register'])->name('face-attendance.register');
+            Route::post('/face-attendance/save-face', [App\Http\Controllers\Admin\FaceAttendanceController::class, 'saveFaceData'])->name('face-attendance.save-face');
+            Route::post('/face-attendance/mark', [App\Http\Controllers\Admin\FaceAttendanceController::class, 'markAttendance'])->name('face-attendance.mark');
+            Route::get('/face-attendance/employee/{id}', [App\Http\Controllers\Admin\FaceAttendanceController::class, 'getEmployeeFaceData'])->name('face-attendance.get-face');
+            Route::get('/face-attendance/all-faces', [App\Http\Controllers\Admin\FaceAttendanceController::class, 'getAllFaceData'])->name('face-attendance.all-faces');
+            
+            /*
+            |--------------------------------------------------------------------------
             | SALARY MANAGEMENT
             |--------------------------------------------------------------------------
             */

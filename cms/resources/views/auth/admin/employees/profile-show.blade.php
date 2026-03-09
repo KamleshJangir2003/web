@@ -10,7 +10,7 @@
 @section('content')
 <div class="main-content">
     <div class="page-header">
-        <h1>Employee Profile</h1>
+       
         
     </div>
 

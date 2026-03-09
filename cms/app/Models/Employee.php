@@ -56,6 +56,7 @@ class Employee extends Authenticatable
 
         // Selfie
         'selfie',
+        'face_data',
 
         // Employment Details
         'joining_date',
