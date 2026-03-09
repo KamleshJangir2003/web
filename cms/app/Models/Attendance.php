@@ -15,6 +15,7 @@ class Attendance extends Model
         'in_time',
         'out_time',
         'status',
+        'shift',
         'shift_id',
         'reason'
     ];

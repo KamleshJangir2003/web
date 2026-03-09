@@ -52,7 +52,33 @@
                                         </tr>
                                     </thead>
                                     <tbody id="attendance-tbody">
+                                        @forelse($todayAttendance as $att)
+                                        <tr>
+                                            <td>{{ $att->employee->employee_id ?? 'N/A' }}</td>
+                                            <td>{{ $att->employee->first_name }} {{ $att->employee->last_name }}</td>
+                                            <td>
+                                                @if($att->in_time)
+                                                    {{ date('h:i A', strtotime($att->in_time)) }} (Check-In)
+                                                @endif
+                                                @if($att->out_time)
+                                                    <br>{{ date('h:i A', strtotime($att->out_time)) }} (Check-Out)
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($att->status === 'present')
+                                                    <span class="badge bg-success">On Time</span>
+                                                @elseif($att->status === 'late')
+                                                    <span class="badge bg-warning">Late</span>
+                                                @elseif($att->status === 'half_day')
+                                                    <span class="badge bg-info">Half Day</span>
+                                                @else
+                                                    <span class="badge bg-secondary">{{ ucwords(str_replace('_', ' ', $att->status)) }}</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        @empty
                                         <tr><td colspan="4" class="text-center text-muted">No attendance marked yet</td></tr>
+                                        @endforelse
                                     </tbody>
                                 </table>
                             </div>

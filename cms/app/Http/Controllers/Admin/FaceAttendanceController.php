@@ -12,7 +12,13 @@ class FaceAttendanceController extends Controller
 {
     public function index()
     {
-        return view('admin.face-attendance.index');
+        $today = Carbon::today()->format('Y-m-d');
+        $todayAttendance = Attendance::with('employee')
+            ->where('attendance_date', $today)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        return view('admin.face-attendance.index', compact('todayAttendance'));
     }
 
     public function register()
@@ -165,7 +171,7 @@ class FaceAttendanceController extends Controller
     {
         $checkInTime = $now->format('H:i:s');
         $lateMinutes = 0;
-        $status = 'Present';
+        $status = 'present';
 
         // Calculate late minutes if shift exists
         if ($employee->shift && is_object($employee->shift) && isset($employee->shift->start_time)) {
@@ -175,13 +181,13 @@ class FaceAttendanceController extends Controller
         
             if ($checkInCarbon->gt($shiftStart)) {
                 $lateMinutes = $checkInCarbon->diffInMinutes($shiftStart);
-                $status = 'Late';
+                $status = 'late';
             }
         }
 
         // Half Day logic: Check-in after 12:00 PM
         if ($now->format('H:i:s') > '12:00:00') {
-            $status = 'Half Day';
+            $status = 'half_day';
         }
 
         $attendance = Attendance::create([
@@ -189,7 +195,7 @@ class FaceAttendanceController extends Controller
             'attendance_date' => $today,
             'in_time' => $checkInTime,
             'status' => $status,
-            'shift' => $employee->shift ?? 'Day',
+            'shift' => ($employee->shift && isset($employee->shift->name)) ? $employee->shift->name : 'Day',
             'shift_id' => $employee->shift_id
         ]);
 
