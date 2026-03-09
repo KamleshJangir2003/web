@@ -3,33 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Employee;
 use App\Models\Attendance;
+use App\Models\Employee;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class FaceAttendanceController extends Controller
 {
     public function index()
     {
-        $employees = Employee::where('user_type', 'employee')
-            ->where('employee_status', 'active')
-            ->where('hired_status', 'hired')
-            ->whereNotNull('joining_date')
-            ->whereRaw('DATE_ADD(joining_date, INTERVAL certification_period DAY) <= CURDATE()')
-            ->get();
-
-        return view('admin.face-attendance.index', compact('employees'));
+        return view('admin.face-attendance.index');
     }
 
     public function register()
     {
-        $employees = Employee::where('user_type', 'employee')
-            ->where('employee_status', 'active')
-            ->where('hired_status', 'hired')
-            ->get();
-
+        $employees = Employee::all();
         return view('admin.face-attendance.register', compact('employees'));
     }
 
@@ -41,53 +29,12 @@ class FaceAttendanceController extends Controller
         ]);
 
         $employee = Employee::findOrFail($request->employee_id);
-        $employee->face_data = $request->face_descriptor;
+        $employee->face_descriptor = $request->face_descriptor;
         $employee->save();
 
-        return response()->json(['success' => true, 'message' => 'Face registered successfully']);
-    }
-
-    public function markAttendance(Request $request)
-    {
-        $request->validate([
-            'employee_id' => 'required|exists:employees,id',
-            'face_descriptor' => 'required|string'
-        ]);
-
-        $employee = Employee::findOrFail($request->employee_id);
-        
-        if (!$employee->face_data) {
-            return response()->json(['success' => false, 'message' => 'Face not registered. Please register first.'], 400);
-        }
-
-        $today = Carbon::today()->format('Y-m-d');
-        $shift = $employee->shift ?? 'Day';
-
-        // Check if attendance already marked
-        $existingAttendance = Attendance::where('employee_id', $employee->id)
-            ->where('attendance_date', $today)
-            ->where('shift', $shift)
-            ->first();
-
-        if ($existingAttendance) {
-            return response()->json(['success' => false, 'message' => 'Attendance already marked for today'], 400);
-        }
-
-        // Create attendance record
-        Attendance::create([
-            'employee_id' => $employee->id,
-            'attendance_date' => $today,
-            'status' => 'Present',
-            'shift' => $shift,
-            'in_time' => Carbon::now()->format('H:i:s'),
-            'reason' => 'Face Recognition Attendance'
-        ]);
-
         return response()->json([
-            'success' => true, 
-            'message' => 'Attendance marked successfully',
-            'employee_name' => $employee->full_name,
-            'time' => Carbon::now()->format('h:i A')
+            'success' => true,
+            'message' => 'Face registered successfully'
         ]);
     }
 
@@ -95,34 +42,128 @@ class FaceAttendanceController extends Controller
     {
         $employee = Employee::findOrFail($id);
         
-        if (!$employee->face_data) {
-            return response()->json(['success' => false, 'message' => 'Face data not found'], 404);
-        }
-
         return response()->json([
             'success' => true,
-            'face_data' => $employee->face_data,
-            'employee_name' => $employee->full_name
+            'descriptor' => $employee->face_descriptor
         ]);
     }
 
     public function getAllFaceData()
     {
-        $employees = Employee::where('user_type', 'employee')
-            ->where('employee_status', 'active')
-            ->where('hired_status', 'hired')
-            ->whereNotNull('face_data')
-            ->get(['id', 'face_data', 'first_name', 'last_name', 'employee_id']);
+        return $this->getAllFaces();
+    }
 
-        $faceData = $employees->map(function($emp) {
-            return [
-                'id' => $emp->id,
-                'employee_id' => $emp->employee_id,
-                'name' => $emp->first_name . ' ' . $emp->last_name,
-                'descriptor' => $emp->face_data
-            ];
-        });
+    public function markAttendance(Request $request)
+    {
+        return $this->mark($request);
+    }
 
-        return response()->json(['success' => true, 'employees' => $faceData]);
+    public function getAllFaces()
+    {
+        $employees = Employee::whereNotNull('face_descriptor')->get(['id', 'employee_id', 'name', 'face_descriptor as descriptor']);
+        
+        return response()->json([
+            'success' => true,
+            'employees' => $employees
+        ]);
+    }
+
+    public function mark(Request $request)
+    {
+        $request->validate([
+            'employee_id' => 'required|exists:employees,id',
+            'face_descriptor' => 'required|string'
+        ]);
+
+        $employee = Employee::with('shift')->findOrFail($request->employee_id);
+        $today = Carbon::today();
+        $now = Carbon::now();
+
+        // Check existing attendance
+        $attendance = Attendance::where('employee_id', $employee->id)
+            ->where('date', $today)
+            ->first();
+
+        // Case 1: No attendance record - Mark Check-In
+        if (!$attendance) {
+            return $this->markCheckIn($employee, $today, $now);
+        }
+
+        // Case 2: Check-in exists, check-out is null - Mark Check-Out
+        if ($attendance->check_in && !$attendance->check_out) {
+            return $this->markCheckOut($attendance, $now);
+        }
+
+        // Case 3: Both check-in and check-out exist
+        return response()->json([
+            'success' => false,
+            'message' => 'Attendance already completed for today'
+        ]);
+    }
+
+    private function markCheckIn($employee, $today, $now)
+    {
+        $checkInTime = $now->format('H:i:s');
+        $lateMinutes = 0;
+        $status = 'Present';
+
+        // Calculate late minutes if shift exists
+        if ($employee->shift) {
+            $shiftStart = Carbon::parse($employee->shift->start_time);
+            $checkInCarbon = Carbon::parse($checkInTime);
+
+            if ($checkInCarbon->gt($shiftStart)) {
+                $lateMinutes = $checkInCarbon->diffInMinutes($shiftStart);
+                $status = 'Late';
+            }
+        }
+
+        // Half Day logic: Check-in after 12:00 PM
+        if ($now->format('H:i:s') > '12:00:00') {
+            $status = 'Half Day';
+        }
+
+        $attendance = Attendance::create([
+            'employee_id' => $employee->id,
+            'date' => $today,
+            'check_in' => $checkInTime,
+            'late_minutes' => $lateMinutes,
+            'status' => $status,
+            'shift_id' => $employee->shift_id
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'type' => 'check_in',
+            'employee_name' => $employee->name,
+            'time' => $now->format('h:i A'),
+            'status' => $status,
+            'late_minutes' => $lateMinutes,
+            'message' => 'Check-in successful'
+        ]);
+    }
+
+    private function markCheckOut($attendance, $now)
+    {
+        $checkOutTime = $now->format('H:i:s');
+        
+        // Calculate working hours
+        $checkIn = Carbon::parse($attendance->check_in);
+        $checkOut = Carbon::parse($checkOutTime);
+        $workingHours = $checkOut->diffInMinutes($checkIn) / 60;
+
+        $attendance->update([
+            'check_out' => $checkOutTime,
+            'working_hours' => round($workingHours, 2)
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'type' => 'check_out',
+            'employee_name' => $attendance->employee->name,
+            'time' => $now->format('h:i A'),
+            'working_hours' => round($workingHours, 2),
+            'message' => 'Check-out successful'
+        ]);
     }
 }

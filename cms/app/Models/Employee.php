@@ -65,6 +65,7 @@ class Employee extends Authenticatable
         'basic_salary',
         'job_title',
         'shift',
+        'shift_id',
 
         // Hired Employee Fields
         'induction_round',
@@ -151,5 +152,13 @@ class Employee extends Authenticatable
     public function salaryRecords()
     {
         return $this->hasMany(SalaryRecord::class);
+    }
+
+    // ==========================
+    // RELATION: SHIFT TYPE
+    // ==========================
+    public function shiftType()
+    {
+        return $this->belongsTo(ShiftType::class, 'shift_id');
     }
 }

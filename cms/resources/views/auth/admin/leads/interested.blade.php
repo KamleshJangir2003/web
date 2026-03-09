@@ -4,7 +4,7 @@
 <div class="main-content">
     <div class="card leads-card">
         <div class="card-header">
-            <h4>Interested Candidates</h4>
+            <h4>ShortListed Candidates</h4>
             <a href="{{ route('admin.leads.index') }}" class="btn btn-secondary btn-sm">
                 <i class="fa-solid fa-arrow-left me-1"></i> Back to All Leads
             </a>

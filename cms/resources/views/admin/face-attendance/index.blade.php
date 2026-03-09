@@ -168,11 +168,27 @@ async function markAttendance() {
         })
     });
     
+    if (!markResponse.ok) {
+        const errorText = await markResponse.text();
+        console.error('Server error:', errorText);
+        showStatus('Server error. Check console for details.', 'danger');
+        markAttendanceBtn.disabled = false;
+        return;
+    }
+    
     const result = await markResponse.json();
+    console.log('Server response:', result);
     
     if (result.success) {
-        showStatus(`Attendance marked for ${result.employee_name} at ${result.time}`, 'success');
-        addToAttendanceList(bestMatch.employee_id, result.employee_name, result.time);
+        const actionType = result.type === 'check_in' ? 'Check-In' : 'Check-Out';
+        let statusBadge = result.type === 'check_in' 
+            ? (result.status === 'Late' 
+                ? `<span class="badge bg-warning">Late (${result.late_minutes} min)</span>` 
+                : '<span class="badge bg-success">On Time</span>')
+            : '<span class="badge bg-info">Checked Out</span>';
+        
+        showStatus(`${actionType} successful for ${result.employee_name} at ${result.time}`, 'success');
+        addToAttendanceList(bestMatch.employee_id, result.employee_name, result.time, statusBadge, actionType);
     } else {
         showStatus(result.message, 'danger');
     }
@@ -187,7 +203,7 @@ function showStatus(message, type) {
     </div>`;
 }
 
-function addToAttendanceList(empId, name, time) {
+function addToAttendanceList(empId, name, time, statusBadge, actionType) {
     const tbody = document.getElementById('attendance-tbody');
     if (tbody.querySelector('td[colspan]')) {
         tbody.innerHTML = '';
@@ -197,8 +213,8 @@ function addToAttendanceList(empId, name, time) {
     row.innerHTML = `
         <td>${empId}</td>
         <td>${name}</td>
-        <td>${time}</td>
-        <td><span class="badge bg-success">Present</span></td>
+        <td>${time} (${actionType})</td>
+        <td>${statusBadge}</td>
     `;
     tbody.insertBefore(row, tbody.firstChild);
 }
