@@ -30,7 +30,7 @@
                     <h5 class="mb-0">Profile Information</h5>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('employee.profile.update') }}" method="POST">
+                    <form action="{{ route('profile.update') }}" method="POST">
                         @csrf
                         <div class="row">
                             <div class="col-md-6">
@@ -92,7 +92,7 @@
                     <h5 class="mb-0">Change Password</h5>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('employee.profile.change-password') }}" method="POST">
+                    <form action="{{ route('profile.change-password') }}" method="POST">
                         @csrf
                         <div class="mb-3">
                             <label for="current_password" class="form-label">Current Password</label>

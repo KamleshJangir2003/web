@@ -18,6 +18,7 @@
             color: white;
             z-index: 1000;
             transition: all 0.3s;
+            overflow-y: auto;
         }
         .sidebar .nav-link {
             color: rgba(255,255,255,0.8);
@@ -47,11 +48,54 @@
         .stats-card:hover {
             transform: translateY(-5px);
         }
+        .sidebar-toggle {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: fixed;
+                top: 60px;
+                left: -100%;
+                max-height: calc(100vh - 60px);
+                border-radius: 0;
+            }
+            .sidebar.show {
+                left: 0;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+            .sidebar-toggle {
+                display: block;
+            }
+            .navbar {
+                margin-bottom: 10px;
+            }
+            .stats-card {
+                margin-bottom: 15px;
+            }
+        }
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 10px;
+            }
+            .sidebar .nav-link {
+                padding: 10px 15px;
+                margin: 3px 10px;
+                font-size: 0.9rem;
+            }
+            .navbar h5 {
+                font-size: 1.1rem;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
     <div class="p-3 border-bottom d-flex justify-content-center align-items-center">
     <small>
         {{ Auth::user()->full_name ?? Auth::user()->first_name . ' ' . Auth::user()->last_name }}
@@ -108,6 +152,9 @@
         <!-- Top Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container-fluid">
+                <button class="btn btn-link sidebar-toggle" id="sidebarToggle" type="button">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <h5 class="mb-0">@yield('page-title', 'Dashboard')</h5>
                 <div class="navbar-nav ms-auto">
                     <div class="nav-item dropdown">
@@ -133,5 +180,21 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('show');
+        });
+        
+        sidebar.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('show');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
