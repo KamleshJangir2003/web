@@ -178,6 +178,15 @@ class DashboardController extends Controller
             $billDates = $billDatesWithDetails->keys()->toArray();
         }
 
+        // Leave statistics
+        $pendingLeaves = \App\Models\Leave::where('status', 'pending')->count();
+        $approvedLeaves = \App\Models\Leave::where('status', 'approved')->count();
+        $rejectedLeaves = \App\Models\Leave::where('status', 'rejected')->count();
+        $recentLeaves = \App\Models\Leave::with('employee')
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
         return view('auth.admin.dashboard', [
             'user' => Auth::user(),
             'stats' => $stats,
@@ -209,6 +218,10 @@ class DashboardController extends Controller
             'callbackDetails' => $callbackDatesWithDetails,
             'billDates' => $billDates,
             'billDetails' => $billDatesWithDetails,
+            'pendingLeaves' => $pendingLeaves,
+            'approvedLeaves' => $approvedLeaves,
+            'rejectedLeaves' => $rejectedLeaves,
+            'recentLeaves' => $recentLeaves,
         ]);
     }
 

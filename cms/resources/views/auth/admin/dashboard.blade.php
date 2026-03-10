@@ -6,8 +6,14 @@
 
 <style>
     .main-content{
-        margin-top: 50px;
+        margin-top: 60px;
     }
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-top: 60px;
+    }
+}
 .dashboard-wrapper{
    padding: 0%;
     margin-left: 65px;
@@ -128,6 +134,14 @@
     transform: scale(0.85);
     transform-origin: top center;
     width: 100%;
+}
+
+@media (max-width: 768px) {
+    .dashboard-wrapper {
+        transform: scale(1) !important;
+        margin-left: 0 !important;
+        margin-top: 10px;
+    }
 }
 
 body {
@@ -2411,56 +2425,8 @@ td {
     }
 }
 </style>
-    <!-- 🔹 Pending Approvals Table -->
-    @if(isset($pendingUsers) && $pendingUsers->count() > 0)
-    <div class="card table-card mb-4">
-        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-semibold">Pending User Approvals</h5>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Email</th>
-                            <th>Department</th>
-                            <th>Role</th>
-                            <th class="text-end">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($pendingUsers as $user)
-                        <tr>
-                            <td>
-                                <strong>{{ $user->first_name }} {{ $user->last_name }}</strong>
-                            </td>
-                            <td>{{ $user->email }}</td>
-                            <td>{{ $user->department }}</td>
-                            <td>
-                                <span class="badge bg-secondary badge-role">
-                                    {{ ucfirst($user->user_type) }}
-                                </span>
-                            </td>
-                            <td class="text-end">
-                                <a href="{{ route('admin.employees.details', $user->id) }}" class="btn btn-sm btn-info me-2">
-                                    <i class="bi bi-eye"></i> View Details
-                                </a>
-                                <form action="{{ route('admin.approve', $user->id) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    <button class="btn btn-sm btn-success">
-                                        <i class="bi bi-check-circle"></i> Approve
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    @endif
+    
+   
 
     <!-- 🔹 Welcome Card -->
     <!-- <div class="card welcome-card">

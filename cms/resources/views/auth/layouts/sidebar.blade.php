@@ -40,6 +40,21 @@
     transition: transform 0.35s ease-in-out;
 }
 
+@media (max-width: 768px) {
+    .sidebar {
+        top: 60px;
+        height: calc(100vh - 60px);
+        transform: translateX(-100%);
+        z-index: 9998;
+        width: 100%;
+        max-width: 280px;
+    }
+    
+    .sidebar.sidebar-mobile-open {
+        transform: translateX(0) !important;
+    }
+}
+
 /* smooth scrollbar (Chrome / Edge) */
 .sidebar::-webkit-scrollbar {
     width: 6px;
@@ -58,6 +73,17 @@
 .sidebar-header {
     padding: 1.4px 20px;
     border-bottom: 1px solid rgb(79, 124, 212);
+}
+
+@media (max-width: 768px) {
+    .sidebar-header {
+        padding: 10px 15px;
+        display: none;
+    }
+    
+    .company-logo1 img {
+        width: 150px !important;
+    }
 }
 
 .company-info {
@@ -112,6 +138,12 @@
     margin: 0;
 }
 
+@media (max-width: 768px) {
+    .sidebar-menu {
+        padding: 10px 0;
+    }
+}
+
 .sidebar-menu li {
     margin: 0;
 }
@@ -124,6 +156,24 @@
     text-decoration: none;
     transition: all 0.3s ease;
     cursor: pointer;
+    word-break: break-word;
+}
+
+@media (max-width: 768px) {
+    .sidebar-menu a {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+    
+    .sidebar-menu i {
+        margin-right: 8px !important;
+        width: 18px;
+    }
+    
+    .sidebar .submenu a {
+        padding-left: 40px;
+        font-size: 12px;
+    }
 }
 
 .sidebar-menu a > span {
@@ -156,6 +206,19 @@
     margin: 0 !important;
 }
 
+@media (max-width: 768px) {
+    .sidebar .submenu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+    
+    .sidebar .has-sub.open > .submenu {
+        max-height: 500px;
+        overflow: visible;
+    }
+}
+
 .sidebar .submenu li {
     margin: 0 !important;
     padding: 0 !important;
@@ -169,6 +232,24 @@
     display: flex;
     align-items: center;
     white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .sidebar .submenu a {
+        padding-left: 40px;
+        font-size: 12px;
+    }
+    
+    .sidebar .submenu {
+        max-height: 0 !important;
+        overflow: hidden !important;
+        display: none !important;
+    }
+    
+    .sidebar .has-sub.open > .submenu {
+        max-height: 500px !important;
+        display: block !important;
+    }
 }
 
 .sidebar .submenu a span {
@@ -487,6 +568,8 @@
         <!-- <li><a href="#">Maps</a></li> -->
         <li><a href="{{ route('admin.hr-notes.index') }}">
         <i class="fa-solid fa-clipboard"></i> <span>HR Notes</span></a></li>
+        <li><a href="{{ route('admin.leaves.index') }}">
+        <i class="fa-solid fa-calendar-days"></i> <span>Leave Management</span></a></li>
         <li><a href="{{ route('admin.candidate-journey.index') }}">
         <i class="fa-solid fa-diagram-project"></i> <span>Candidate Journey</span></a></li>
         <li class="has-sub">
@@ -532,9 +615,8 @@
         <li><a href="{{ route('admin.tickets.index') }}"><i class="fa-solid fa-ticket-alt"></i> <span>Employee Tickets</span></a></li>
         <li><a href="{{ route('admin.employee-expenses.index') }}"><i class="fa-solid fa-receipt"></i> <span>Reimbursement</span></a></li>
         <!-- <li class="logout"><a href="#">Logout</a></li> -->
-    </ul>
-    
-    <!-- Mobile Header Items -->
+
+         <!-- Mobile Header Items -->
     <div class="mobile-header-items" style="display: none;">
         <ul style="list-style: none; padding: 0; margin: 0;">
             <li>
@@ -584,6 +666,9 @@
             </li>
         </ul>
     </div>
+    </ul>
+    
+   
 </div>
 
 <script>

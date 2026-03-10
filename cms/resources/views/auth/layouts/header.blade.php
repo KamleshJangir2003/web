@@ -19,24 +19,52 @@
     height: 60px;
     background: #fff;
     border-bottom: 1px solid #2eacb3;
-
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     padding: 0 35px;
     z-index: 9999;
     box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .top-header {
+        left: 0;
+        width: 100%;
+        height: 60px;
+        padding: 0 10px;
+    }
 }
 .header-right{
     display: flex;
     align-items: center;
     gap: 22px;
 }
+
+@media (max-width: 768px) {
+    .header-right {
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+    
+    .header-right li {
+        display: none !important;
+    }
+    
+    .header-right .dropdown {
+        display: flex !important;
+    }
+}
 .header-left{
     display: flex;
     align-items: center;
     gap: 15px;
+}
+
+@media (max-width: 768px) {
+    .header-left {
+        gap: 5px;
+    }
 }
 
 
@@ -51,6 +79,17 @@
     padding: 8px;
     border-radius: 6px;
     transition: background 0.2s;
+}
+
+@media (max-width: 768px) {
+    .menu-btn, .header-icon {
+        font-size: 16px;
+        padding: 4px;
+    }
+    
+    #fullscreenToggle {
+        display: none !important;
+    }
 }
 
 #fullscreenToggle {
@@ -101,7 +140,15 @@
     min-width: 180px;
     border-radius: 6px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    z-index: 10001;          /* 🔥 sabse upar */
+    z-index: 10001;
+}
+
+@media (max-width: 768px) {
+    .dropdown-menu {
+        min-width: 150px;
+        max-width: calc(100vw - 20px);
+        right: -10px;
+    }
 }
 
 .dropdown-menu li{
@@ -1031,10 +1078,10 @@ function showStatusPopup(type, title, message, details = null) {
         </button>
         
         <!-- MOBILE LOGO -->
-        <div class="mobile-logo" style="display: none;">
+        <!-- <div class="mobile-logo" style="display: none;">
             <i class="fa-solid fa-building"></i>
             <span>Kwikster HRMS</span>
-        </div>
+        </div> -->
 
         
      
@@ -1745,6 +1792,26 @@ searchInput.addEventListener('focus', function() {
     }
 });
 
+// Mobile Menu Toggle Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuBtn = document.getElementById('mobileMenuToggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    if (mobileMenuBtn && sidebar) {
+        mobileMenuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            sidebar.classList.toggle('sidebar-mobile-open');
+        });
+        
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#sidebar') && !e.target.closest('#mobileMenuToggle')) {
+                sidebar.classList.remove('sidebar-mobile-open');
+            }
+        });
+    }
+});
+
 // Fullscreen Toggle Functionality
 document.addEventListener('DOMContentLoaded', function() {
     const fullscreenBtn = document.getElementById('fullscreenToggle');
@@ -1968,6 +2035,12 @@ document.addEventListener('DOMContentLoaded', function() {
     color: #084298;
 }
 
+/* Mobile Menu Toggle Styles */
+.sidebar.sidebar-mobile-open {
+    transform: translateX(0) !important;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
 /* Fullscreen Mode Styles */
 .sidebar.sidebar-collapsed {
     width: 70px;
@@ -2009,6 +2082,131 @@ document.addEventListener('DOMContentLoaded', function() {
     font-size: 22px;
 }
 
+/* Mobile responsive - hide sidebar by default on small screens */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 60px;
+        height: calc(100vh - 60px);
+        width: 260px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 9998;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    
+    .sidebar.sidebar-mobile-open {
+        transform: translateX(0) !important;
+    }
+    
+    .top-header {
+        left: 0 !important;
+        width: 100% !important;
+        padding: 0 10px !important;
+        height: 50px;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+        padding: 10px !important;
+    }
+    
+    .header-left {
+        gap: 5px !important;
+    }
+    
+    .global-search {
+        display: none !important;
+    }
+    
+    .header-right {
+        gap: 5px !important;
+    }
+    
+    .header-right li {
+        display: none !important;
+    }
+    
+    .header-right li a {
+        padding: 6px 8px !important;
+        font-size: 11px !important;
+    }
+    
+    .dropdown-menu {
+        max-width: calc(100vw - 20px) !important;
+        right: 0 !important;
+    }
+    
+    .menu-btn {
+        font-size: 16px !important;
+        padding: 4px !important;
+    }
+    
+    #excelUploadBtn {
+        
+        font-size: 12px !important;
+    }
+    
+    .dropdown-btn {
+        font-size: 14px !important;
+    }
+}
+
+/* Tablet Styles - 769px to 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .sidebar {
+        width: 220px;
+    }
+    
+    .top-header {
+        left: 220px;
+        width: calc(100% - 220px);
+        padding: 0 20px;
+    }
+    
+    .main-content {
+        margin-left: 220px;
+    }
+    
+    .global-search {
+        width: 250px;
+    }
+    
+    .header-right li {
+        display: flex !important;
+    }
+    
+    .header-right li a {
+        font-size: 12px !important;
+        padding: 6px 10px !important;
+    }
+}
+
+/* Desktop Styles - 1025px and above */
+@media (min-width: 1025px) {
+    .menu-btn {
+        display: none !important;
+    }
+    
+    .mobile-logo {
+        display: none !important;
+    }
+    
+    .sidebar .mobile-header-items {
+        display: none !important;
+    }
+    
+    .header-right li {
+        display: flex !important;
+    }
+    
+    .global-search {
+        display: block !important;
+    }
+}
+
 .top-header.header-fullscreen {
     left: 70px;
     width: calc(100% - 70px);
@@ -2018,6 +2216,24 @@ document.addEventListener('DOMContentLoaded', function() {
 .main-content.content-fullscreen {
     margin-left: 70px;
     transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 480px) {
+    .top-header {
+        height: 63px !important;
+    }
+    
+    .menu-btn {
+        font-size: 24px !important;
+    }
+    
+    .header-right {
+        gap: 3px !important;
+    }
+    
+    .dropdown-menu {
+        min-width: 150px !important;
+    }
 }
 </style>
 

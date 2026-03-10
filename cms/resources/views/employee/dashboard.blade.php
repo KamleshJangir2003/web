@@ -9,7 +9,7 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card border-0 bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                <div class="card-body text-white">
+                <div class="card-body text-black">
                     <h2 class="mb-1">Welcome back, {{ $user->full_name ?? $user->first_name . ' ' . $user->last_name }}!</h2>
                     <p class="mb-0 opacity-75">{{ $user->department }} Department • {{ date('l, F j, Y') }}</p>
                 </div>
@@ -171,9 +171,9 @@
                             <i class="fas fa-file-upload me-2"></i>Upload Documents
                         </a>
                         
-                        <button class="btn btn-outline-warning">
+                        <a href="{{ route('employee.leaves.index') }}" class="btn btn-outline-warning">
                             <i class="fas fa-calendar me-2"></i>Request Leave
-                        </button>
+                        </a>
                         
                         <button class="btn btn-outline-secondary">
                             <i class="fas fa-download me-2"></i>Download Salary Slip
@@ -187,7 +187,7 @@
                     <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Your Info</h5>
                 </div>
                 <div class="card-body">
-                    <p><strong>Employee ID:</strong> EMP{{ str_pad($user->id, 4, '0', STR_PAD_LEFT) }}</p>
+                    <p><strong>Employee ID:</strong> {{ $user->employee_id }}</p>
                     <p><strong>Department:</strong> {{ $user->department }}</p>
                     <p><strong>Email:</strong> {{ $user->email }}</p>
                     <p><strong>Phone:</strong> {{ $user->phone ?? 'Not provided' }}</p>

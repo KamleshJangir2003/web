@@ -566,6 +566,9 @@ Route::middleware(['auth'])->group(function () {
             |--------------------------------------------------------------------------
             */
             Route::get('/letters', [App\Http\Controllers\Admin\LetterController::class, 'index'])->name('letters.index');
+            Route::get('/leaves', [App\Http\Controllers\Admin\LeaveController::class, 'index'])->name('leaves.index');
+            Route::post('/leaves/{id}/approve', [App\Http\Controllers\Admin\LeaveController::class, 'approve'])->name('leaves.approve');
+            Route::post('/leaves/{id}/reject', [App\Http\Controllers\Admin\LeaveController::class, 'reject'])->name('leaves.reject');
             
             /*
             |--------------------------------------------------------------------------
@@ -780,3 +783,10 @@ Route::fallback(function () {
     return view('errors.404');
 });
 
+
+// Employee Leave Routes - Added after employee routes
+Route::middleware(['auth', 'check.user.type:employee'])->prefix('employee')->name('employee.')->group(function () {
+    Route::get('/leaves', [App\Http\Controllers\Employee\LeaveController::class, 'index'])->name('leaves.index');
+    Route::get('/leaves/create', [App\Http\Controllers\Employee\LeaveController::class, 'create'])->name('leaves.create');
+    Route::post('/leaves', [App\Http\Controllers\Employee\LeaveController::class, 'store'])->name('leaves.store');
+});

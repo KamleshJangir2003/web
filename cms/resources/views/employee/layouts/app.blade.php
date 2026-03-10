@@ -52,10 +52,11 @@
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
-        <div class="p-3 border-bottom">
-            <h4><i class="fas fa-user-tie me-2"></i>Employee Panel</h4>
-            <small>{{ Auth::user()->full_name ?? Auth::user()->first_name . ' ' . Auth::user()->last_name }}</small>
-        </div>
+    <div class="p-3 border-bottom d-flex justify-content-center align-items-center">
+    <small>
+        {{ Auth::user()->full_name ?? Auth::user()->first_name . ' ' . Auth::user()->last_name }}
+    </small>
+</div>
         <nav class="nav flex-column mt-3">
             <a class="nav-link {{ request()->routeIs('employee.dashboard') ? 'active' : '' }}" href="{{ route('employee.dashboard') }}">
                 <i class="fas fa-tachometer-alt me-2"></i>Dashboard
@@ -69,7 +70,7 @@
             <a class="nav-link" href="#">
                 <i class="fas fa-clock me-2"></i>Test
             </a>
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ route('employee.leaves.index') }}">
                 <i class="fas fa-clock me-2"></i>Leave
             </a>
             <a class="nav-link {{ request()->routeIs('employee.tickets*') ? 'active' : '' }}" href="{{ route('employee.tickets') }}">
