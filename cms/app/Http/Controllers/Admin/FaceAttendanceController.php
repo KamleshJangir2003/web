@@ -171,23 +171,25 @@ class FaceAttendanceController extends Controller
     {
         $checkInTime = $now->format('H:i:s');
         $lateMinutes = 0;
-        $status = 'present';
+        $status = 'Present';
 
-        // Calculate late minutes if shift exists
-        if ($employee->shift && is_object($employee->shift) && isset($employee->shift->start_time)) {
-
+        // Check if Sunday - Mark as Week Off (paid)
+        if ($now->dayOfWeek === Carbon::SUNDAY) {
+            $status = 'Week Off';
+        }
+        // Half Day logic: Check-in after 12:00 PM (takes priority)
+        elseif ($now->format('H:i:s') > '12:00:00') {
+            $status = 'Half Day';
+        }
+        // Calculate late minutes if shift exists and not half day
+        elseif ($employee->shift && is_object($employee->shift) && isset($employee->shift->start_time)) {
             $shiftStart = Carbon::createFromFormat('H:i:s', $employee->shift->start_time);
             $checkInCarbon = Carbon::createFromFormat('H:i:s', $checkInTime);
         
             if ($checkInCarbon->gt($shiftStart)) {
                 $lateMinutes = $checkInCarbon->diffInMinutes($shiftStart);
-                $status = 'late';
+                $status = 'Present'; // Late bhi present hi count hoga salary me
             }
-        }
-
-        // Half Day logic: Check-in after 12:00 PM
-        if ($now->format('H:i:s') > '12:00:00') {
-            $status = 'half_day';
         }
 
         $attendance = Attendance::create([

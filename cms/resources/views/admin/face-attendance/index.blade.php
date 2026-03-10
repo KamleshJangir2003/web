@@ -2,9 +2,46 @@
 
 @section('content')
 <style>
-.container-fluid { padding-left: 130px !important; }
-#video { width: 100%; max-width: 640px; border-radius: 10px; }
-#canvas { display: none; }
+.container-fluid { 
+    padding-left: 130px !important; 
+}
+
+#video { 
+    width: 100%; 
+    max-width: 640px; 
+    border-radius: 10px; 
+}
+
+#canvas { 
+    display: none; 
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+
+.container-fluid{
+    padding-left:15px !important;
+    padding-right:15px !important;
+}
+
+#video{
+    max-width:100%;
+}
+
+.card-body{
+    padding:15px;
+}
+
+.btn-lg{
+    width:100%;
+    margin-bottom:10px;
+}
+
+.table{
+    font-size:12px;
+}
+
+}
 </style>
 
 <div class="container-fluid">
@@ -301,6 +338,10 @@ function addToAttendanceList(empId, name, time, statusBadge, actionType) {
 startCameraBtn.addEventListener('click', startCamera);
 markAttendanceBtn.addEventListener('click', markAttendance);
 
-loadModels();
+// Auto start camera on page load
+document.addEventListener("DOMContentLoaded", async function () {
+    await loadModels();
+    await startCamera();
+});
 </script>
 @endsection

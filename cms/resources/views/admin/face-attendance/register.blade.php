@@ -2,9 +2,100 @@
 
 @section('content')
 <style>
-.container-fluid { padding-left: 130px !important; }
-#video { width: 100%; max-width: 640px; border-radius: 10px; }
-#canvas { display: none; }
+
+.container-fluid{
+    padding-left:130px;
+    padding-right:20px;
+}
+
+/* MOBILE FIX */
+
+@media (max-width:768px){
+
+.container-fluid{
+    padding-left:10px !important;
+    padding-right:10px !important;
+    width:100% !important;
+}
+
+.row{
+    margin-left:0 !important;
+    margin-right:0 !important;
+}
+
+.card{
+    width:100%;
+}
+
+#employeeSelect{
+    width:100%;
+}
+
+}
+
+/* video box */
+#video{
+    width:100%;
+    max-width:640px;
+    border-radius:10px;
+}
+
+#canvas{
+    display:none;
+}
+
+/* -------- MOBILE RESPONSIVE -------- */
+
+@media (max-width:768px){
+
+.container-fluid{
+    padding-left:15px !important;
+    padding-right:15px !important;
+}
+
+.card-body{
+    padding:15px;
+}
+
+#video{
+    max-width:100%;
+}
+
+.btn-lg{
+    width:100%;
+    margin-bottom:10px;
+}
+
+.table{
+    font-size:12px;
+}
+
+}
+
+/* Fix dropdown overflow */
+.card{
+overflow:visible;
+}
+
+#employeeSelect{
+width:100%;
+max-width:100%;
+}
+
+.form-select{
+width:100%;
+}
+#employeeSelect{
+width:100%;
+max-width:100%;
+font-size:14px;
+}
+
+.form-select{
+width:100%;
+max-width:100%;
+}
+
 </style>
 
 <div class="container-fluid">

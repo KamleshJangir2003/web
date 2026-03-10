@@ -127,8 +127,8 @@ class SalaryController extends Controller
             $weekOff = $attendanceRecords->where('status', 'Week Off')->count();
             $compOff = $attendanceRecords->where('status', 'Comp Off')->count();
 
-            // Calculate working days
-            $workingDays = $present + $paidLeave + $compOff + ($halfDay * 0.5);
+            // Calculate working days (Week Off counts as paid day)
+            $workingDays = $present + $paidLeave + $compOff + $weekOff + ($halfDay * 0.5);
 
             // Calculate per day salary
             $perDaySalary = $inHandSalary / $totalDaysInMonth;

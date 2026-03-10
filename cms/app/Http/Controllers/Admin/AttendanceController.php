@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Employee;
+use App\Models\Attendance;
 use App\Models\SalaryRecord;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Artisan;
@@ -303,7 +304,7 @@ class AttendanceController extends Controller
         $shift = $request->shift ?? 'Day';
         
         foreach ($request->employees as $employee_id => $data) {
-            $status = $data['status'];
+            $status = $data['status'] ?? '';
             
             // Skip if no status selected
             if (empty($status)) {
@@ -312,10 +313,10 @@ class AttendanceController extends Controller
             
             $in_time = !empty($data['in_time']) ? $data['in_time'] : null;
             $out_time = !empty($data['out_time']) ? $data['out_time'] : null;
-            $reason = $data['reason'];
+            $reason = $data['reason'] ?? null;
             
-            // Use upsert to handle duplicates
-            DB::table('attendance')->updateOrInsert(
+            // Use Eloquent updateOrCreate to handle duplicates
+            Attendance::updateOrCreate(
                 [
                     'employee_id' => $employee_id,
                     'attendance_date' => $attendance_date,
@@ -325,9 +326,7 @@ class AttendanceController extends Controller
                     'status' => $status,
                     'in_time' => $in_time,
                     'out_time' => $out_time,
-                    'reason' => $reason,
-                    'updated_at' => now(),
-                    'created_at' => now()
+                    'reason' => $reason
                 ]
             );
         }
