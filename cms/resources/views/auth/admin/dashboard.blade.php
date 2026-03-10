@@ -18,8 +18,7 @@
 @media (max-width: 768px) {
     .dashboard-wrapper {
         margin-left: 0 !important;
-        margin-top: 70px;
-        padding: 15px;
+       
     }
     
     .stat-card {

@@ -1021,6 +1021,10 @@ function showStatusPopup(type, title, message, details = null) {
 
 <header class="top-header">
     <div class="header-left">
+
+    <button class="menu-btn" id="mobileMenuToggle">
+    <i class="fa-solid fa-bars"></i>
+</button>
         <!-- FULLSCREEN TOGGLE BUTTON -->
         <button class="menu-btn" id="fullscreenToggle" title="Toggle Fullscreen">
             <i class="fa-solid fa-expand"></i>
