@@ -23,7 +23,8 @@ class FaceAttendanceController extends Controller
 
     public function register()
     {
-        $employees = Employee::all();
+        $employees = Employee::where('hired_status', 'hired')->get();
+    
         return view('admin.face-attendance.register', compact('employees'));
     }
 
@@ -139,6 +140,28 @@ class FaceAttendanceController extends Controller
             $today = Carbon::today()->format('Y-m-d');
             $now = Carbon::now();
 
+            // Verify face descriptor matches stored face
+            $detectionDescriptor = json_decode($request->face_descriptor, true);
+            $storedDescriptor = json_decode($employee->face_data, true);
+            
+            if (!$storedDescriptor) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Employee face not registered'
+                ], 400);
+            }
+            
+            // Calculate euclidean distance
+            $distance = $this->euclideanDistance($detectionDescriptor, $storedDescriptor);
+            
+            // Strict threshold: 0.5 (stricter than frontend 0.65)
+            if ($distance > 0.5) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Face verification failed. Distance too high: ' . round($distance, 3)
+                ], 403);
+            }
+
             // Check existing attendance
             $attendance = Attendance::where('employee_id', $employee->id)
                 ->where('attendance_date', $today)
@@ -165,6 +188,16 @@ class FaceAttendanceController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    private function euclideanDistance($arr1, $arr2)
+    {
+        $sum = 0;
+        for ($i = 0; $i < count($arr1); $i++) {
+            $diff = $arr1[$i] - $arr2[$i];
+            $sum += $diff * $diff;
+        }
+        return sqrt($sum);
     }
 
     private function markCheckIn($employee, $today, $now)
@@ -214,7 +247,7 @@ class FaceAttendanceController extends Controller
 
     private function markCheckOut($attendance, $now)
     {
-        $employee = Employee::find($attendance->employee_id);
+        $employee = Employee::with('shift')->find($attendance->employee_id);
     
         $checkOutTime = $now->format('H:i:s');
     
@@ -223,8 +256,30 @@ class FaceAttendanceController extends Controller
         $checkOut = Carbon::parse($checkOutTime);
         $workingHours = $checkOut->diffInMinutes($checkIn) / 60;
     
+        // Calculate early checkout and overtime
+        $earlyCheckoutMinutes = 0;
+        $overtimeHours = 0;
+        
+        if ($employee->shift && isset($employee->shift->end_time)) {
+            $shiftEnd = Carbon::createFromFormat('H:i:s', $employee->shift->end_time);
+            $shiftStart = Carbon::createFromFormat('H:i:s', $employee->shift->start_time);
+            $checkOutCarbon = Carbon::createFromFormat('H:i:s', $checkOutTime);
+            
+            // Check for early checkout
+            if ($checkOutCarbon->lt($shiftEnd)) {
+                $earlyCheckoutMinutes = $shiftEnd->diffInMinutes($checkOutCarbon);
+            }
+            // Check for overtime
+            elseif ($checkOutCarbon->gt($shiftEnd)) {
+                $overtimeMinutes = $checkOutCarbon->diffInMinutes($shiftEnd);
+                $overtimeHours = round($overtimeMinutes / 60, 2);
+            }
+        }
+    
         $attendance->update([
-            'out_time' => $checkOutTime
+            'out_time' => $checkOutTime,
+            'early_checkout_minutes' => $earlyCheckoutMinutes,
+            'overtime_hours' => $overtimeHours
         ]);
     
         return response()->json([
@@ -232,7 +287,9 @@ class FaceAttendanceController extends Controller
             'type' => 'check_out',
             'employee_name' => $employee->first_name . ' ' . $employee->last_name,
             'time' => $checkOutTime,
-            'working_hours' => round($workingHours, 2)
+            'working_hours' => round($workingHours, 2),
+            'early_checkout_minutes' => $earlyCheckoutMinutes,
+            'overtime_hours' => $overtimeHours
         ]);
     }
 }

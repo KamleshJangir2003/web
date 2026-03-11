@@ -25,7 +25,10 @@
 }
 
 #video{
-    max-width:100%;
+    width:100%;
+    height:420px;      /* camera height increase */
+    object-fit:cover;  /* video stretch na ho */
+    border-radius:10px;
 }
 
 .card-body{
@@ -67,6 +70,14 @@
                                     <canvas id="canvas"></canvas>
                                 </div>
                             </div>
+                            <div id="face-preview" class="card mb-3" style="display: none;">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Face Detected</h6>
+                                    <p class="mb-2"><strong>Employee ID:</strong> <span id="preview-emp-id" class="badge bg-primary"></span></p>
+                                    <p class="mb-2"><strong>Name:</strong> <span id="preview-emp-name" class="text-success"></span></p>
+                                    <p class="mb-0"><strong>Confidence:</strong> <span id="preview-confidence" class="badge bg-info"></span></p>
+                                </div>
+                            </div>
                             <div class="text-center">
                                 <button id="startCamera" class="btn btn-primary btn-lg">
                                     <i class="fas fa-camera me-2"></i>Start Camera
@@ -79,12 +90,15 @@
                         <div class="col-md-6">
                             <h5>Today's Attendance</h5>
                             <div id="attendance-list" class="table-responsive">
-                                <table class="table table-striped">
+                                <table class="table table-striped table-sm">
                                     <thead>
                                         <tr>
                                             <th>Employee ID</th>
                                             <th>Name</th>
-                                            <th>Time</th>
+                                            <th>Check-In</th>
+                                            <th>Check-Out</th>
+                                            <th>Early (min)</th>
+                                            <th>Overtime (hrs)</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
@@ -93,28 +107,24 @@
                                         <tr>
                                             <td>{{ $att->employee->employee_id ?? 'N/A' }}</td>
                                             <td>{{ $att->employee->first_name }} {{ $att->employee->last_name }}</td>
+                                            <td>{{ $att->in_time ? date('h:i A', strtotime($att->in_time)) : '-' }}</td>
+                                            <td>{{ $att->out_time ? date('h:i A', strtotime($att->out_time)) : '-' }}</td>
+                                            <td>{{ $att->early_checkout_minutes ?? '-' }}</td>
+                                            <td>{{ $att->overtime_hours ?? '-' }}</td>
                                             <td>
-                                                @if($att->in_time)
-                                                    {{ date('h:i A', strtotime($att->in_time)) }} (Check-In)
-                                                @endif
-                                                @if($att->out_time)
-                                                    <br>{{ date('h:i A', strtotime($att->out_time)) }} (Check-Out)
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if($att->status === 'present')
+                                                @if($att->status === 'Present')
                                                     <span class="badge bg-success">On Time</span>
-                                                @elseif($att->status === 'late')
-                                                    <span class="badge bg-warning">Late</span>
-                                                @elseif($att->status === 'half_day')
-                                                    <span class="badge bg-info">Half Day</span>
+                                                @elseif($att->status === 'Half Day')
+                                                    <span class="badge bg-warning">Half Day</span>
+                                                @elseif($att->status === 'Week Off')
+                                                    <span class="badge bg-info">Week Off</span>
                                                 @else
                                                     <span class="badge bg-secondary">{{ ucwords(str_replace('_', ' ', $att->status)) }}</span>
                                                 @endif
                                             </td>
                                         </tr>
                                         @empty
-                                        <tr><td colspan="4" class="text-center text-muted">No attendance marked yet</td></tr>
+                                        <tr><td colspan="7" class="text-center text-muted">No attendance marked yet</td></tr>
                                         @endforelse
                                     </tbody>
                                 </table>
@@ -246,6 +256,7 @@ async function markAttendance() {
         
         let bestMatch = null;
         let minDistance = 0.65;
+        let secondBestDistance = Infinity;
         
         for (const emp of data.employees) {
             const savedDescriptor = JSON.parse(emp.descriptor);
@@ -253,18 +264,39 @@ async function markAttendance() {
             console.log(`${emp.name}: distance = ${distance.toFixed(3)}`);
             
             if (distance < minDistance) {
+                secondBestDistance = minDistance;
                 minDistance = distance;
                 bestMatch = emp;
+            } else if (distance < secondBestDistance) {
+                secondBestDistance = distance;
             }
         }
         
         console.log('Best match:', bestMatch?.name, 'Distance:', minDistance.toFixed(3));
+        console.log('Second best distance:', secondBestDistance.toFixed(3));
         
         if (!bestMatch) {
             showStatus('Face not recognized. Distance too high. Please try again or register.', 'danger');
+            document.getElementById('face-preview').style.display = 'none';
             markAttendanceBtn.disabled = false;
             return;
         }
+        
+        // Strict verification: Check if match is significantly better than second best
+        const confidenceGap = secondBestDistance - minDistance;
+        if (confidenceGap < 0.08) {
+            showStatus('Face match is ambiguous. Please try again with better lighting.', 'danger');
+            document.getElementById('face-preview').style.display = 'none';
+            markAttendanceBtn.disabled = false;
+            return;
+        }
+        
+        // Show face preview with employee details
+        const confidence = Math.round((1 - minDistance) * 100);
+        document.getElementById('preview-emp-id').textContent = bestMatch.employee_id;
+        document.getElementById('preview-emp-name').textContent = bestMatch.name;
+        document.getElementById('preview-confidence').textContent = confidence + '%';
+        document.getElementById('face-preview').style.display = 'block';
         
         const markResponse = await fetch('/admin/face-attendance/mark', {
             method: 'POST',
@@ -292,15 +324,24 @@ async function markAttendance() {
         if (result.success) {
             const actionType = result.type === 'check_in' ? 'Check-In' : 'Check-Out';
             let statusBadge = result.type === 'check_in' 
-                ? (result.status === 'Late' 
-                    ? `<span class="badge bg-warning">Late (${result.late_minutes} min)</span>` 
-                    : (result.status === 'Half Day' 
-                        ? '<span class="badge bg-info">Half Day</span>'
-                        : '<span class="badge bg-success">On Time</span>'))
+                ? (result.status === 'Half Day' 
+                    ? '<span class="badge bg-warning">Half Day</span>'
+                    : '<span class="badge bg-success">On Time</span>')
                 : '<span class="badge bg-info">Checked Out</span>';
             
-            showStatus(`${actionType} successful for ${result.employee_name} at ${result.time}. <a href="/admin/attendance" class="alert-link">View Attendance Page</a>`, 'success');
-            addToAttendanceList(bestMatch.employee_id, result.employee_name, result.time, statusBadge, actionType);
+            let message = `${actionType} successful for ${result.employee_name} at ${result.time}`;
+            if (result.type === 'check_out') {
+                if (result.early_checkout_minutes > 0) {
+                    message += ` (${result.early_checkout_minutes} min early)`;
+                }
+                if (result.overtime_hours > 0) {
+                    message += ` (${result.overtime_hours} hrs overtime)`;
+                }
+            }
+            message += `. <a href="/admin/attendance" class="alert-link">View Attendance Page</a>`;
+            
+            showStatus(message, 'success');
+            addToAttendanceList(bestMatch.employee_id, result.employee_name, result.time, statusBadge, actionType, result);
         } else {
             showStatus(result.message, 'danger');
         }
@@ -319,17 +360,25 @@ function showStatus(message, type) {
     </div>`;
 }
 
-function addToAttendanceList(empId, name, time, statusBadge, actionType) {
+function addToAttendanceList(empId, name, time, statusBadge, actionType, result) {
     const tbody = document.getElementById('attendance-tbody');
     if (tbody.querySelector('td[colspan]')) {
         tbody.innerHTML = '';
     }
     
+    const checkIn = actionType === 'Check-In' ? time : '-';
+    const checkOut = actionType === 'Check-Out' ? time : '-';
+    const earlyMin = result.early_checkout_minutes || '-';
+    const overtimeHrs = result.overtime_hours || '-';
+    
     const row = document.createElement('tr');
     row.innerHTML = `
         <td>${empId}</td>
         <td>${name}</td>
-        <td>${time} (${actionType})</td>
+        <td>${checkIn}</td>
+        <td>${checkOut}</td>
+        <td>${earlyMin}</td>
+        <td>${overtimeHrs}</td>
         <td>${statusBadge}</td>
     `;
     tbody.insertBefore(row, tbody.firstChild);

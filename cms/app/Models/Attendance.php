@@ -16,6 +16,8 @@ class Attendance extends Model
         'attendance_date',
         'in_time',
         'out_time',
+        'early_checkout_minutes',
+        'overtime_hours',
         'status',
         'shift',
         'shift_id',

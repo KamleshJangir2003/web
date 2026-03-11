@@ -265,6 +265,8 @@ body {
                                         <th>Status</th>
                                         <th>In Time</th>
                                         <th>Out Time</th>
+                                        <th>Early (min)</th>
+                                        <th>Overtime (hrs)</th>
                                         <th>Reason</th>
                                     </tr>
                                 </thead>
@@ -283,6 +285,8 @@ body {
                                                 </td>
                                                 <td>{{ isset($att->in_time) && $att->in_time ? date('h:i A', strtotime($att->in_time)) : '-' }}</td>
                                                 <td>{{ isset($att->out_time) && $att->out_time ? date('h:i A', strtotime($att->out_time)) : '-' }}</td>
+                                                <td>{{ isset($att->early_checkout_minutes) && $att->early_checkout_minutes > 0 ? $att->early_checkout_minutes : '-' }}</td>
+                                                <td>{{ isset($att->overtime_hours) && $att->overtime_hours > 0 ? $att->overtime_hours : '-' }}</td>
                                                 <td>{{ isset($att->reason) && $att->reason ? $att->reason : '-' }}</td>
                                             </tr>
                                         @endif
