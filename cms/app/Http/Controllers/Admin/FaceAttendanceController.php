@@ -217,8 +217,8 @@ class FaceAttendanceController extends Controller
         
             if ($checkInCarbon->gt($shiftStart)) {
                 $lateMinutes = $checkInCarbon->diffInMinutes($shiftStart);
-                // If late by more than 20 minutes - Mark as Half Day
-                if ($lateMinutes > 20) {
+                // If late by more than 10 minutes - Mark as Half Day
+                if ($lateMinutes > 10) {
                     $status = 'Half Day';
                 } else {
                     $status = 'Present';
