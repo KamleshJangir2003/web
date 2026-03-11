@@ -45,6 +45,23 @@
 }
 
 }
+
+/* Hide header and sidebar only on mobile */
+@media (max-width: 768px){
+
+.sidebar,
+.top-header{
+    display:none !important;
+}
+
+/* Full width content */
+.main-content{
+    margin-left:0 !important;
+    padding-top:0 !important;
+    margin-top:0 !important; 
+}
+
+}
 </style>
 
 <div class="container-fluid">
@@ -55,10 +72,10 @@
                     <h4 class="mb-0"><i class="fas fa-user-check me-2"></i>Face Recognition Attendance</h4>
                 </div>
                 <div class="card-body">
-                    <div class="alert alert-info">
+                    <!-- <div class="alert alert-info">
                         <i class="fas fa-info-circle me-2"></i>
                         Position your face in front of the camera and click "Mark Attendance"
-                    </div>
+                    </div> -->
 
                     <div id="status-message"></div>
 
