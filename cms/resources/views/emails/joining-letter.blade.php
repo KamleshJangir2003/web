@@ -89,7 +89,14 @@
         <div class="header">
               <!-- Company Logo -->
     <div style="margin-bottom:15px;">
-    <img src="{{ public_path('Kwikster.jpeg') }}" alt="Kwikster Logo" style="height:80px;">
+    @php
+$path = public_path('Kwikster.jpeg');
+$type = pathinfo($path, PATHINFO_EXTENSION);
+$data = file_get_contents($path);
+$logo = 'data:image/' . $type . ';base64,' . base64_encode($data);
+@endphp
+
+<img src="{{ $logo }}" style="height:80px;">
     </div>
             <h2>KWIKSTER INNOVATIVE OPTIMISATIONS PVT LTD</h2>
             <p>21/281, Kaveri Path, Madhyam Marg Road</p>

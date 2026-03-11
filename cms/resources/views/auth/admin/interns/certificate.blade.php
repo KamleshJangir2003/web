@@ -1,203 +1,323 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Internship Certificate</title>
-    <style>
-        @page { margin: 0; }
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Georgia', serif;
-            background: #f4f6fb;
-        }
+<meta charset="utf-8">
+<title>Internship Certificate</title>
 
-        .certificate-wrapper {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+<style>
 
-        .certificate {
-            width: 1000px;
-            background: #ffffff;
-            padding: 70px;
-            position: relative;
-            border: 15px solid #c9a227;
-            box-shadow: 0 15px 60px rgba(0,0,0,0.15);
-        }
+@page { margin:0; }
 
-        /* Watermark */
-        .certificate::before {
-            content: "KWIKSTER";
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 120px;
-            color: rgba(0,0,0,0.03);
-            font-weight: bold;
-            z-index: 0;
-            letter-spacing: 10px;
-        }
+body{
+margin:0;
+padding:0;
+font-family: "Times New Roman", serif;
+background:#f3f5fa;
+}
 
-        .header {
-            text-align: center;
-            position: relative;
-            z-index: 2;
-        }
+.wrapper{
+display:flex;
+align-items:center;
+justify-content:center;
 
-        .company-name {
-            font-size: 40px;
-            font-weight: bold;
-            color: #2c3e50;
-            letter-spacing: 4px;
-        }
+}
 
-        .title {
-            font-size: 30px;
-            margin-top: 15px;
-            color: #c9a227;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
+.certificate{
 
-        .divider {
-            width: 150px;
-            height: 3px;
-            background: #c9a227;
-            margin: 20px auto;
-        }
 
-        .content {
-            text-align: center;
-            margin-top: 40px;
-            line-height: 2;
-            font-size: 18px;
-            position: relative;
-            z-index: 2;
-        }
+background:white;
+padding:80px;
+border:15px solid #d4af37;
+outline:5px solid #f1e3a2;
+position:relative;
 
-        .intern-name {
-            font-size: 36px;
-            font-weight: bold;
-            margin: 25px 0;
-            color: #2c3e50;
-        }
+box-shadow:0 20px 70px rgba(0,0,0,0.15);
+}
 
-        .course {
-            font-size: 22px;
-            font-weight: bold;
-            color: #c9a227;
-        }
+/* watermark */
 
-        .details {
-            margin-top: 30px;
-            font-size: 16px;
-        }
+.certificate::after{
 
-        .footer {
-            margin-top: 80px;
-            display: flex;
-            justify-content: space-between;
-            position: relative;
-            z-index: 2;
-        }
+content:"KWIKSTER";
+position:absolute;
+top:45%;
+left:50%;
+transform:translate(-50%,-50%);
+font-size:120px;
+color:rgba(0,0,0,0.04);
+letter-spacing:10px;
+font-weight:bold;
 
-        .signature {
-            text-align: center;
-            width: 250px;
-        }
+}
 
-        .signature-line {
-            border-top: 2px solid #2c3e50;
-            margin-bottom: 10px;
-        }
+/* header */
 
-        .date-section {
-            margin-top: 50px;
-            text-align: center;
-            font-size: 14px;
-            position: relative;
-            z-index: 2;
-        }
+.header{
+text-align:center;
+margin-bottom:40px;
+}
 
-        .certificate-id {
-            font-size: 12px;
-            color: #888;
-        }
+.logo{
 
-    </style>
+font-size:42px;
+font-weight:bold;
+letter-spacing:6px;
+color:#2c3e50;
+
+}
+
+.subtitle{
+
+font-size:28px;
+margin-top:10px;
+color:#d4af37;
+letter-spacing:4px;
+
+}
+
+.divider{
+
+width:180px;
+height:3px;
+background:#d4af37;
+margin:25px auto;
+
+}
+
+/* content */
+
+.content{
+text-align:center;
+line-height:1.9;
+font-size:18px;
+}
+
+.intern-name{
+
+font-size:40px;
+font-weight:bold;
+color:#1a1a1a;
+margin:25px 0;
+
+border-bottom:2px solid #d4af37;
+display:inline-block;
+padding-bottom:8px;
+
+}
+
+.course{
+
+font-size:24px;
+font-weight:bold;
+color:#d4af37;
+margin-top:10px;
+
+}
+
+.details{
+
+margin-top:30px;
+font-size:16px;
+
+}
+
+/* seal */
+
+.seal{
+
+position:absolute;
+right:90px;
+bottom:160px;
+
+width:110px;
+height:110px;
+
+border:6px double #d4af37;
+border-radius:50%;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:12px;
+text-align:center;
+color:#d4af37;
+font-weight:bold;
+
+}
+
+/* footer */
+
+.footer{
+
+margin-top:90px;
+display:flex;
+justify-content:space-between;
+
+}
+
+.signature{
+
+text-align:center;
+width:250px;
+
+}
+
+.signature-line{
+
+border-top:2px solid #333;
+margin-bottom:10px;
+
+}
+
+.signature p{
+margin:4px;
+}
+
+/* issue date */
+
+.issue{
+
+text-align:center;
+margin-top:40px;
+font-size:14px;
+color:#555;
+
+}
+
+.cert-id{
+
+font-size:12px;
+color:#999;
+}
+
+</style>
+
 </head>
+
 <body>
 
-<div class="certificate-wrapper">
-    <div class="certificate">
+<div class="wrapper">
 
-        <div class="header">
-            <div class="company-name">KWIKSTER</div>
-            <div class="title">Internship Certificate</div>
-            <div class="divider"></div>
-        </div>
+<div class="certificate">
 
-        <div class="content">
-            <p>This is to certify that</p>
+<div class="header">
 
-            <div class="intern-name">{{ $intern->name }}</div>
+<div class="logo">KWIKSTER</div>
 
-            <p>has successfully completed the internship program in</p>
+<div class="subtitle">
+INTERNSHIP CERTIFICATE
+</div>
 
-            <div class="course">{{ $intern->course ?? 'Software Development' }}</div>
+<div class="divider"></div>
 
-            <div class="details">
-                <p><strong>Duration:</strong> {{ $intern->internship_duration ?? 'N/A' }} Months</p>
+</div>
 
-                <p><strong>Period:</strong>
-                    {{ $intern->start_date ? \Carbon\Carbon::parse($intern->start_date)->format('d M Y') : 'N/A' }}
-                    to
-                    {{ $intern->completion_date ? \Carbon\Carbon::parse($intern->completion_date)->format('d M Y') : 'N/A' }}
-                </p>
 
-                @if($intern->performance_rating)
-                <p><strong>Performance:</strong> {{ $intern->performance_rating }}</p>
-                @endif
+<div class="content">
 
-                @if($intern->mentor)
-                <p><strong>Mentor:</strong> {{ $intern->mentor->full_name }}</p>
-                @endif
-            </div>
+<p>This is to certify that</p>
 
-            <p style="margin-top:30px;">
-                We sincerely appreciate the dedication, professionalism and commitment shown during the internship tenure.
-            </p>
-        </div>
+<div class="intern-name">
+{{ $intern->name }}
+</div>
 
-        <div class="footer">
-            <div class="signature">
-                <div class="signature-line"></div>
-                <p><strong>HR Manager</strong></p>
-                @if($intern->hr)
-                <p>{{ $intern->hr->full_name }}</p>
-                @endif
-            </div>
+<p>has successfully completed the internship program in</p>
 
-            <div class="signature">
-                <div class="signature-line"></div>
-                <p><strong>Mentor</strong></p>
-                @if($intern->mentor)
-                <p>{{ $intern->mentor->full_name }}</p>
-                @endif
-            </div>
-        </div>
+<div class="course">
+{{ $intern->course ?? 'Software Development' }}
+</div>
 
-        <div class="date-section">
-            <p>Issued on: {{ $intern->completion_date ? \Carbon\Carbon::parse($intern->completion_date)->format('d F Y') : now()->format('d F Y') }}</p>
-            <p class="certificate-id">Certificate ID: KWIK-{{ str_pad($intern->id, 6, '0', STR_PAD_LEFT) }}</p>
-        </div>
+<div class="details">
 
-    </div>
+<p><strong>Duration :</strong> {{ $intern->internship_duration ?? 'N/A' }} Months</p>
+
+<p>
+<strong>Period :</strong>
+
+{{ $intern->start_date ? \Carbon\Carbon::parse($intern->start_date)->format('d M Y') : 'N/A' }}
+
+to
+
+{{ $intern->completion_date ? \Carbon\Carbon::parse($intern->completion_date)->format('d M Y') : 'N/A' }}
+
+</p>
+
+@if($intern->performance_rating)
+<p><strong>Performance :</strong> {{ $intern->performance_rating }}</p>
+@endif
+
+@if($intern->mentor)
+<p><strong>Mentor :</strong> {{ $intern->mentor->full_name }}</p>
+@endif
+
+</div>
+
+<p style="margin-top:30px">
+
+We appreciate the dedication and professionalism shown during the internship period.
+
+</p>
+
+</div>
+
+
+<!-- Seal -->
+
+<div class="seal">
+Verified <br> Certificate
+</div>
+
+
+
+<div class="footer">
+
+<div class="signature">
+
+<div class="signature-line"></div>
+
+<p><strong>HR Manager</strong></p>
+
+@if($intern->hr)
+<p>{{ $intern->hr->full_name }}</p>
+@endif
+
+</div>
+
+
+<div class="signature">
+
+<div class="signature-line"></div>
+
+<p><strong>Mentor</strong></p>
+
+@if($intern->mentor)
+<p>{{ $intern->mentor->full_name }}</p>
+@endif
+
+</div>
+
+</div>
+
+
+<div class="issue">
+
+<p>
+
+Issued on :
+
+{{ $intern->completion_date ? \Carbon\Carbon::parse($intern->completion_date)->format('d F Y') : now()->format('d F Y') }}
+
+</p>
+
+<p class="cert-id">
+Certificate ID : KIO{{ str_pad($intern->certificate_no,3,'0',STR_PAD_LEFT) }}
+</p>
+
+</div>
+
+
+</div>
 </div>
 
 </body>

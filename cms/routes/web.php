@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SalaryCalculatorController;
 use App\Models\JobOpening;
 use App\Http\Controllers\Admin\JobOpeningController;
-
+use App\Models\Intern;
 /*
 |--------------------------------------------------------------------------
 | Root Route
@@ -789,4 +789,20 @@ Route::middleware(['auth', 'check.user.type:employee'])->prefix('employee')->nam
     Route::get('/leaves', [App\Http\Controllers\Employee\LeaveController::class, 'index'])->name('leaves.index');
     Route::get('/leaves/create', [App\Http\Controllers\Employee\LeaveController::class, 'create'])->name('leaves.create');
     Route::post('/leaves', [App\Http\Controllers\Employee\LeaveController::class, 'store'])->name('leaves.store');
+});
+
+
+
+Route::get('/test-letter', function () {
+
+    $employee = Employee::find(1);   // employee id
+
+    return view('emails.joining-letter', compact('employee'));
+});
+
+Route::get('/test-certificate', function () {
+
+    $intern = Intern::first(); // database se ek intern record
+
+    return view('auth.admin.interns.certificate', compact('intern'));
 });
