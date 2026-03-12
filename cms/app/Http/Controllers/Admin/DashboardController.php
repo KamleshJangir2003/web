@@ -17,10 +17,8 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Cache stats for 5 minutes
-        $stats = Cache::remember('dashboard_stats', 300, function () {
-            return $this->getOptimizedStats();
-        });
+        // Get fresh stats without caching
+        $stats = $this->getOptimizedStats();
 
         // Get pending users with minimal data
         $pendingUsers = Employee::where('is_approved', false)
