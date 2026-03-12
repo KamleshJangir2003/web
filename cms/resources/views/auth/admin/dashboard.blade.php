@@ -654,7 +654,7 @@ body {
 
     <!-- 🎉 Birthday Alert -->
     @if(isset($todayBirthdays) && $todayBirthdays->count() > 0)
-    <div class="alert alert-info birthday-alert mb-4" style="background: linear-gradient(135deg, #ff6b6b, #ffa500); color: white; border: none; border-radius: 12px;">
+    <div class="alert alert-info birthday-alert mb-4" style="background: linear-gradient(135deg, #2eacb3, #2eacb3); color: white; border: none; border-radius: 12px;">
         <div class="d-flex align-items-center">
             <i class="fa-solid fa-birthday-cake fa-2x me-3"></i>
             <div>
@@ -671,7 +671,7 @@ body {
 
     <!-- 🔥 Hiring Required Alert -->
     @if(isset($activeJobOpenings) && $activeJobOpenings->count() > 0)
-    <div class="alert alert-warning hiring-alert mb-4" style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none; border-radius: 12px;">
+    <div class="alert alert-warning hiring-alert mb-4" style="background: linear-gradient(135deg, #2eacb3, #2eacb3); color: white; border: none; border-radius: 12px;">
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
                 <i class="fa-solid fa-briefcase fa-2x me-3"></i>
@@ -688,7 +688,7 @@ body {
     @endif
 
     <!-- 💰 Due Bills Alert -->
-    <div id="dueBillsAlert" class="alert alert-warning bill-alert mb-4" style="background: linear-gradient(135deg, #f39c12, #e74c3c); color: white; border: none; border-radius: 12px; display: none;">
+    <div id="dueBillsAlert" class="alert alert-warning bill-alert mb-4" style="background: linear-gradient(135deg, #2eacb3, #2eacb3); color: white; border: none; border-radius: 12px; display: none;">
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
                 <i class="fa-solid fa-file-invoice fa-2x me-3"></i>
@@ -707,7 +707,7 @@ body {
 
     <!-- 📞 Today's Callbacks Alert -->
     @if(isset($todayCallbacks) && $todayCallbacks->count() > 0)
-    <div class="alert alert-warning bill-alert mb-4" style="background: linear-gradient(135deg, #ff9500, #ff6b35); color: white; border: none; border-radius: 12px;">
+    <div class="alert alert-warning bill-alert mb-4" style="background: linear-gradient(135deg, #2eacb3, #2eacb3 ); color: white; border: none; border-radius: 12px;">
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
                 <i class="fa-solid fa-phone fa-2x me-3"></i>

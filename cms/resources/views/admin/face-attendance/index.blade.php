@@ -114,6 +114,7 @@
                                             <th>Name</th>
                                             <th>Check-In</th>
                                             <th>Check-Out</th>
+                                            <th>Late (min)</th>
                                             <th>Early (min)</th>
                                             <th>Overtime (hrs)</th>
                                             <th>Status</th>
@@ -126,6 +127,7 @@
                                             <td>{{ $att->employee->first_name }} {{ $att->employee->last_name }}</td>
                                             <td>{{ $att->in_time ? date('h:i A', strtotime($att->in_time)) : '-' }}</td>
                                             <td>{{ $att->out_time ? date('h:i A', strtotime($att->out_time)) : '-' }}</td>
+                                            <td>{{ $att->late_minutes ?? '-' }}</td>
                                             <td>{{ $att->early_checkout_minutes ?? '-' }}</td>
                                             <td>{{ $att->overtime_hours ?? '-' }}</td>
                                             <td>
@@ -141,7 +143,7 @@
                                             </td>
                                         </tr>
                                         @empty
-                                        <tr><td colspan="7" class="text-center text-muted">No attendance marked yet</td></tr>
+                                        <tr><td colspan="8" class="text-center text-muted">No attendance marked yet</td></tr>
                                         @endforelse
                                     </tbody>
                                 </table>
@@ -383,10 +385,9 @@ function addToAttendanceList(empId, name, time, statusBadge, actionType, result)
         tbody.innerHTML = '';
     }
     
-    const checkIn = actionType === 'Check-In' ? time : '-';
-    const checkOut = actionType === 'Check-Out' ? time : '-';
     const earlyMin = result.early_checkout_minutes || '-';
     const overtimeHrs = result.overtime_hours || '-';
+    const lateMin = result.late_minutes || '-';
     
     const row = document.createElement('tr');
     row.innerHTML = `
@@ -394,6 +395,7 @@ function addToAttendanceList(empId, name, time, statusBadge, actionType, result)
         <td>${name}</td>
         <td>${checkIn}</td>
         <td>${checkOut}</td>
+        <td>${lateMin}</td>
         <td>${earlyMin}</td>
         <td>${overtimeHrs}</td>
         <td>${statusBadge}</td>

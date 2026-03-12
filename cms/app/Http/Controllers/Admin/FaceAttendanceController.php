@@ -37,9 +37,21 @@ class FaceAttendanceController extends Controller
             ]);
 
             $employee = Employee::findOrFail($request->employee_id);
-            $employee->face_data = is_string($request->face_descriptor) 
-                ? $request->face_descriptor 
-                : json_encode($request->face_descriptor);
+            $newDescriptor = is_string($request->face_descriptor) 
+                ? json_decode($request->face_descriptor, true)
+                : $request->face_descriptor;
+
+            // Check for duplicate faces
+            $duplicateFace = $this->findDuplicateFace($newDescriptor, $employee->id);
+            if ($duplicateFace) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This face is already registered with another employee',
+                    'duplicate_employee' => $duplicateFace['name']
+                ], 409);
+            }
+
+            $employee->face_data = json_encode($newDescriptor);
             $employee->save();
 
             return response()->json([
@@ -200,6 +212,37 @@ class FaceAttendanceController extends Controller
         return sqrt($sum);
     }
 
+    private function findDuplicateFace($newDescriptor, $currentEmployeeId)
+    {
+        $threshold = 0.45;
+        $employees = Employee::whereNotNull('face_data')
+            ->where('face_data', '!=', '')
+            ->where('id', '!=', $currentEmployeeId)
+            ->get(['id', 'first_name', 'last_name', 'face_data']);
+
+        foreach ($employees as $employee) {
+            $storedDescriptor = json_decode($employee->face_data, true);
+            if (!is_array($storedDescriptor)) {
+                continue;
+            }
+
+            if (count($newDescriptor) !== count($storedDescriptor)) {
+                continue;
+            }
+
+            $distance = $this->euclideanDistance($newDescriptor, $storedDescriptor);
+            if ($distance < $threshold) {
+                return [
+                    'id' => $employee->id,
+                    'name' => $employee->first_name . ' ' . $employee->last_name,
+                    'distance' => $distance
+                ];
+            }
+        }
+
+        return null;
+    }
+
     private function markCheckIn($employee, $today, $now)
     {
         $checkInTime = $now->format('H:i:s');
@@ -232,7 +275,10 @@ class FaceAttendanceController extends Controller
             'in_time' => $checkInTime,
             'status' => $status,
             'shift' => ($employee->shift && isset($employee->shift->name)) ? $employee->shift->name : 'Day',
-            'shift_id' => $employee->shift_id
+            'shift_id' => $employee->shift_id,
+            'late_minutes' => $lateMinutes,
+            'early_checkout_minutes' => 0,
+            'overtime_hours' => 0
         ]);
 
         return response()->json([

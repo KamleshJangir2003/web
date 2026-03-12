@@ -266,17 +266,19 @@ async function captureFace() {
             })
         });
         
-        if (!response.ok) {
-            throw new Error('Server error: ' + response.status);
-        }
-        
         const result = await response.json();
         
+        if (response.status === 409) {
+            showStatus('❌ ' + result.message + '<br><strong>Already registered to: ' + result.duplicate_employee + '</strong>', 'danger');
+            captureFaceBtn.disabled = false;
+            return;
+        }
+        
         if (result.success) {
-            showStatus('Face registered successfully!', 'success');
+            showStatus('✅ Face registered successfully!', 'success');
             setTimeout(() => location.reload(), 1500);
         } else {
-            showStatus(result.message || 'Registration failed', 'danger');
+            showStatus('❌ ' + (result.message || 'Registration failed'), 'danger');
             captureFaceBtn.disabled = false;
         }
     } catch (error) {
