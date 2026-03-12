@@ -285,7 +285,13 @@ body {
                                                 </td>
                                                 <td>{{ isset($att->in_time) && $att->in_time ? date('h:i A', strtotime($att->in_time)) : '-' }}</td>
                                                 <td>{{ isset($att->out_time) && $att->out_time ? date('h:i A', strtotime($att->out_time)) : '-' }}</td>
-                                                <td>{{ isset($att->early_checkout_minutes) && $att->early_checkout_minutes > 0 ? $att->early_checkout_minutes : '-' }}</td>
+                                                <td>
+                                                    @if(isset($att->early_checkout_minutes) && $att->early_checkout_minutes > 0)
+                                                        {{ floor($att->early_checkout_minutes / 60) }}h {{ $att->early_checkout_minutes % 60 }}m
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
                                                 <td>{{ isset($att->overtime_hours) && $att->overtime_hours > 0 ? $att->overtime_hours : '-' }}</td>
                                                 <td>{{ isset($att->reason) && $att->reason ? $att->reason : '-' }}</td>
                                             </tr>

@@ -127,16 +127,32 @@
                                             <td>{{ $att->employee->first_name }} {{ $att->employee->last_name }}</td>
                                             <td>{{ $att->in_time ? date('h:i A', strtotime($att->in_time)) : '-' }}</td>
                                             <td>{{ $att->out_time ? date('h:i A', strtotime($att->out_time)) : '-' }}</td>
-                                            <td>{{ $att->late_minutes ?? '-' }}</td>
-                                            <td>{{ $att->early_checkout_minutes ?? '-' }}</td>
+                                            <td>
+                                                @if($att->late_minutes > 0)
+                                                    {{ floor($att->late_minutes / 60) }}h {{ $att->late_minutes % 60 }}m
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($att->early_checkout_minutes > 0)
+                                                    {{ floor($att->early_checkout_minutes / 60) }}h {{ $att->early_checkout_minutes % 60 }}m
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
                                             <td>{{ $att->overtime_hours ?? '-' }}</td>
                                             <td>
                                                 @if($att->status === 'Present')
                                                     <span class="badge bg-success">On Time</span>
+                                                @elseif($att->status === 'Late')
+                                                    <span class="badge bg-warning">Late</span>
                                                 @elseif($att->status === 'Half Day')
                                                     <span class="badge bg-warning">Half Day</span>
                                                 @elseif($att->status === 'Week Off')
                                                     <span class="badge bg-info">Week Off</span>
+                                                @elseif($att->status === 'Absent')
+                                                    <span class="badge bg-danger">Absent</span>
                                                 @else
                                                     <span class="badge bg-secondary">{{ ucwords(str_replace('_', ' ', $att->status)) }}</span>
                                                 @endif
@@ -385,6 +401,8 @@ function addToAttendanceList(empId, name, time, statusBadge, actionType, result)
         tbody.innerHTML = '';
     }
     
+    const checkIn = actionType === 'Check-In' ? time : '-';
+    const checkOut = actionType === 'Check-Out' ? time : '-';
     const earlyMin = result.early_checkout_minutes || '-';
     const overtimeHrs = result.overtime_hours || '-';
     const lateMin = result.late_minutes || '-';

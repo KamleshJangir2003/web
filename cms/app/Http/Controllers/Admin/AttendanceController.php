@@ -54,10 +54,9 @@ class AttendanceController extends Controller
         }
 
         // Order employees with recent attendance first, then by name
-        $employees = $query->leftJoin('attendance', function($join) use ($selected_date, $selected_shift) {
+        $employees = $query->leftJoin('attendance', function($join) use ($selected_date) {
                 $join->on('employees.id', '=', 'attendance.employee_id')
-                     ->where('attendance.attendance_date', '=', $selected_date)
-                     ->where('attendance.shift', '=', $selected_shift);
+                     ->where('attendance.attendance_date', '=', $selected_date);
             })
             ->select('employees.*', 'attendance.created_at as attendance_created_at', 'attendance.updated_at as attendance_updated_at')
             ->orderByDesc('attendance.updated_at')
@@ -68,13 +67,12 @@ class AttendanceController extends Controller
         $attendance_summary = [];
 
         if ($view_type === 'daily') {
-            // Daily view - existing logic with shift
+            // Daily view - fetch attendance without shift filter (face attendance uses shift names)
             if ($employees->count() > 0) {
                 $employee_ids = $employees->pluck('id')->toArray();
                 $attendance_records = DB::table('attendance')
                     ->whereIn('employee_id', $employee_ids)
                     ->where('attendance_date', $selected_date)
-                    ->where('shift', $selected_shift)
                     ->get();
 
                 foreach ($attendance_records as $att) {
@@ -234,6 +232,7 @@ class AttendanceController extends Controller
                 ->get();
 
             $present = $attendanceRecords->where('status', 'Present')->count();
+            $late = $attendanceRecords->where('status', 'Late')->count();
             $absent = $attendanceRecords->where('status', 'Absent')->count();
             $halfDay = $attendanceRecords->where('status', 'Half Day')->count();
             $unauthorizedLeave = $attendanceRecords->where('status', 'Unauthorized Leave')->count();
@@ -242,7 +241,8 @@ class AttendanceController extends Controller
             $weekOff = $attendanceRecords->where('status', 'Week Off')->count();
             $compOff = $attendanceRecords->where('status', 'Comp Off')->count();
 
-            $workingDays = $present + $paidLeave + $compOff + ($halfDay * 0.5);
+            // Calculate working days: Present + Late (both count as full day) + Half Day (0.5) + Paid Leave + Comp Off
+            $workingDays = $present + $late + ($halfDay * 0.5) + $paidLeave + $compOff;
 
             // Per day salary based on 30-day cycle
             $perDaySalary = $inHandSalary / $totalDaysInCycle;

@@ -148,7 +148,7 @@ class FaceAttendanceController extends Controller
                 'face_descriptor' => 'required|string'
             ]);
 
-            $employee = Employee::with('shift')->findOrFail($request->employee_id);
+            $employee = Employee::with('shiftType')->findOrFail($request->employee_id);
             $today = Carbon::today()->format('Y-m-d');
             $now = Carbon::now();
 
@@ -254,17 +254,31 @@ class FaceAttendanceController extends Controller
             $status = 'Week Off';
         }
         // Calculate late minutes if shift exists
-        elseif ($employee->shift && is_object($employee->shift) && isset($employee->shift->start_time)) {
-            $shiftStart = Carbon::createFromFormat('H:i:s', $employee->shift->start_time);
-            $checkInCarbon = Carbon::createFromFormat('H:i:s', $checkInTime);
-        
-            if ($checkInCarbon->gt($shiftStart)) {
-                $lateMinutes = $checkInCarbon->diffInMinutes($shiftStart);
-                // If late by more than 10 minutes - Mark as Half Day
-                if ($lateMinutes > 10) {
-                    $status = 'Half Day';
-                } else {
-                    $status = 'Present';
+        elseif ($employee->shift_id && $employee->shiftType) {
+            $shiftStart = $employee->shiftType->start_time;
+            
+            if ($shiftStart) {
+                try {
+                    $shiftStartTime = Carbon::createFromFormat('H:i:s', $shiftStart);
+                    $checkInCarbon = Carbon::createFromFormat('H:i:s', $checkInTime);
+                
+                    if ($checkInCarbon->gt($shiftStartTime)) {
+                        // Calculate late minutes: check-in time - shift start time (always positive)
+                        $lateMinutes = abs($checkInCarbon->diffInMinutes($shiftStartTime));
+                        
+                        // Determine status based on late minutes
+                        if ($lateMinutes <= 15) {
+                            $status = 'Present'; // Grace time
+                        } elseif ($lateMinutes <= 120) {
+                            $status = 'Late';
+                        } elseif ($lateMinutes <= 240) {
+                            $status = 'Half Day';
+                        } else {
+                            $status = 'Absent';
+                        }
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Time parsing error: ' . $e->getMessage());
                 }
             }
         }
@@ -274,7 +288,7 @@ class FaceAttendanceController extends Controller
             'attendance_date' => $today,
             'in_time' => $checkInTime,
             'status' => $status,
-            'shift' => ($employee->shift && isset($employee->shift->name)) ? $employee->shift->name : 'Day',
+            'shift' => ($employee->shiftType && $employee->shiftType->shift_name) ? $employee->shiftType->shift_name : 'Day Shift',
             'shift_id' => $employee->shift_id,
             'late_minutes' => $lateMinutes,
             'early_checkout_minutes' => 0,
@@ -293,7 +307,7 @@ class FaceAttendanceController extends Controller
 
     private function markCheckOut($attendance, $now)
     {
-        $employee = Employee::with('shift')->find($attendance->employee_id);
+        $employee = Employee::with('shiftType')->find($attendance->employee_id);
     
         $checkOutTime = $now->format('H:i:s');
     
@@ -306,10 +320,16 @@ class FaceAttendanceController extends Controller
         $earlyCheckoutMinutes = 0;
         $overtimeHours = 0;
         
-        if ($employee->shift && isset($employee->shift->end_time)) {
-            $shiftEnd = Carbon::createFromFormat('H:i:s', $employee->shift->end_time);
-            $shiftStart = Carbon::createFromFormat('H:i:s', $employee->shift->start_time);
+        if ($employee->shiftType && $employee->shiftType->end_time) {
+            $shiftEnd = Carbon::createFromFormat('H:i:s', $employee->shiftType->end_time);
+            $shiftStart = Carbon::createFromFormat('H:i:s', $employee->shiftType->start_time);
             $checkOutCarbon = Carbon::createFromFormat('H:i:s', $checkOutTime);
+            
+            // Handle night shift (end time < start time means shift ends next day)
+            if ($shiftEnd->lt($shiftStart)) {
+                $shiftEnd->addDay();
+                $checkOutCarbon->addDay();
+            }
             
             // Check for early checkout
             if ($checkOutCarbon->lt($shiftEnd)) {
@@ -334,6 +354,7 @@ class FaceAttendanceController extends Controller
             'employee_name' => $employee->first_name . ' ' . $employee->last_name,
             'time' => $checkOutTime,
             'working_hours' => round($workingHours, 2),
+            'late_minutes' => $attendance->late_minutes,
             'early_checkout_minutes' => $earlyCheckoutMinutes,
             'overtime_hours' => $overtimeHours
         ]);
