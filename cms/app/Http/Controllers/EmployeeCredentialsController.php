@@ -12,8 +12,9 @@ class EmployeeCredentialsController extends Controller
     public function index()
     {
         $employees = Employee::where('user_type', 'employee')
-                    ->where('hired_status', 'hired')
-                    ->get();
+            ->where('hired_status', 'hired')
+            ->where('action_status', 'selected') // hired page se selected
+            ->get();
     
         return view('employee-credentials', compact('employees'));
     }
