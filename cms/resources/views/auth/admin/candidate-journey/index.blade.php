@@ -478,7 +478,7 @@
 
     {{-- ================= NOT SELECTED ================= --}}
     <div class="journey-column">
-        <h4 class="text-danger mb-3">Not Selected ({{ $journeys->where('final_status','rejected')->count() }})</h4>
+        <h4 class="text-danger mb-3">Not Selected/Rejected ({{ $journeys->where('final_status','rejected')->count() }})</h4>
 
         @foreach($journeys->where('final_status','rejected')->take(10) as $journey)
 
