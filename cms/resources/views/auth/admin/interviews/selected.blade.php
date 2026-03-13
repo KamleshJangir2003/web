@@ -1,5 +1,6 @@
 @extends('auth.layouts.app')
 <style>
+  
     .action-buttons {
     display: flex;
     align-items: center;
@@ -31,12 +32,12 @@
 </style>
 @section('content')
 <div class="main-content">
-    <div class="page-header">
+    <!-- <div class="page-header">
         <h1></h1>
         <a href="{{ route('admin.interviews.index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Back to Interviews
         </a>
-    </div>
+    </div> -->
 
     <div class="content-card">
         <div class="table-responsive">

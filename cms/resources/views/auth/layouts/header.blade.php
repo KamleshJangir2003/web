@@ -1,4 +1,4 @@
-﻿<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
     :root{
@@ -118,7 +118,7 @@
 /* DROPDOWN */
 .dropdown{
     position: relative;
-    z-index: 10000;          /* 🔥 dropdown clickable */
+    z-index: 10000;          /* ?? dropdown clickable */
 }
 
 .dropdown-btn{
@@ -1246,7 +1246,7 @@ function showStatusPopup(type, title, message, details = null) {
                 <!-- BIRTHDAYS SECTION -->
                 @if(isset($todayBirthdays) && $todayBirthdays->count() > 0)
                 <li class="birthday-header">
-                    <span>🎉 Today's Birthdays</span>
+                    <span>?? Today's Birthdays</span>
                     <span class="count-badge">{{ $todayBirthdays->count() }}</span>
                 </li>
                 @foreach($todayBirthdays as $employee)
@@ -1349,7 +1349,7 @@ function showStatusPopup(type, title, message, details = null) {
 </div>
 <script>
 document.getElementById('excelMenu').addEventListener('click', function (e) {
-    e.stopPropagation();   // 🔥 yahi main fix hai
+    e.stopPropagation();   // ?? yahi main fix hai
 });
 </script>
 
@@ -1446,7 +1446,7 @@ function displayNotifications(notifications) {
     }
     
     list.innerHTML = `<li class="notif-section-header">
-        <span>📬 Recent Updates</span>
+        <span>?? Recent Updates</span>
         <span class="count-badge">${notifications.length}</span>
     </li>` + 
         notifications.map(notif => `
@@ -1508,14 +1508,14 @@ function showBillsInHeader(bills) {
     
     // Generate bills content
     let billsHtml = `<li class="bills-header">
-        <span>💰 Bills Due Today</span>
+        <span>?? Bills Due Today</span>
         <span class="count-badge">${bills.length}</span>
     </li>`;
     bills.forEach(function(bill) {
         billsHtml += `<li class="bills-item">
             <div class="bills-item-info">
                 <strong>${bill.bill_type}</strong>
-                <small>₹${parseFloat(bill.amount).toFixed(2)} - Due: ${new Date(bill.due_date).toLocaleDateString('en-GB')}</small>
+                <small>?${parseFloat(bill.amount).toFixed(2)} - Due: ${new Date(bill.due_date).toLocaleDateString('en-GB')}</small>
             </div>
             <button class="btn btn-success btn-sm" onclick="markBillAsPaidFromHeader(${bill.id})">
                 <i class="fa-solid fa-check"></i>
@@ -1543,12 +1543,12 @@ function markBillAsPaidFromHeader(billId) {
             // Refresh bills in header
             checkDueBillsForHeader();
         } else {
-            alert('âŒ Error marking bill as paid');
+            showStatusPopup('error', 'Error', 'Operation failed');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('âŒ Error marking bill as paid');
+        showStatusPopup('error', 'Error', 'Operation failed');
     });
 }
 
@@ -1558,7 +1558,7 @@ function selectExcelFile(e) {
 
     const role = document.getElementById('roleSelect').value;
     if (!role) {
-        alert('âš ï¸ Please select role first!');
+        showStatusPopup('error', 'Error', 'Operation failed');
         return;
     }
 
@@ -1655,16 +1655,16 @@ function saveManualEntry() {
     const platform = document.getElementById('platformSelect').value;
 
     if (!name || !number) {
-        alert('âš ï¸ Please enter both name and number!');
+        showStatusPopup('error', 'Error', 'Operation failed');
         return;
     }
-      // ✅ Only 10 digit number allowed
+      // ? Only 10 digit number allowed
       if (!/^[0-9]{10}$/.test(number)) {
-        alert('Mobile number must be exactly 10 digits!');
+        showStatusPopup('error', 'Error', 'Operation failed');
         return;
     }
     if (!role) {
-        alert('âš ï¸ Please select role first!');
+        showStatusPopup('error', 'Error', 'Operation failed');
         return;
     }
 
@@ -1682,15 +1682,15 @@ function saveManualEntry() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Lead saved successfully!');
+            showStatusPopup('success', 'Success', 'Lead saved successfully!');
             document.getElementById('manualName').value = '';
             document.getElementById('manualNumber').value = '';
             document.getElementById('manualEntryForm').style.display = 'none';
         } else {
-            alert('âŒ Error saving lead!');
+            showStatusPopup('error', 'Error', 'Operation failed');
         }
     })
-    .catch(() => alert('âŒ Network error!'));
+    .catch(() => showStatusPopup('error', 'Error', 'Operation failed'));
 }
 </script>
 <script>
@@ -1734,15 +1734,15 @@ searchInput.addEventListener('input', function () {
                         let detailsHtml = '<div class="search-result-details">';
                         
                         if (item.status && item.status !== 'N/A') {
-                            detailsHtml += `<span class="search-detail-badge ${statusClass}">📊 ${item.status}</span>`;
+                            detailsHtml += `<span class="search-detail-badge ${statusClass}">?? ${item.status}</span>`;
                         }
                         
                         if (item.role && item.role !== 'N/A') {
-                            detailsHtml += `<span class="search-detail-badge role-badge">💼 ${item.role}</span>`;
+                            detailsHtml += `<span class="search-detail-badge role-badge">?? ${item.role}</span>`;
                         }
                         
                         if (item.platform && item.platform !== 'N/A') {
-                            detailsHtml += `<span class="search-detail-badge platform-badge">🌐 ${item.platform}</span>`;
+                            detailsHtml += `<span class="search-detail-badge platform-badge">?? ${item.platform}</span>`;
                         }
                         
                         detailsHtml += '</div>';
@@ -1752,7 +1752,7 @@ searchInput.addEventListener('input', function () {
                             <div class="search-result-info">
                                 <div class="search-result-name">${item.name}</div>
                                 <div class="search-result-number">${item.number || 'No number'}</div>
-                                <div class="search-result-page">📍 <strong>${item.page}</strong> - <span class="search-result-type">${item.type}</span></div>
+                                <div class="search-result-page">?? <strong>${item.page}</strong> - <span class="search-result-type">${item.type}</span></div>
                                 ${detailsHtml}
                             </div>
                         `;
@@ -1864,39 +1864,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 <table class="table table-bordered table-sm">
                     <tr>
                         <th>Gross Salary</th>
-                        <td id="resultGross">₹ 0.00</td>
+                        <td id="resultGross">? 0.00</td>
                     </tr>
                     <tr>
                         <th>Basic Salary (60%)</th>
-                        <td id="resultBasic">₹ 0.00</td>
+                        <td id="resultBasic">? 0.00</td>
                     </tr>
                     <tr>
                         <th>HRA (40%)</th>
-                        <td id="resultHra">₹ 0.00</td>
+                        <td id="resultHra">? 0.00</td>
                     </tr>
                     <tr>
                         <th>Employee PF (12% of Basic)</th>
-                        <td id="resultEmpPf">₹ 0.00</td>
+                        <td id="resultEmpPf">? 0.00</td>
                     </tr>
                     <tr>
                         <th>Employee ESIC (0.75% of Gross)</th>
-                        <td id="resultEmpEsic">₹ 0.00</td>
+                        <td id="resultEmpEsic">? 0.00</td>
                     </tr>
                     <tr>
                         <th>Employer PF (13% of Basic)</th>
-                        <td id="resultEmprPf">₹ 0.00</td>
+                        <td id="resultEmprPf">? 0.00</td>
                     </tr>
                     <tr>
                         <th>Employer ESIC (3.25% of Gross)</th>
-                        <td id="resultEmprEsic">₹ 0.00</td>
+                        <td id="resultEmprEsic">? 0.00</td>
                     </tr>
                     <tr class="table-success">
                         <th>In-Hand Salary</th>
-                        <td id="resultInHand"><strong>₹ 0.00</strong></td>
+                        <td id="resultInHand"><strong>? 0.00</strong></td>
                     </tr>
                     <tr class="table-info">
                         <th>Total CTC</th>
-                        <td id="resultCtc"><strong>₹ 0.00</strong></td>
+                        <td id="resultCtc"><strong>? 0.00</strong></td>
                     </tr>
                 </table>
             </div>
@@ -2269,7 +2269,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const inHand = parseFloat(document.getElementById('modalInHandSalary').value);
             
             if (!inHand || inHand <= 0) {
-                alert('âš ï¸ Please enter a valid salary amount');
+                showStatusPopup('error', 'Error', 'Operation failed');
                 return;
             }
             
@@ -2290,21 +2290,22 @@ document.addEventListener('DOMContentLoaded', function() {
             const ctc = gross + employerPf + employerEsic;
             
             // Display results
-            document.getElementById('resultGross').textContent = '₹ ' + gross.toFixed(2);
-            document.getElementById('resultBasic').textContent = '₹ ' + basic.toFixed(2);
-            document.getElementById('resultHra').textContent = '₹ ' + hra.toFixed(2);
-            document.getElementById('resultEmpPf').textContent = '₹ ' + employeePf.toFixed(2);
-            document.getElementById('resultEmpEsic').textContent = '₹ ' + employeeEsic.toFixed(2);
-            document.getElementById('resultEmprPf').textContent = '₹ ' + employerPf.toFixed(2);
-            document.getElementById('resultEmprEsic').textContent = '₹ ' + employerEsic.toFixed(2);
-            document.getElementById('resultInHand').innerHTML = '<strong>₹ ' + inHand.toFixed(2) + '</strong>';
-            document.getElementById('resultCtc').innerHTML = '<strong>₹ ' + ctc.toFixed(2) + '</strong>';
+            document.getElementById('resultGross').textContent = '? ' + gross.toFixed(2);
+            document.getElementById('resultBasic').textContent = '? ' + basic.toFixed(2);
+            document.getElementById('resultHra').textContent = '? ' + hra.toFixed(2);
+            document.getElementById('resultEmpPf').textContent = '? ' + employeePf.toFixed(2);
+            document.getElementById('resultEmpEsic').textContent = '? ' + employeeEsic.toFixed(2);
+            document.getElementById('resultEmprPf').textContent = '? ' + employerPf.toFixed(2);
+            document.getElementById('resultEmprEsic').textContent = '? ' + employerEsic.toFixed(2);
+            document.getElementById('resultInHand').innerHTML = '<strong>? ' + inHand.toFixed(2) + '</strong>';
+            document.getElementById('resultCtc').innerHTML = '<strong>? ' + ctc.toFixed(2) + '</strong>';
             
             document.getElementById('salaryResults').style.display = 'block';
         });
     }
 });
 </script>
+
 
 
 

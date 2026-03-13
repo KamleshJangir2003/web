@@ -19,18 +19,18 @@ function saveManualEntry() {
     console.log('Manual entry data:', { name, number, platform, role });
 
     if (!name || !number) {
-        alert('Please fill in both name and number');
+        showStatusPopup('warning', 'Warning', 'Please fill in both name and number');
         return;
     }
 
     if (!role) {
-        alert('Please select a role');
+        showStatusPopup('warning', 'Warning', 'Please select a role');
         return;
     }
 
     // Validate number format (10 digits)
     if (!/^[0-9]{10}$/.test(number)) {
-        alert('Please enter a valid 10-digit mobile number');
+        showStatusPopup('warning', 'Warning', 'Please enter a valid 10-digit mobile number');
         return;
     }
 
@@ -55,7 +55,7 @@ function saveManualEntry() {
     .then(data => {
         console.log('Response data:', data);
         if (data.success) {
-            alert('Lead saved successfully!');
+            showStatusPopup('success', 'Success', 'Lead saved successfully!');
             document.getElementById('manualName').value = '';
             document.getElementById('manualNumber').value = '';
             document.getElementById('platformSelect').value = '';
@@ -64,15 +64,15 @@ function saveManualEntry() {
         } else {
             // Show specific error message for duplicates
             if (data.message.includes('already exists')) {
-                alert('⚠️ Duplicate Number: ' + data.message);
+                showStatusPopup('error', 'Error', 'Duplicate Number: ' + data.message);
             } else {
-                alert('Error: ' + data.message);
+                showStatusPopup('error', 'Error', data.message);
             }
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error saving lead');
+        showStatusPopup('error', 'Error', 'Error saving lead');
     });
 }
 
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Validate role selection
             if (!role) {
-                alert('Please select a role before uploading file');
+                showStatusPopup('warning', 'Warning', 'Please select a role before uploading file');
                 return;
             }
 
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
             
             if (!allowedTypes.includes(fileExtension)) {
-                alert('Please select a valid Excel file (.xlsx, .xls, .csv)');
+                showStatusPopup('error', 'Error', 'Please select a valid Excel file (.xlsx, .xls, .csv)');
                 return;
             }
 
@@ -175,17 +175,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     uploadProgress.style.display = 'none';
                     if (data.success) {
                         // Show detailed success message including duplicates info
-                        alert(data.message);
+                        showStatusPopup('success', 'Success', data.message);
                         location.reload(); // Refresh page to show new leads
                     } else {
-                        alert('Error: ' + data.message);
+                        showStatusPopup('error', 'Error', data.message);
                     }
                 }, 500);
             })
             .catch(error => {
                 console.error('Upload error:', error);
                 uploadProgress.style.display = 'none';
-                alert('Error uploading file');
+                showStatusPopup('error', 'Error', 'Error uploading file');
             });
 
             // Reset file input

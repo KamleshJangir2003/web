@@ -5,7 +5,7 @@
     display: flex;
        /* Horizontal center */
     align-items: center;       /* Vertical center (optional) */
-    margin-top: 40px;
+    margin-top: 70px;
 }
 
 </style>
