@@ -1861,39 +1861,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 <table class="table table-bordered table-sm">
                     <tr>
                         <th>Gross Salary</th>
-                        <td id="resultGross">? 0.00</td>
+                        <td id="resultGross">₹ 0.00</td>
                     </tr>
                     <tr>
                         <th>Basic Salary (60%)</th>
-                        <td id="resultBasic">? 0.00</td>
+                        <td id="resultBasic">₹ 0.00</td>
                     </tr>
                     <tr>
                         <th>HRA (40%)</th>
-                        <td id="resultHra">? 0.00</td>
+                        <td id="resultHra">₹ 0.00</td>
                     </tr>
                     <tr>
                         <th>Employee PF (12% of Basic)</th>
-                        <td id="resultEmpPf">? 0.00</td>
+                        <td id="resultEmpPf">₹ 0.00</td>
                     </tr>
                     <tr>
                         <th>Employee ESIC (0.75% of Gross)</th>
-                        <td id="resultEmpEsic">? 0.00</td>
+                        <td id="resultEmpEsic">₹ 0.00</td>
                     </tr>
                     <tr>
                         <th>Employer PF (13% of Basic)</th>
-                        <td id="resultEmprPf">? 0.00</td>
+                        <td id="resultEmprPf">₹ 0.00</td>
                     </tr>
                     <tr>
                         <th>Employer ESIC (3.25% of Gross)</th>
-                        <td id="resultEmprEsic">? 0.00</td>
+                        <td id="resultEmprEsic">₹ 0.00</td>
                     </tr>
                     <tr class="table-success">
                         <th>In-Hand Salary</th>
-                        <td id="resultInHand"><strong>? 0.00</strong></td>
+                        <td id="resultInHand"><strong>₹ 0.00</strong></td>
                     </tr>
                     <tr class="table-info">
                         <th>Total CTC</th>
-                        <td id="resultCtc"><strong>? 0.00</strong></td>
+                        <td id="resultCtc"><strong>₹ 0.00</strong></td>
                     </tr>
                 </table>
             </div>
@@ -2512,15 +2512,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const ctc = gross + employerPf + employerEsic;
             
             // Display results
-            document.getElementById('resultGross').textContent = '? ' + gross.toFixed(2);
-            document.getElementById('resultBasic').textContent = '? ' + basic.toFixed(2);
-            document.getElementById('resultHra').textContent = '? ' + hra.toFixed(2);
-            document.getElementById('resultEmpPf').textContent = '? ' + employeePf.toFixed(2);
-            document.getElementById('resultEmpEsic').textContent = '? ' + employeeEsic.toFixed(2);
-            document.getElementById('resultEmprPf').textContent = '? ' + employerPf.toFixed(2);
-            document.getElementById('resultEmprEsic').textContent = '? ' + employerEsic.toFixed(2);
-            document.getElementById('resultInHand').innerHTML = '<strong>? ' + inHand.toFixed(2) + '</strong>';
-            document.getElementById('resultCtc').innerHTML = '<strong>? ' + ctc.toFixed(2) + '</strong>';
+            document.getElementById('resultGross').textContent = '₹ ' + gross.toFixed(2);
+            document.getElementById('resultBasic').textContent = '₹ ' + basic.toFixed(2);
+            document.getElementById('resultHra').textContent = '₹ ' + hra.toFixed(2);
+            document.getElementById('resultEmpPf').textContent = '₹ ' + employeePf.toFixed(2);
+            document.getElementById('resultEmpEsic').textContent = '₹ ' + employeeEsic.toFixed(2);
+            document.getElementById('resultEmprPf').textContent = '₹ ' + employerPf.toFixed(2);
+            document.getElementById('resultEmprEsic').textContent = '₹ ' + employerEsic.toFixed(2);
+            document.getElementById('resultInHand').innerHTML = '<strong>₹ ' + inHand.toFixed(2) + '</strong>';
+            document.getElementById('resultCtc').innerHTML = '<strong>₹ ' + ctc.toFixed(2) + '</strong>';
             
             document.getElementById('salaryResults').style.display = 'block';
         });
