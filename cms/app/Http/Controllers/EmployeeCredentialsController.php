@@ -13,7 +13,8 @@ class EmployeeCredentialsController extends Controller
     {
         $employees = Employee::where('user_type', 'employee')
             ->where('hired_status', 'hired')
-            ->where('action_status', 'selected') // hired page se selected
+            ->where('action_status', 'selected')
+            ->where('employee_status', 'active')
             ->get();
     
         return view('employee-credentials', compact('employees'));
