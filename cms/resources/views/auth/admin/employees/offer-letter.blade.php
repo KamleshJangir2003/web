@@ -49,7 +49,7 @@
      <div style="text-align:center; margin-bottom:30px;">
         <img src="{{ asset('Kwikster.jpeg') }}" 
              alt="Kwikster Logo" 
-             style="height:100px;">
+             style="height:80px;">
     </div>
 
     <!-- Company Info -->

@@ -90,13 +90,18 @@
               <!-- Company Logo -->
     <div style="margin-bottom:15px;">
     @php
-$path = public_path('Kwikster.jpeg');
-$type = pathinfo($path, PATHINFO_EXTENSION);
-$data = file_get_contents($path);
-$logo = 'data:image/' . $type . ';base64,' . base64_encode($data);
-@endphp
-
-<img src="{{ $logo }}" style="height:80px;">
+        $logoPath = public_path('Kwikster.jpeg');
+        if (file_exists($logoPath)) {
+            $type = pathinfo($logoPath, PATHINFO_EXTENSION);
+            $data = file_get_contents($logoPath);
+            $logo = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        } else {
+            $logo = null;
+        }
+    @endphp
+    @if($logo)
+        <img src="{{ $logo }}" style="height:80px;">
+    @endif
     </div>
             <h2>KWIKSTER INNOVATIVE OPTIMISATIONS PVT LTD</h2>
             <p>21/281, Kaveri Path, Madhyam Marg Road</p>
