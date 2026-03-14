@@ -1,5 +1,16 @@
 @extends('auth.layouts.app')
+<style>
+    /* Mobile Fix */
+@media (max-width:768px){
 
+.main-content{
+margin-left:0 !important;
+padding-top:20px !important;
+margin-top:20px !important;
+}
+
+}
+</style>
 @section('content')
 <div class="main-content">
     <div class="page-header">

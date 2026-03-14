@@ -1,12 +1,35 @@
 @extends('auth.layouts.app')
 <style>
-    .card-header{
-        
-        display: flex;
-    }
-    .btn-secondary{
-        margin-left: 600px;
-    }
+   .card-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+}
+
+.btn-secondary{
+margin-left:auto;
+}
+
+/* Mobile Fix */
+@media (max-width:768px){
+
+.main-content{
+margin-left:0 !important;
+padding-top:0px !important;
+}
+
+.card-header{
+flex-direction:column;
+align-items:flex-start;
+gap:10px;
+}
+
+.btn-secondary{
+margin-left:0;
+}
+
+}
 </style>
 @section('title', 'Wrong Number Interns')
 

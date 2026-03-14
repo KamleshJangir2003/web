@@ -29,6 +29,17 @@
     background-color: #f1fdf4;
 }
 
+    /* Mobile Fix */
+    @media (max-width:768px){
+
+.main-content{
+margin-left:0 !important;
+padding-top:20px !important;
+margin-top:20px !important;
+}
+
+}
+
 </style>
 @section('content')
 <div class="main-content">

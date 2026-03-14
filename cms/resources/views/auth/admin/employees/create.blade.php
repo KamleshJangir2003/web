@@ -6,6 +6,11 @@
    
     padding-left: 130px !important;
 }
+@media (max-width:768px){
+    .container-fluid{
+        padding-left: 0% !important;
+    }
+}
 </style>
 <div class="container-fluid">
 

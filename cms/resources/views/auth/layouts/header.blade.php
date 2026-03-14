@@ -14,64 +14,65 @@
 .top-header{
     position: fixed;
     top: 0;
-    left: 260px;
-    width: calc(100% - 260px);
+    left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
     height: 60px;
     background: #fff;
     border-bottom: 1px solid #2eacb3;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 35px;
+    padding: 0 20px;
     z-index: 9999;
     box-sizing: border-box;
+    transition: all 0.3s ease;
 }
 
-@media (max-width: 768px) {
-    .top-header {
-        left: 0;
-        width: 100%;
-        height: 60px;
-        padding: 0 10px;
-    }
-}
-.header-right{
-    display: flex;
-    align-items: center;
-    gap: 22px;
-}
-
-@media (max-width: 768px) {
-    .header-right {
-        gap: 5px;
-        flex-wrap: wrap;
-    }
-    
-    .header-right li {
-        display: none !important;
-    }
-    
-    .header-right .dropdown {
-        display: flex !important;
-    }
-}
 .header-left{
     display: flex;
     align-items: center;
     gap: 15px;
+    flex: 1;
+    min-width: 0;
 }
 
-@media (max-width: 768px) {
-    .header-left {
-        gap: 5px;
-    }
+.header-center {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
 }
 
+.header-center .mobile-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 16px;
+    color: #2eacb3;
+}
+
+.header-center .mobile-logo i {
+    font-size: 20px;
+    color: #2eacb3;
+}
+
+.header-center .mobile-logo img {
+    height: 35px;
+    width: auto;
+}
+
+.header-right{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: nowrap;
+}
 
 .menu-btn, .header-icon{
     background: none;
     border: none;
-    font-size: 22px;
+    font-size: 20px;
     cursor: pointer;
     position: relative;
     z-index: 10000;
@@ -79,21 +80,11 @@
     padding: 8px;
     border-radius: 6px;
     transition: background 0.2s;
-}
-
-@media (max-width: 768px) {
-    .menu-btn, .header-icon {
-        font-size: 16px;
-        padding: 4px;
-    }
-    
-    #fullscreenToggle {
-        display: none !important;
-    }
+    flex-shrink: 0;
 }
 
 #fullscreenToggle {
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
 }
@@ -104,21 +95,14 @@
 }
 
 .menu-btn{
-    position: relative;
-    z-index: 10000;
-    pointer-events: auto;
-}
-
-.header-right{
-    display: flex;
-    align-items: center;
-   
+    display: none;
 }
 
 /* DROPDOWN */
 .dropdown{
     position: relative;
-    z-index: 10000;          /* ?? dropdown clickable */
+    z-index: 10000;
+    flex-shrink: 0;
 }
 
 .dropdown-btn{
@@ -128,6 +112,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
+    white-space: nowrap;
 }
 
 .dropdown-menu{
@@ -141,14 +126,7 @@
     border-radius: 6px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     z-index: 10001;
-}
-
-@media (max-width: 768px) {
-    .dropdown-menu {
-        min-width: 150px;
-        max-width: calc(100vw - 20px);
-        right: -10px;
-    }
+    max-width: 90vw;
 }
 
 .dropdown-menu li{
@@ -412,16 +390,17 @@
 /* Header right list */
 .header-right li {
     list-style: none;
+    flex-shrink: 0;
 }
 
 /* Salary Calculator & PF Form links */
 .header-right li a {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
+    gap: 6px;
+    padding: 8px 12px;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     text-decoration: none;
     transition: all 0.3s ease;
@@ -467,15 +446,16 @@
 #excelUploadBtn {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     padding: 8px 12px;
     border-radius: 8px;
     background: #e9f7ef;
     border: 1px solid #2eacb3;
     color: #2eacb3;
-    font-size: 14px;
+    font-size: 13px;
     cursor: pointer;
     transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
 /* Excel icon */
@@ -664,15 +644,17 @@
     /* GLOBAL SEARCH */
 .global-search {
     position: relative;
-    width: 300px;
+    width: 280px;
+    flex-shrink: 1;
+    min-width: 0;
 }
 
 .global-search input {
     width: 100%;
-    padding: 10px 40px 10px 40px;
+    padding: 9px 35px 9px 35px;
     border-radius: 20px;
     border: 2px solid #e1e5e9;
-    font-size: 14px;
+    font-size: 13px;
     transition: all 0.3s ease;
     background: #f8f9fa;
 }
@@ -690,14 +672,15 @@
     top: 50%;
     transform: translateY(-50%);
     color: #666;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .global-search-results {
     position: absolute;
     top: 50px;
     left: 0;
-    width: 450px;
+    width: 420px;
+    max-width: 90vw;
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 12px;
@@ -842,32 +825,30 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 8px 14px;
+    padding: 8px 12px;
     border-radius: 10px;
     background: linear-gradient(135deg, #198754, #20c997);
     color: #fff;
     text-decoration: none;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(25,135,84,0.25);
     position: relative;
     overflow: hidden;
+    white-space: nowrap;
 }
 
-/* Icon size */
 .header-icon[href*="employee/create"] i {
-    font-size: 15px;
+    font-size: 14px;
 }
 
-/* Hover effect */
 .header-icon[href*="employee/create"]:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(25,135,84,0.35);
     background: linear-gradient(135deg, #157347, #1aa179);
 }
 
-/* Active click */
 .header-icon[href*="employee/create"]:active {
     transform: scale(0.96);
 }
@@ -1000,6 +981,13 @@
 }
 
 
+@media (max-width: 768px) {
+    #fullscreenToggle {
+        display: none !important;
+    }
+}
+
+
 
 </style>
 
@@ -1077,13 +1065,6 @@ function showStatusPopup(type, title, message, details = null) {
             <i class="fa-solid fa-expand"></i>
         </button>
         
-        <!-- MOBILE LOGO -->
-        <!-- <div class="mobile-logo" style="display: none;">
-            <i class="fa-solid fa-building"></i>
-            <span>Kwikster HRMS</span>
-        </div> -->
-
-        
      
          <!-- GLOBAL SEARCH -->
 <div class="global-search">
@@ -1094,6 +1075,13 @@ function showStatusPopup(type, title, message, details = null) {
 </div>
     </div>
    
+    <!-- MOBILE LOGO CENTER -->
+    <div class="header-center">
+        <div class="mobile-logo">
+            <!-- Company Logo -->
+            <img src="{{ asset('Kwikster.jpeg') }}" alt="Kwikster Logo">
+        </div>
+    </div>
 
 <!-- EXCEL UPLOAD -->
 <div class="dropdown">
@@ -2035,10 +2023,379 @@ document.addEventListener('DOMContentLoaded', function() {
     color: #084298;
 }
 
-/* Mobile Menu Toggle Styles */
-.sidebar.sidebar-mobile-open {
-    transform: translateX(0) !important;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+/* ========================================
+   RESPONSIVE BREAKPOINTS
+======================================== */
+
+/* Mobile: 320px – 480px */
+@media (max-width: 480px) {
+    .top-header {
+        left: 0;
+        width: 100%;
+        padding: 0 8px;
+        height: 55px;
+        justify-content: space-between;
+    }
+    
+    .menu-btn {
+        display: flex;
+        font-size: 20px;
+        padding: 6px;
+    }
+    
+    .header-left {
+        gap: 0;
+        flex: 0;
+    }
+    
+    .header-center {
+        display: flex;
+        flex: 1;
+    }
+    
+    .header-center .mobile-logo {
+        font-size: 14px;
+    }
+    
+    .header-center .mobile-logo i {
+        font-size: 18px;
+    }
+    
+    .header-center .mobile-logo img {
+        height: 43px;
+        width: 190px;
+    }
+    
+    .header-right {
+        gap: 6px;
+        flex: 0;
+    }
+    
+    .global-search {
+        display: none;
+    }
+    
+    .header-right li {
+        display: none;
+    }
+    
+    #fullscreenToggle {
+        display: none;
+    }
+    
+    #excelUploadBtn {
+        display: flex;
+        font-size: 20px;
+        padding: 6px;
+    }
+    
+    #excelUploadBtn span {
+        display: none;
+    }
+    
+    #excelUploadBtn .fa-chevron-down {
+        display: none;
+    }
+    
+    .dropdown-menu {
+        min-width: 160px;
+        max-width: calc(100vw - 20px);
+        right: 0;
+    }
+    
+    .user-dropdown span {
+        display: none;
+    }
+    
+    .user-dropdown .fa-chevron-down {
+        display: none;
+    }
+    
+    .user-dropdown img {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .header-icon {
+        font-size: 18px;
+        padding: 6px;
+    }
+    
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 55px;
+        height: calc(100vh - 55px);
+        width: 260px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 9998;
+    }
+    
+    .sidebar.sidebar-mobile-open {
+        transform: translateX(0);
+        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding: 10px;
+    }
+}
+
+/* Large Mobile: 481px – 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+    .top-header {
+        left: 0;
+        width: 100%;
+        padding: 0 12px;
+        height: 60px;
+        justify-content: space-between;
+    }
+    
+    .menu-btn {
+        display: flex;
+        font-size: 20px;
+    }
+    
+    .header-left {
+        gap: 0;
+        flex: 0;
+    }
+    
+    .header-center {
+        display: flex;
+        flex: 1;
+    }
+    
+    .header-center .mobile-logo {
+        font-size: 16px;
+    }
+    
+    .header-center .mobile-logo i {
+        font-size: 20px;
+    }
+    
+    .header-center .mobile-logo img {
+        height: 35px;
+    }
+    
+    .header-right {
+        gap: 8px;
+        flex: 0;
+    }
+    
+    .global-search {
+        display: none;
+    }
+    
+    .header-right li {
+        display: none;
+    }
+    
+    #fullscreenToggle {
+        display: none;
+    }
+    
+    #excelUploadBtn {
+        display: flex;
+        font-size: 18px;
+        padding: 7px;
+    }
+    
+    #excelUploadBtn span {
+        display: none;
+    }
+    
+    #excelUploadBtn .fa-chevron-down {
+        display: none;
+    }
+    
+    .user-dropdown span {
+        display: none;
+    }
+    
+    .user-dropdown .fa-chevron-down {
+        display: none;
+    }
+    
+    .dropdown-menu {
+        max-width: calc(100vw - 30px);
+    }
+    
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 60px;
+        height: calc(100vh - 60px);
+        width: 260px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 9998;
+    }
+    
+    .sidebar.sidebar-mobile-open {
+        transform: translateX(0);
+        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding: 15px;
+    }
+}
+
+/* Tablet: 769px – 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .top-header {
+        left: 260px;
+        width: calc(100% - 260px);
+        padding: 0 15px;
+    }
+    
+    .menu-btn {
+        display: none;
+    }
+    
+    .header-center {
+        display: none;
+    }
+    
+    .header-left {
+        gap: 12px;
+    }
+    
+    .header-right {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .global-search {
+        width: 200px;
+    }
+    
+    .header-right li {
+        display: flex;
+    }
+    
+    .header-right li a {
+        font-size: 12px;
+        padding: 7px 10px;
+        gap: 5px;
+    }
+    
+    .header-right li a i {
+        font-size: 13px;
+    }
+    
+    #excelUploadBtn {
+        font-size: 12px;
+        padding: 7px 10px;
+    }
+    
+    #fullscreenToggle {
+        display: flex;
+    }
+}
+
+/* Laptop: 1025px – 1440px */
+@media (min-width: 1025px) and (max-width: 1440px) {
+    .top-header {
+        left: 260px;
+        width: calc(100% - 260px);
+        padding: 0 20px;
+    }
+    
+    .menu-btn {
+        display: none;
+    }
+    
+    .header-center {
+        display: none;
+    }
+    
+    .header-left {
+        gap: 15px;
+    }
+    
+    .header-right {
+        gap: 12px;
+    }
+    
+    .global-search {
+        width: 250px;
+    }
+    
+    .header-right li {
+        display: flex;
+    }
+    
+    #fullscreenToggle {
+        display: flex;
+    }
+}
+
+/* Desktop: 1441px – 1920px */
+@media (min-width: 1441px) and (max-width: 1920px) {
+    .top-header {
+        left: 260px;
+        width: calc(100% - 260px);
+        padding: 0 30px;
+    }
+    
+    .header-center {
+        display: none;
+    }
+    
+    .header-left {
+        gap: 18px;
+    }
+    
+    .header-right {
+        gap: 15px;
+    }
+    
+    .global-search {
+        width: 300px;
+    }
+    
+    .header-right li {
+        display: flex;
+    }
+}
+
+/* Large Screens: 1921px+ */
+@media (min-width: 1921px) {
+    .top-header {
+        left: 260px;
+        width: calc(100% - 260px);
+        padding: 0 40px;
+    }
+    
+    .header-center {
+        display: none;
+    }
+    
+    .header-left {
+        gap: 20px;
+    }
+    
+    .header-right {
+        gap: 18px;
+    }
+    
+    .global-search {
+        width: 350px;
+    }
+    
+    .header-right li {
+        display: flex;
+    }
+    
+    .header-right li a {
+        font-size: 14px;
+        padding: 9px 14px;
+    }
 }
 
 /* Fullscreen Mode Styles */
@@ -2052,7 +2409,7 @@ document.addEventListener('DOMContentLoaded', function() {
 .sidebar.sidebar-collapsed .submenu,
 .sidebar.sidebar-collapsed .arrow,
 .sidebar.sidebar-collapsed .float-end {
-    display: none !important;
+    display: none;
 }
 
 .sidebar.sidebar-collapsed .sidebar-header {
@@ -2078,162 +2435,18 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .sidebar.sidebar-collapsed .sidebar-menu i {
-    margin-right: 0 !important;
+    margin-right: 0;
     font-size: 22px;
-}
-
-/* Mobile responsive - hide sidebar by default on small screens */
-@media (max-width: 768px) {
-    .sidebar {
-        position: fixed;
-        left: 0;
-        top: 60px;
-        height: calc(100vh - 60px);
-        width: 260px;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        z-index: 9998;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-    
-    .sidebar.sidebar-mobile-open {
-        transform: translateX(0) !important;
-    }
-    
-    .top-header {
-        left: 0 !important;
-        width: 100% !important;
-        padding: 0 10px !important;
-        height: 50px;
-    }
-    
-    .main-content {
-        margin-left: 0 !important;
-        padding: 10px !important;
-    }
-    
-    .header-left {
-        gap: 5px !important;
-    }
-    
-    .global-search {
-        display: none !important;
-    }
-    
-    .header-right {
-        gap: 5px !important;
-    }
-    
-    .header-right li {
-        display: none !important;
-    }
-    
-    .header-right li a {
-        padding: 6px 8px !important;
-        font-size: 11px !important;
-    }
-    
-    .dropdown-menu {
-        max-width: calc(100vw - 20px) !important;
-        right: 0 !important;
-    }
-    
-    .menu-btn {
-        font-size: 16px !important;
-        padding: 4px !important;
-    }
-    
-    #excelUploadBtn {
-        
-        font-size: 12px !important;
-    }
-    
-    .dropdown-btn {
-        font-size: 14px !important;
-    }
-}
-
-/* Tablet Styles - 769px to 1024px */
-@media (min-width: 769px) and (max-width: 1024px) {
-    .sidebar {
-        width: 220px;
-    }
-    
-    .top-header {
-        left: 220px;
-        width: calc(100% - 220px);
-        padding: 0 20px;
-    }
-    
-    .main-content {
-        margin-left: 220px;
-    }
-    
-    .global-search {
-        width: 250px;
-    }
-    
-    .header-right li {
-        display: flex !important;
-    }
-    
-    .header-right li a {
-        font-size: 12px !important;
-        padding: 6px 10px !important;
-    }
-}
-
-/* Desktop Styles - 1025px and above */
-@media (min-width: 1025px) {
-    .menu-btn {
-        display: none !important;
-    }
-    
-    .mobile-logo {
-        display: none !important;
-    }
-    
-    .sidebar .mobile-header-items {
-        display: none !important;
-    }
-    
-    .header-right li {
-        display: flex !important;
-    }
-    
-    .global-search {
-        display: block !important;
-    }
 }
 
 .top-header.header-fullscreen {
     left: 70px;
     width: calc(100% - 70px);
-    transition: all 0.3s ease;
 }
 
 .main-content.content-fullscreen {
     margin-left: 70px;
     transition: margin-left 0.3s ease;
-}
-
-@media (max-width: 480px) {
-    .top-header {
-        height: 63px !important;
-    }
-    
-    .menu-btn {
-        font-size: 24px !important;
-    }
-    
-    .header-right {
-        gap: 3px !important;
-    }
-    
-    .dropdown-menu {
-        min-width: 150px !important;
-    }
 }
 </style>
 

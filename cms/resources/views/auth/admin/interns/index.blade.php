@@ -251,6 +251,125 @@
     color: #555;
 }
 
+/* ===== MAIN CONTENT FIX ===== */
+
+
+
+/* ===== CARD HEADER FIX ===== */
+
+.card-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:10px;
+}
+
+/* ===== TOP BAR ===== */
+
+.intern-top-bar{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:15px;
+flex-wrap:wrap;
+}
+
+/* ===== SEARCH BOX ===== */
+
+.search-box{
+position:relative;
+width:280px;
+}
+
+.search-box input{
+width:100%;
+padding:8px 35px 8px 35px;
+border-radius:8px;
+border:1px solid #ddd;
+font-size:14px;
+}
+
+/* ===== TABLE ===== */
+
+.table-responsive{
+overflow-x:auto;
+}
+
+.interns-table{
+width:100%;
+min-width:600px;
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+
+@media (max-width:768px){
+
+.main-contentq{
+margin-left:0 !important;
+padding:10px !important;
+}
+
+/* header safe */
+.card-header{
+flex-direction:column;
+align-items:flex-start;
+gap:10px;
+}
+
+/* top bar */
+.intern-top-bar{
+flex-direction:column;
+align-items:stretch;
+gap:10px;
+}
+
+/* search full width */
+.search-box{
+width:100%;
+}
+
+/* results center */
+.results-info{
+text-align:center;
+}
+
+/* buttons small */
+.whatsapp-btn,
+.location-btn{
+padding:6px 8px;
+font-size:12px;
+}
+
+/* dropdown small */
+.status-select{
+font-size:12px;
+padding:4px;
+}
+
+/* table text small */
+.interns-table th,
+.interns-table td{
+font-size:12px;
+padding:6px;
+}
+
+}
+
+/* ===== SMALL PHONE ===== */
+
+@media (max-width:480px){
+
+.interns-table{
+min-width:520px;
+}
+
+.search-box input{
+font-size:13px;
+}
+
+}
+
    
 </style>
 @endsection

@@ -119,10 +119,45 @@
 </style>
 <style>
     /* 5 Columns Equal Width */
-.journey-wrapper {
+    .journey-wrapper {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 12px;
+}
+
+/* Tablet */
+@media (max-width: 1200px) {
+.journey-wrapper {
+    grid-template-columns: repeat(3, 1fr);
+}
+}
+
+/* Small Tablet */
+@media (max-width: 992px) {
+.journey-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+}
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+.journey-wrapper {
+    grid-template-columns: 1fr;
+}
+}
+/* Mobile fix */
+@media (max-width:768px){
+
+.main-content{
+padding-left:0;
+display:flex;
+justify-content:center;
+}
+
+.container-fluid{
+max-width:420px;
+}
+
 }
 
 /* Column Safe Width */

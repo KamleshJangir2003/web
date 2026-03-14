@@ -22,6 +22,17 @@
     border-radius: 4px;
     font-weight: 500;
 }
+
+    /* Mobile Fix */
+    @media (max-width:768px){
+
+.main-content{
+margin-left:0 !important;
+padding-top:0px !important;
+margin-top:20px !important;
+}
+
+}
 </style>
 
 @section('content')

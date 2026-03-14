@@ -63,6 +63,17 @@
     font-size: 12px;
     padding: 6px 12px;
 }
+
+/* Mobile Fix */
+@media (max-width:768px){
+
+.main-content{
+margin-left:0 !important;
+padding-top:0px !important;
+margin-top:0px !important;
+}
+
+}
 </style>
 
 <div class="dashboard-wrapper">

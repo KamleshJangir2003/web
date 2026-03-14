@@ -28,6 +28,11 @@
 .letter-full-content * {
     max-width: 100%;
 }
+
+
+
+
+
 </style>
 
 <div class="admin-letters-content">

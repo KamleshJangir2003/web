@@ -181,6 +181,17 @@
     align-items: center;
 
 }
+
+    /* Mobile Fix */
+    @media (max-width:768px){
+
+.main-content{
+margin-left:0 !important;
+padding-top:20px !important;
+margin-top:20px !important;
+}
+
+}
 </style>
 
 <div class="main-content">

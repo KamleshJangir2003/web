@@ -1,5 +1,24 @@
 @extends('auth.layouts.app')
+<style>
+ .main-content{
 
+padding-top:0 !important;
+
+}
+
+/* Mobile Fix */
+@media (max-width:768px){
+
+.main-content{
+margin-left:0 !important;
+padding-top:10px !important;
+margin-top:20px !important;
+}
+
+}
+
+
+</style>
 @section('title', 'Admin Settings')
 
 @section('content')
@@ -8,7 +27,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-header">
-                    <h1><i class="fa-solid fa-cog"></i> Settings</h1>
+                    <h3><i class="fa-solid fa-cog"></i> Settings</h1>
                 </div>
             </div>
         </div>

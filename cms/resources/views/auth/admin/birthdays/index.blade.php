@@ -128,6 +128,18 @@
     border-radius: 10px;
     margin-bottom: 15px;
 }
+
+
+/* Mobile Fix */
+@media (max-width:768px){
+
+.main-content{
+margin-left:0 !important;
+padding-top:0px !important;
+margin-top:20px !important;
+}
+
+}
 </style>
 
 <div class="dashboard-wrapper">

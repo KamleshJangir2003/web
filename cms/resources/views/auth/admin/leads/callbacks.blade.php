@@ -219,7 +219,101 @@
     color: #fff;
 }
 
+  /* ===============================
+   MOBILE VIEW (CARD LAYOUT)
+================================ */
 
+@media (max-width:768px){
+
+/* sidebar fix */
+.content,
+.content-wrapper,
+.page-content,
+.container-fluid{
+margin-left:0 !important;
+width:100% !important;
+max-width:100% !important;
+}
+
+.main-content{
+padding:15px;
+}
+
+/* hide table header */
+.leads-table thead{
+display:none;
+}
+
+/* row becomes card */
+.leads-table tr{
+display:block;
+background:#fff;
+border-radius:12px;
+padding:15px;
+margin-bottom:15px;
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* each field row */
+.leads-table td{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+padding:8px 0;
+border-bottom:1px solid #f1f1f1;
+font-size:13px;
+}
+
+/* last border remove */
+.leads-table td:last-child{
+border-bottom:none;
+}
+
+/* labels */
+.leads-table td::before{
+font-weight:600;
+color:#444;
+min-width:110px;
+}
+
+.leads-table td:nth-child(1)::before{content:"Name";}
+.leads-table td:nth-child(2)::before{content:"Number";}
+.leads-table td:nth-child(3)::before{content:"Role";}
+.leads-table td:nth-child(4)::before{content:"Callback";}
+.leads-table td:nth-child(5)::before{content:"Status";}
+.leads-table td:nth-child(6)::before{content:"Notes";}
+.leads-table td:nth-child(7)::before{content:"WhatsApp";}
+.leads-table td:nth-child(8)::before{content:"Action";}
+
+/* inputs full width */
+.leads-table input,
+.leads-table select,
+.leads-table textarea{
+width:60%;
+}
+
+/* textarea fix */
+.callback-notes{
+width:60%;
+}
+
+/* whatsapp button */
+.whatsapp-btn{
+width:34px;
+height:34px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+/* action button */
+.leads-table td:last-child{
+justify-content:flex-start;
+gap:10px;
+}
+
+}
 </style>
 @section('content')
 <div class="main-content">
