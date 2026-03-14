@@ -987,7 +987,15 @@
     }
 }
 
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:15px;   /* spacing */
+}
 
+.header-right li{
+    list-style:none;
+}
 
 </style>
 
@@ -1084,7 +1092,13 @@ function showStatusPopup(type, title, message, details = null) {
     </div>
 
 <!-- EXCEL UPLOAD -->
-<div class="dropdown">
+
+
+
+
+
+    <div class="header-right">
+    <div class="dropdown">
             <input type="file" id="excelFileInput" accept=".xlsx,.xls,.csv" style="display: none;">
             <button class="header-icon dropdown-btn" id="excelUploadBtn" title="Upload Excel">
     <i class="fa-solid fa-file-excel"></i>
@@ -1176,11 +1190,6 @@ function showStatusPopup(type, title, message, details = null) {
 </ul>
 
         </div>
-
-
-
-
-    <div class="header-right">
         <!-- <li>
     <a href="{{ route('admin.employee.create') }}" class="header-icon" title="Add Employee">
         <i class="fa-solid fa-user-plus"></i>
@@ -2323,7 +2332,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     .global-search {
-        width: 250px;
+        width: 350px;
     }
     
     .header-right li {
