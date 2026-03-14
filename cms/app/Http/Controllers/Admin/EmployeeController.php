@@ -17,9 +17,8 @@ class EmployeeController extends Controller
     public function index(Request $request)
     {
         $query = Employee::where('user_type', '!=', 'admin')
-        ->where('hired_status', 'hired')
-        ->whereNotNull('joining_date')
-        ->whereRaw('DATE_ADD(joining_date, INTERVAL certification_period DAY) <= CURDATE()');
+            ->where('hired_status', 'hired')
+            ->whereNotNull('joining_date');
         // Combined role and platform filtering
         if ($request->has('role') && $request->role) {
             $query->where('user_type', $request->role);
@@ -29,15 +28,49 @@ class EmployeeController extends Controller
             $query->where('platform', $request->platform);
         }
         
-        // If both role and platform are provided, filter by both
-        if ($request->has('role') && $request->has('platform') && $request->role && $request->platform) {
-            $query->where('user_type', $request->role)
-                  ->where('platform', $request->platform);
-        }
-        
         $employees = $query->orderBy('first_name')->get();
         
         return view('auth.admin.employees.index', compact('employees'));
+    }
+
+    public function getEmployeesData()
+    {
+        $employees = Employee::where('user_type', '!=', 'admin')
+                        ->where('action_status', 'selected')
+                        ->where('hired_status', 'hired')
+                        ->orderBy('first_name')
+                        ->get();
+        
+        return response()->json(['employees' => $employees]);
+    }
+
+    public function showDetails($id)
+    {
+        $employee = Employee::findOrFail($id);
+        return view('auth.admin.employees.employee-details', compact('employee'));
+    }
+
+    public function profiles(Request $request)
+    {
+       $query = Employee::where('user_type', '!=', 'admin')
+        ->where('hired_status', 'hired')
+        ->where('employee_status', 'active')
+        ->whereNotNull('joining_date');
+        
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"])
+                  ->orWhere('email', 'LIKE', "%{$search}%")
+                  ->orWhere('department', 'LIKE', "%{$search}%")
+                  ->orWhere('contact_number', 'LIKE', "%{$search}%")
+                  ->orWhere('phone', 'LIKE', "%{$search}%");
+            });
+        }
+        
+        $employees = $query->orderBy('first_name')->paginate(10);
+        
+        return view('auth.admin.employees.profiles', compact('employees'));
     }
 
     public function create()
@@ -229,46 +262,7 @@ class EmployeeController extends Controller
         return redirect()->route('admin.employees.index')->with('success', 'Employee deleted successfully!');
     }
 
-    public function getEmployeesData()
-    {
-        $employees = Employee::where('user_type', '!=', 'admin')
-                        ->where('action_status', 'selected')
-                        ->where('hired_status', 'hired')
-                        ->orderBy('first_name')
-                        ->get();
-        
-        return response()->json(['employees' => $employees]);
-    }
 
-    public function showDetails($id)
-    {
-        $employee = Employee::findOrFail($id);
-        return view('auth.admin.employees.employee-details', compact('employee'));
-    }
-
-    public function profiles(Request $request)
-    {
-       $query = Employee::where('user_type', '!=', 'admin')
-        ->where('hired_status', 'hired')
-        ->where('employee_status', 'active')
-        ->whereNotNull('joining_date')
-        ->whereRaw('DATE_ADD(joining_date, INTERVAL certification_period DAY) <= CURDATE()');
-        
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"])
-                  ->orWhere('email', 'LIKE', "%{$search}%")
-                  ->orWhere('department', 'LIKE', "%{$search}%")
-                  ->orWhere('contact_number', 'LIKE', "%{$search}%")
-                  ->orWhere('phone', 'LIKE', "%{$search}%");
-            });
-        }
-        
-        $employees = $query->orderBy('first_name')->paginate(10);
-        
-        return view('auth.admin.employees.profiles', compact('employees'));
-    }
 
     public function employeeList()
     {
