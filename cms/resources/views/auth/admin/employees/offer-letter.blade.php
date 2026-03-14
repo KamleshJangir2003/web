@@ -104,7 +104,7 @@ $annualCTC = round($monthlyCTC * 12, 2);
 
         @if($netPay > 0)
 <p class="ctc-highlight">
-    Your Monthly Total CTC will be ₹{{ number_format($annualCTC, 0) }}.
+    Your Annual Total CTC will be ₹{{ number_format($annualCTC, 0) }}.
 </p>
 @endif
 

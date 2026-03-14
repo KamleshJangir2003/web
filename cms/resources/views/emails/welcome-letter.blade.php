@@ -25,9 +25,9 @@
 
             <p><strong>Your Details:</strong></p>
             <ul>
-                <li><strong>Position:</strong> {{ $employee->job_title ?? 'Employee' }}</li>
+                <li><strong>Position:</strong> {{ $employee->department}}</li>
                 <li><strong>Joining Date:</strong> {{ $employee->joining_date ? $employee->joining_date->format('jS F Y') : 'N/A' }}</li>
-                <li><strong>Annual CTC:</strong> ₹{{ number_format($employee->current_ctc ?? 0, 0) }}</li>
+                <li><strong>Monthly CTC:</strong> ₹{{ number_format($employee->current_ctc ?? 0, 0) }}</li>
             </ul>
 
             <p>We are excited to have you on board and look forward to your valuable contributions to our organization.</p>
