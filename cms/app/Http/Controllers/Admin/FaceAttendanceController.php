@@ -23,7 +23,9 @@ class FaceAttendanceController extends Controller
 
     public function register()
     {
-        $employees = Employee::where('hired_status', 'hired')->get();
+        $employees = Employee::where('hired_status', 'hired')
+            ->where('employee_status', 'active')
+            ->get();
     
         return view('admin.face-attendance.register', compact('employees'));
     }
@@ -82,6 +84,7 @@ class FaceAttendanceController extends Controller
             \Log::info('getAllFaceData called');
             $employees = Employee::whereNotNull('face_data')
                 ->where('face_data', '!=', '')
+                ->where('employee_status', 'active')
                 ->get(['id', 'employee_id', 'first_name', 'last_name', 'face_data'])
                 ->map(function($emp) {
                     return [
@@ -118,6 +121,7 @@ class FaceAttendanceController extends Controller
         try {
             $employees = Employee::whereNotNull('face_data')
                 ->where('face_data', '!=', '')
+                ->where('employee_status', 'active')
                 ->get(['id', 'employee_id', 'first_name', 'last_name', 'face_data'])
                 ->map(function($emp) {
                     return [

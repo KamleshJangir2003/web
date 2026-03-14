@@ -18,7 +18,6 @@ class EmployeeController extends Controller
     {
         $query = Employee::where('user_type', '!=', 'admin')
         ->where('hired_status', 'hired')
-        ->where('employee_status', 'active')
         ->whereNotNull('joining_date')
         ->whereRaw('DATE_ADD(joining_date, INTERVAL certification_period DAY) <= CURDATE()');
         // Combined role and platform filtering
