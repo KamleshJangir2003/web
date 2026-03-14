@@ -728,4 +728,76 @@ EmailLog::create([
         return redirect()->route('admin.employees.hired.index')
             ->with('success', 'Employee rehired successfully with new joining date!');
     }
+
+    /* =====================================================
+       REJECT EMPLOYEE (No documents submitted)
+    ===================================================== */
+    public function rejectEmployee(Request $request, $id)
+    {
+        $request->validate([
+            'rejection_reason' => 'required|string|min:10|max:500'
+        ]);
+
+        $employee = Employee::findOrFail($id);
+
+        try {
+            $employee->update([
+                'action_status' => 'rejected',
+                'action_reason' => $request->rejection_reason,
+                'is_interview_candidate' => false,
+                'hired_status' => 'rejected'
+            ]);
+
+            $emailContent = view('emails.rejection-letter', [
+                'employee' => $employee,
+                'reason' => $request->rejection_reason
+            ])->render();
+
+            Mail::to($employee->email)->send(new \App\Mail\RejectionMail($employee, $request->rejection_reason));
+
+            EmailLog::create([
+                'to_email' => $employee->email,
+                'subject' => 'Application Status - ' . $employee->full_name,
+                'content' => $emailContent,
+                'sent_at' => now(),
+                'status' => 'sent'
+            ]);
+
+            return redirect()->route('admin.employees.rejected.index')
+                ->with('success', 'Employee rejected successfully. Rejection email sent to ' . $employee->email);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error rejecting employee: ' . $e->getMessage());
+        }
+    }
+
+    /* =====================================================
+       REJECTED EMPLOYEES INDEX
+    ===================================================== */
+    public function rejectedEmployeesIndex()
+    {
+        $rejectedEmployees = Employee::where('user_type', 'employee')
+            ->where('action_status', 'rejected')
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        return view('auth.admin.employees.rejected_index', compact('rejectedEmployees'));
+    }
+
+    /* =====================================================
+       REHIRE FROM REJECTED
+    ===================================================== */
+    public function rehireFromRejected($id)
+    {
+        $employee = Employee::findOrFail($id);
+        
+        $employee->update([
+            'action_status' => 'selected',
+            'action_reason' => null,
+            'is_interview_candidate' => true,
+            'hired_status' => 'not_hired'
+        ]);
+
+        return redirect()->route('admin.employees.documents.index')
+            ->with('success', 'Employee rehired successfully and moved back to documents pending list!');
+    }
 }

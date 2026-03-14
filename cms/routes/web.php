@@ -54,6 +54,12 @@ Route::middleware(['auth'])->prefix('employee')->name('employee.')->group(functi
 |--------------------------------------------------------------------------
 */
 Route::get(
+    '/admin/employees/rejected',
+    [EmployeeDocumentController::class, 'rejectedEmployeesIndex']
+)->middleware(['auth', 'check.user.type:admin'])
+ ->name('admin.employees.rejected.index');
+
+Route::get(
     '/admin/employees/hired',
     [EmployeeDocumentController::class, 'hiredEmployeesIndex']
 )->middleware(['auth', 'check.user.type:admin'])
@@ -124,6 +130,18 @@ Route::patch(
     [EmployeeDocumentController::class, 'rehireEmployee']
 )->middleware(['auth', 'check.user.type:admin'])
  ->name('admin.employees.rehire');
+
+Route::patch(
+    '/admin/employees/{id}/reject',
+    [EmployeeDocumentController::class, 'rejectEmployee']
+)->middleware(['auth', 'check.user.type:admin'])
+ ->name('admin.employees.reject');
+
+Route::patch(
+    '/admin/employees/{id}/rehire-from-rejected',
+    [EmployeeDocumentController::class, 'rehireFromRejected']
+)->middleware(['auth', 'check.user.type:admin'])
+ ->name('admin.employees.rehire-from-rejected');
 
 // Test route for offer letter
 Route::get('/test-offer-letter/{userId}', function($userId) {
@@ -773,6 +791,9 @@ include __DIR__ . '/test-salary.php';
 
 /*------debug gender--------*/
 include __DIR__ . '/debug.php';
+
+/*------debug rejected employees--------*/
+include __DIR__ . '/debug-rejected.php';
 
 /*
 |--------------------------------------------------------------------------

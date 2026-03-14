@@ -435,6 +435,13 @@
                 <span>Rejected Interview</span>
             </a>
         </li>
+
+        <li>
+            <a href="{{ route('admin.employees.rejected.index') }}">
+                <i class="fa-solid fa-user-slash"></i>
+                <span>Rejected Employees</span>
+            </a>
+        </li>
     </ul>
 </li>
 

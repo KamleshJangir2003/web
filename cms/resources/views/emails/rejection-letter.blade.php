@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Offer Letter - Kwikster</title>
+    <title>Application Status - Kwikster</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -22,7 +22,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         .header {
-            background: linear-gradient(135deg, #2eacb3 0%, #0056b3 100%);
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
             color: white;
             padding: 50px 40px;
             text-align: center;
@@ -38,7 +38,7 @@
             height: 0;
             border-left: 20px solid transparent;
             border-right: 20px solid transparent;
-            border-top: 20px solid #0056b3;
+            border-top: 20px solid #c82333;
         }
         .company-name {
             font-size: 28px;
@@ -54,73 +54,80 @@
         .content {
             padding: 50px 40px;
         }
-        .congratulations {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .congratulations h2 {
-            font-size: 32px;
-            color: #2eacb3;
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-        .congratulations .emoji {
-            font-size: 48px;
-            margin-bottom: 20px;
-            display: block;
-        }
-        .intro-text {
+        .greeting {
             font-size: 18px;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
             color: #34495e;
-            text-align: center;
-            line-height: 1.8;
         }
-        .offer-details {
-            background: linear-gradient(135deg, #e7f3ff 0%, #cce7ff 100%);
-            padding: 35px;
+        .status-box {
+            background: #ffe6e6;
+            padding: 30px;
             border-radius: 12px;
             margin: 30px 0;
-            border: 1px solid #2eacb3;
-        }
-        .offer-details h3 {
-            color: #2eacb3;
-            font-size: 22px;
-            margin-bottom: 25px;
+            border: 2px solid #dc3545;
             text-align: center;
-            font-weight: 600;
         }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .status-box h2 {
+            color: #dc3545;
+            font-size: 28px;
             margin-bottom: 15px;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(0,123,255,0.1);
-        }
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-        .detail-label {
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 16px;
-        }
-        .detail-value {
             font-weight: 700;
-            color: #2eacb3;
-            font-size: 16px;
         }
-        .instructions {
-            background: #fff8e1;
+        .status-box p {
+            font-size: 16px;
+            color: #721c24;
+        }
+        .reason-section {
+            background: #f8f9fa;
             padding: 25px;
             border-radius: 12px;
             margin: 30px 0;
-            border-left: 5px solid #ffc107;
+            border-left: 5px solid #dc3545;
         }
-        .instructions p {
+        .reason-section h3 {
+            color: #dc3545;
+            font-size: 18px;
             margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .reason-text {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
             font-size: 16px;
+            line-height: 1.8;
+            color: #2c3e50;
+            border: 1px solid #dee2e6;
+        }
+        .next-steps {
+            background: #e7f3ff;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 30px 0;
+            border-left: 5px solid #0056b3;
+        }
+        .next-steps h3 {
+            color: #0056b3;
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .next-steps ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .next-steps li {
+            margin-bottom: 12px;
+            padding-left: 25px;
+            position: relative;
+            font-size: 16px;
+        }
+        .next-steps li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #0056b3;
+            font-weight: bold;
         }
         .contact-info {
             background: #f8f9fa;
@@ -134,7 +141,7 @@
             font-size: 16px;
         }
         .contact-info a {
-            color: #2eacb3;
+            color: #0056b3;
             text-decoration: none;
             font-weight: 600;
         }
@@ -143,12 +150,11 @@
         }
         .closing {
             text-align: center;
-            font-size: 18px;
-            font-weight: 600;
-            color: #27ae60;
+            font-size: 16px;
+            color: #34495e;
             margin: 35px 0;
             padding: 25px;
-            background: #e8f5e8;
+            background: #f8f9fa;
             border-radius: 12px;
         }
         .footer {
@@ -175,9 +181,8 @@
             .email-container { margin: 10px; border-radius: 12px; }
             .header { padding: 30px 20px; }
             .content { padding: 30px 25px; }
-            .offer-details, .instructions, .contact-info { padding: 20px; }
-            .detail-row { flex-direction: column; align-items: flex-start; gap: 5px; }
-            .congratulations h2 { font-size: 24px; }
+            .status-box, .reason-section, .next-steps, .contact-info { padding: 20px; }
+            .status-box h2 { font-size: 24px; }
             .company-name { font-size: 22px; }
         }
     </style>
@@ -185,9 +190,6 @@
 <body>
     <div class="email-container">
         <div class="header">
-            <div style="text-align:center; margin-bottom:20px;">
-                <img src="{{ asset('Kwikster.jpeg') }}" alt="Kwikster Logo" style="height:80px;">
-            </div>
             <div class="company-name">Kwikster Innovative Optimisations Pvt Ltd</div>
             <div class="company-address">
                 21/281, Kaveri path, Madhyam Marg Road<br>
@@ -196,46 +198,39 @@
         </div>
 
         <div class="content">
-            <div class="congratulations">
-                <span class="emoji">🎉</span>
-                <h2>Congratulations {{ $employee->first_name }}!</h2>
+            <div class="greeting">
+                Dear {{ $employee->first_name }},
             </div>
-            
-            <div class="intro-text">
-                We are delighted to inform you that your offer letter has been generated and is attached to this email. Welcome to the Kwikster family!
+
+            <div class="status-box">
+                <h2>Application Status Update</h2>
+                <p>We regret to inform you that your application has not been selected at this time.</p>
             </div>
-            
-            <div class="offer-details">
-                <h3>💼 Position Details</h3>
-                <div class="detail-row">
-                    <span class="detail-label">🎯 Position:</span>
-                    <span class="detail-value">{{ $employee->department ?? 'Lead Generation Executive' }}</span>
-                </div>
-                @if($employee->current_ctc)
-                <div class="detail-row">
-                    <span class="detail-label">💰 Monthly CTC:</span>
-                    <span class="detail-value">₹{{ number_format($employee->current_ctc, 0) }}</span>
-                </div>
-                @endif
-                <div class="detail-row">
-                    <span class="detail-label">📅 Joining Date:</span>
-                    <span class="detail-value">{{ $employee->joining_date ? $employee->joining_date->format('jS F, Y') : 'To be confirmed' }}</span>
+
+            <div class="reason-section">
+                <h3>📋 Reason for Decision</h3>
+                <div class="reason-text">
+                    {{ $reason }}
                 </div>
             </div>
 
-            <div class="instructions">
-                <p><strong>📝 Important:</strong> Please review the attached offer letter carefully and respond within <strong>7 days</strong> of receiving this email.</p>
-                <p>Your prompt response will help us proceed with the onboarding process smoothly.</p>
+            <div class="next-steps">
+                <h3>💡 What's Next?</h3>
+                <ul>
+                    <li>We appreciate your interest in joining Kwikster</li>
+                    <li>Feel free to apply for other positions in the future</li>
+                    <li>Keep an eye on our careers page for new opportunities</li>
+                    <li>We wish you the best in your career endeavors</li>
+                </ul>
             </div>
 
             <div class="contact-info">
-                <p><strong>📧 Questions or Concerns?</strong></p>
-                <p>Feel free to contact our HR team at <a href="mailto:hr@thekwikster.com">hr@thekwikster.com</a></p>
-                <p>We're here to help and answer any questions you may have.</p>
+                <p><strong>📧 Have Questions?</strong></p>
+                <p>If you have any questions regarding this decision, please feel free to contact our HR team at <a href="mailto:hr@thekwikster.com">hr@thekwikster.com</a></p>
             </div>
 
             <div class="closing">
-                🎆 We look forward to welcoming you to our team and starting this exciting journey together!
+                Thank you for considering Kwikster as your career destination. We wish you all the best!
             </div>
         </div>
 
@@ -245,7 +240,7 @@
                 <p><strong>HR Team</strong></p>
                 <p><strong>Kwikster Innovative Optimisations Pvt Ltd</strong></p>
             </div>
-            
+
             <div class="footer-note">
                 <p>This is an automated email. Please do not reply to this email address.</p>
                 <p>For any queries, please contact us at hr@thekwikster.com</p>

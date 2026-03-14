@@ -15,7 +15,7 @@ return new class extends Migration
             $table->enum('induction_round', ['yes', 'no'])->nullable()->after('hired_status');
             $table->enum('training', ['yes', 'no'])->nullable()->after('induction_round');
             $table->integer('certification_period')->default(5)->after('training');
-            $table->enum('action_status', ['selected', 'not_selected', 'reason'])->nullable()->after('certification_period');
+            $table->enum('action_status', ['selected', 'not_selected', 'reason', 'rejected'])->nullable()->after('certification_period');
             $table->text('action_reason')->nullable()->after('action_status');
         });
     }
