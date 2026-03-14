@@ -100,7 +100,7 @@
         }
     @endphp
     @if($logo)
-        <img src="{{ $logo }}" style="height:80px;">
+        <img src="{{ $logo }}" style="height:81px;">
     @endif
     </div>
             <h2>KWIKSTER INNOVATIVE OPTIMISATIONS PVT LTD</h2>
