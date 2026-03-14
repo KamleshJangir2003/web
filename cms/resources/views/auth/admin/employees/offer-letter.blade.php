@@ -104,7 +104,7 @@ $annualCTC = round($monthlyCTC * 12, 2);
 
         @if($netPay > 0)
 <p class="ctc-highlight">
-    Your Annual Total CTC will be ₹{{ number_format($annualCTC, 0) }}.
+    Your Monthly Total CTC will be ₹{{ number_format($annualCTC, 0) }}.
 </p>
 @endif
 
@@ -155,7 +155,7 @@ $annualCTC = round($monthlyCTC * 12, 2);
     <!-- Signature -->
     <div class="signature-section">
         <p>
-            Vishwash Agarwal<br>
+        Jayshika Hr<br>
             Director<br>
             Kwikster Innovative Optimisations Pvt Ltd
         </p>

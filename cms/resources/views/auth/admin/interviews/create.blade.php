@@ -20,15 +20,7 @@
         </a>
     </div>
 
-    @if($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+
 
     <div class="container">
         <form action="{{ route('admin.interviews.store') }}" method="POST" autocomplete="off">
@@ -53,7 +45,10 @@
                         </div>
                         <div class="col">
                             <label>Email</label>
-                            <input type="email" name="candidate_email" value="{{ $lead->email ?? ($interview->candidate_email ?? '') }}" required autocomplete="off">
+                            <input type="email" name="candidate_email" value="{{ old('candidate_email', $lead->email ?? ($interview->candidate_email ?? '')) }}" required autocomplete="off" class="@error('candidate_email') input-error @enderror">
+                            @error('candidate_email')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="col">
                             <label>Job Role</label>
@@ -81,7 +76,10 @@
                         </div>
                         <div class="col">
                             <label>Email</label>
-                            <input type="email" name="candidate_email" id="candidate_email" required autocomplete="off">
+                            <input type="email" name="candidate_email" id="candidate_email" value="{{ old('candidate_email') }}" required autocomplete="off" class="@error('candidate_email') input-error @enderror">
+                            @error('candidate_email')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
                         </div>
                     @endif
                 </div>
@@ -93,24 +91,36 @@
 
                 <label>Interview Round</label>
                 <div class="radio-group">
-                    <label><input type="radio" name="interview_round" value="HR" {{ ($nextRound == 'HR' || (isset($interview) && $interview->interview_round == 'HR')) ? 'checked' : '' }} required> HR</label>
-                    <label><input type="radio" name="interview_round" value="Technical" {{ ($nextRound == 'Technical' || (isset($interview) && $interview->interview_round == 'Technical')) ? 'checked' : '' }} required> Technical</label>
-                    <label><input type="radio" name="interview_round" value="Manager" {{ ($nextRound == 'Manager' || (isset($interview) && $interview->interview_round == 'Manager')) ? 'checked' : '' }} required> Manager</label>
-                    <label><input type="radio" name="interview_round" value="Final" {{ ($nextRound == 'Final' || (isset($interview) && $interview->interview_round == 'Final')) ? 'checked' : '' }} required> Final</label>
+                    <label><input type="radio" name="interview_round" value="HR" {{ old('interview_round', $nextRound ?? ($interview->interview_round ?? '')) == 'HR' ? 'checked' : '' }} required> HR</label>
+                    <label><input type="radio" name="interview_round" value="Technical" {{ old('interview_round', $nextRound ?? ($interview->interview_round ?? '')) == 'Technical' ? 'checked' : '' }} required> Technical</label>
+                    <label><input type="radio" name="interview_round" value="Manager" {{ old('interview_round', $nextRound ?? ($interview->interview_round ?? '')) == 'Manager' ? 'checked' : '' }} required> Manager</label>
+                    <label><input type="radio" name="interview_round" value="Final" {{ old('interview_round', $nextRound ?? ($interview->interview_round ?? '')) == 'Final' ? 'checked' : '' }} required> Final</label>
                 </div>
+                @error('interview_round')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
 
                 <div class="row" style="margin-top:15px;">
                     <div class="col">
                         <label>Interview Date</label>
-                        <input type="date" name="interview_date" value="{{ isset($interview) ? $interview->interview_date->format('Y-m-d') : '' }}" required min="{{ date('Y-m-d') }}" autocomplete="off">
+                        <input type="date" name="interview_date" value="{{ old('interview_date', isset($interview) ? $interview->interview_date->format('Y-m-d') : '') }}" required min="{{ date('Y-m-d') }}" autocomplete="off" class="@error('interview_date') input-error @enderror">
+                        @error('interview_date')
+                            <span class="error-message">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="col">
                         <label>Start Time</label>
-                        <input type="time" name="start_time" value="{{ isset($interview) ? date('H:i', strtotime($interview->start_time)) : '' }}" required autocomplete="off">
+                        <input type="time" name="start_time" value="{{ old('start_time', isset($interview) ? date('H:i', strtotime($interview->start_time)) : '') }}" required autocomplete="off" class="@error('start_time') input-error @enderror">
+                        @error('start_time')
+                            <span class="error-message">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="col">
                         <label>End Time</label>
-                        <input type="time" name="end_time" value="{{ isset($interview) ? date('H:i', strtotime($interview->end_time)) : '' }}" required autocomplete="off">
+                        <input type="time" name="end_time" value="{{ old('end_time', isset($interview) ? date('H:i', strtotime($interview->end_time)) : '') }}" required autocomplete="off" class="@error('end_time') input-error @enderror">
+                        @error('end_time')
+                            <span class="error-message">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
 
@@ -118,10 +128,10 @@
                     <div class="col">
                         <label>Interviewer</label>
                         <div style="display: flex; gap: 5px;">
-                            <select name="interviewer" id="interviewer_select" required style="flex: 1;" onchange="updateInterviewerInfo(this)" autocomplete="off">
+                            <select name="interviewer" id="interviewer_select" required style="flex: 1;" onchange="updateInterviewerInfo(this)" autocomplete="off" class="@error('interviewer') input-error @enderror">
                                 <option value="">Select Interviewer</option>
                                 @foreach($interviewers as $interviewer)
-                                    <option value="{{ $interviewer['name'] }}" data-email="{{ $interviewer['email'] }}" data-phone="{{ $interviewer['phone'] }}">{{ $interviewer['name'] }}</option>
+                                    <option value="{{ $interviewer['name'] }}" data-email="{{ $interviewer['email'] }}" data-phone="{{ $interviewer['phone'] }}" {{ old('interviewer') == $interviewer['name'] ? 'selected' : '' }}>{{ $interviewer['name'] }}</option>
                                 @endforeach
                             </select>
                             <button type="button" onclick="toggleAddInterviewer()" style="padding: 8px 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">+</button>
@@ -130,25 +140,37 @@
                         <input type="email" id="new_interviewer_email" placeholder="Enter email" style="margin-top: 5px; display: none;">
                         <input type="tel" id="new_interviewer_phone" placeholder="Enter phone" style="margin-top: 5px; display: none;">
                         <button type="button" id="save_interviewer_btn" onclick="saveNewInterviewer()" style="margin-top: 5px; display: none; padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">Save Interviewer</button>
+                        @error('interviewer')
+                            <span class="error-message">{{ $message }}</span>
+                        @enderror
                     </div>
                     
                     <div class="col">
                         <label>Interviewer Email</label>
-                        <input type="email" name="interviewer_email" required placeholder="interviewer@company.com" autocomplete="off">
+                        <input type="email" name="interviewer_email" value="{{ old('interviewer_email') }}" required placeholder="interviewer@company.com" autocomplete="off" class="@error('interviewer_email') input-error @enderror">
+                        @error('interviewer_email')
+                            <span class="error-message">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="col">
                         <label>Interviewer Phone</label>
-                        <input type="tel" name="interviewer_phone" required placeholder="+91 9876543210" autocomplete="off">
+                        <input type="tel" name="interviewer_phone" value="{{ old('interviewer_phone') }}" required placeholder="+91 9876543210" autocomplete="off" class="@error('interviewer_phone') input-error @enderror">
+                        @error('interviewer_phone')
+                            <span class="error-message">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
 
                 <div class="row" style="margin-top:15px;">
                     <div class="col">
                         <label>Interview Mode</label>
-                        <select name="interview_mode" required onchange="toggleMeetingSection(this.value)">
-                            <option value="Online" {{ (isset($interview) && $interview->interview_mode == 'Online') ? 'selected' : '' }}>Online</option>
-                            <option value="Offline" {{ (isset($interview) && $interview->interview_mode == 'Offline') ? 'selected' : '' }}>Offline</option>
+                        <select name="interview_mode" required onchange="toggleMeetingSection(this.value)" class="@error('interview_mode') input-error @enderror">
+                            <option value="Online" {{ old('interview_mode', isset($interview) ? $interview->interview_mode : '') == 'Online' ? 'selected' : '' }}>Online</option>
+                            <option value="Offline" {{ old('interview_mode', isset($interview) ? $interview->interview_mode : '') == 'Offline' ? 'selected' : '' }}>Offline</option>
                         </select>
+                        @error('interview_mode')
+                            <span class="error-message">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -159,15 +181,21 @@
 
                 <label>Meeting Platform</label>
                 <div class="radio-group">
-                    <label><input type="radio" name="meeting_platform" value="Google Meet" {{ (isset($interview) && $interview->meeting_platform == 'Google Meet') ? 'checked' : '' }} onchange="toggleLinkInput()"> Google Meet</label>
-                    <label><input type="radio" name="meeting_platform" value="Zoom" {{ (isset($interview) && $interview->meeting_platform == 'Zoom') ? 'checked' : '' }} onchange="toggleLinkInput()"> Zoom</label>
-                    <label><input type="radio" name="meeting_platform" value="Teams" {{ (isset($interview) && $interview->meeting_platform == 'Teams') ? 'checked' : '' }} onchange="toggleLinkInput()"> Teams</label>
+                    <label><input type="radio" name="meeting_platform" value="Google Meet" {{ old('meeting_platform', isset($interview) ? $interview->meeting_platform : '') == 'Google Meet' ? 'checked' : '' }} onchange="toggleLinkInput()"> Google Meet</label>
+                    <label><input type="radio" name="meeting_platform" value="Zoom" {{ old('meeting_platform', isset($interview) ? $interview->meeting_platform : '') == 'Zoom' ? 'checked' : '' }} onchange="toggleLinkInput()"> Zoom</label>
+                    <label><input type="radio" name="meeting_platform" value="Teams" {{ old('meeting_platform', isset($interview) ? $interview->meeting_platform : '') == 'Teams' ? 'checked' : '' }} onchange="toggleLinkInput()"> Teams</label>
                 </div>
+                @error('meeting_platform')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
 
                 <div class="meeting-box" style="margin-top:12px;">
-                    <input type="text" name="meeting_link" id="meeting_link" value="{{ isset($interview) ? $interview->meeting_link : '' }}" placeholder="Paste your meeting link here or generate one" required autocomplete="off">
+                    <input type="text" name="meeting_link" id="meeting_link" value="{{ old('meeting_link', isset($interview) ? $interview->meeting_link : '') }}" placeholder="Paste your meeting link here or generate one" required autocomplete="off" class="@error('meeting_link') input-error @enderror">
                     <button type="button" class="generate-btn" onclick="generateMeetingLink()">Generate Link</button>
                 </div>
+                @error('meeting_link')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
                 
                 <div class="meeting-note" style="margin-top:10px; padding:10px; background:#fff3cd; border:1px solid #ffeaa7; border-radius:4px; font-size:13px;">
                     <strong>Note:</strong> 
@@ -350,6 +378,19 @@ textarea{
 
 .btn-secondary:hover{
     background:#545b62;
+}
+
+.input-error{
+    border-color: #dc3545 !important;
+    background-color: #fff5f5;
+}
+
+.error-message{
+    display: block;
+    color: #dc3545;
+    font-size: 13px;
+    margin-top: 4px;
+    font-weight: 500;
 }
 </style>
 

@@ -114,11 +114,10 @@ class InterviewController extends Controller
             'instructions' => 'nullable|string',
         ]);
 
-        // Check for duplicate interview at same date and time
+        // Check for duplicate interview at same date and time (excluding rescheduled and completed)
         $duplicate = Interview::where('interview_date', $request->interview_date)
             ->where('start_time', $request->start_time)
-            ->where('status', '!=', 'Rescheduled')
-            ->where('status', '!=', 'Completed')
+            ->whereNotIn('status', ['Rescheduled', 'Completed'])
             ->first();
 
         if ($duplicate) {
@@ -750,8 +749,7 @@ class InterviewController extends Controller
     {
         $duplicate = Interview::where('interview_date', $request->interview_date)
             ->where('start_time', $request->start_time)
-            ->where('status', '!=', 'Rescheduled')
-            ->where('status', '!=', 'Completed')
+            ->whereNotIn('status', ['Rescheduled', 'Completed'])
             ->exists();
 
         return response()->json(['duplicate' => $duplicate]);
