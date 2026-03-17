@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition Attendance Tester v2</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; text-align: center; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        video { width: 100%; max-width: 400px; border-radius: 8px; border: 3px solid #333; transform: scaleX(-1); }
+        .controls { margin-top: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .card { padding: 15px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
+        input { padding: 10px; margin: 5px; border: 1px solid #ccc; border-radius: 4px; width: 80%; max-width: 200px; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; border: none; border-radius: 5px; font-weight: bold; color: white; transition: 0.3s; }
+        
+        .btn-blue { background: #007bff; } .btn-blue:hover { background: #0056b3; }
+        .btn-green { background: #28a745; } .btn-green:hover { background: #218838; }
+        .btn-red { background: #dc3545; } .btn-red:hover { background: #c82333; }
+        .btn-purple { background: #6f42c1; } .btn-purple:hover { background: #5a32a3; }
+        .btn-orange { background: #fd7e14; } .btn-orange:hover { background: #e8590c; }
+        
+        #responseBox { margin-top: 10px; padding: 15px; background: #222; color: #0f0; font-family: monospace; border-radius: 5px; white-space: pre-wrap; text-align: left; max-height: 200px; overflow-y: auto; }
+        .date-group { display: inline-block; text-align: left; margin: 5px; }
+        .date-group label { display: block; font-size: 12px; color: #555; margin-bottom: 2px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background: #343a40; color: white; }
+        tr:nth-child(even) { background-color: #f8f9fa; }
+        
+        .badge { padding: 5px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; color: white; display: inline-block; }
+        .badge-full { background: #28a745; }
+        .badge-half { background: #fd7e14; }
+        .badge-absent { background: #dc3545; }
+        .badge-shift { background: #17a2b8; }
+        
+        .verification-status { padding: 10px; margin: 10px 0; border-radius: 5px; font-weight: bold; }
+        .verified { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .not-verified { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📸 Face Attendance System API Tester v2</h2>
+    <p style="font-size: 12px; color: #666;">✨ Now with Face Verification Check!</p>
+    
+    <video id="webcam" autoplay playsinline></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <div class="controls">
+        
+        <!-- Registration Section -->
+        <div class="card">
+            <h3>1. Register Employee Face</h3>
+            <p style="font-size: 12px; color: #666;">Enter the Employee ID. The system will auto-fetch their name and shift from your HR database.</p>
+            <input type="text" id="emp_id" placeholder="Employee ID (e.g., EMP001)">
+            <br>
+            <button class="btn-blue" onclick="sendFaceRequest('/register-face')">Capture & Register Face</button>
+        </div>
+
+        <!-- NEW: Face Verification Check -->
+        <div class="card">
+            <h3>2. Check if Face is Registered</h3>
+            <p style="font-size: 12px; color: #666;">Verify if your face is already registered in the system before marking attendance.</p>
+            <button class="btn-orange" onclick="checkFaceRegistration()">Verify My Face</button>
+            <div id="verificationStatus"></div>
+        </div>
+
+        <!-- Attendance Section -->
+        <div class="card">
+            <h3>3. Mark Attendance</h3>
+            <button class="btn-green" onclick="sendFaceRequest('/attendance/entry')">Capture & Mark Entry</button>
+            <button class="btn-red" onclick="sendFaceRequest('/attendance/exit')">Capture & Mark Exit</button>
+        </div>
+
+        <!-- Fetch Data Section -->
+        <div class="card">
+            <h3>4. View Attendance Data</h3>
+            <input type="text" id="query_emp_id" placeholder="Employee ID (Optional)">
+            
+            <div class="date-group">
+                <label>Start Date</label>
+                <input type="date" id="query_start_date">
+            </div>
+            
+            <div class="date-group">
+                <label>End Date</label>
+                <input type="date" id="query_end_date">
+            </div>
+            
+            <br>
+            <button class="btn-purple" onclick="fetchAttendanceData()">Fetch & View Records</button>
+        </div>
+
+    </div>
+
+    <div id="responseBox">System ready. Waiting for action...</div>
+    <div id="tableContainer"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<script>
+    const API_BASE_URL = "https://face-recognition-attendance-dsq4.onrender.com";
+    const video = document.getElementById('webcam');
+    const canvas = document.getElementById('canvas');
+    const responseBox = document.getElementById('responseBox');
+    const tableContainer = document.getElementById('tableContainer');
+    const verificationStatus = document.getElementById('verificationStatus');
+
+    let modelsLoaded = false;
+    let allRegisteredFaces = [];
+
+    // Start Webcam
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => { video.srcObject = stream; })
+        .catch(err => { responseBox.innerText = "Error accessing webcam: " + err; });
+
+    // Load face-api.js models
+    async function loadModels() {
+        try {
+            await faceapi.nets.ssdMobilenetv1.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model');
+            await faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model');
+            await faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model');
+            modelsLoaded = true;
+            console.log('Face-api models loaded successfully');
+        } catch (error) {
+            console.error('Error loading models:', error);
+            responseBox.style.color = "#ff4c4c";
+            responseBox.innerText = "Error loading face detection models: " + error;
+        }
+    }
+
+    // Load models on page load
+    loadModels();
+
+    // Fetch all registered faces from backend
+    async function fetchAllRegisteredFaces() {
+        try {
+            const response = await fetch(API_BASE_URL + '/attendance/all-faces', { method: 'GET' });
+            const data = await response.json();
+            
+            if (response.ok && data.employees) {
+                allRegisteredFaces = data.employees.map(emp => ({
+                    id: emp.id,
+                    employee_id: emp.employee_id,
+                    name: emp.name,
+                    descriptor: JSON.parse(emp.descriptor)
+                }));
+                console.log(`Loaded ${allRegisteredFaces.length} registered faces`);
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Error fetching registered faces:', error);
+            return false;
+        }
+    }
+
+    // NEW: Check if face is registered
+    async function checkFaceRegistration() {
+        verificationStatus.innerHTML = "";
+        responseBox.style.color = "#aaa";
+        responseBox.innerText = "Checking face registration... Please look at the camera.";
+        tableContainer.innerHTML = "";
+
+        if (!modelsLoaded) {
+            responseBox.style.color = "#ff4c4c";
+            responseBox.innerText = "Face detection models not loaded yet. Please wait...";
+            return;
+        }
+
+        // Fetch latest registered faces
+        await fetchAllRegisteredFaces();
+
+        if (allRegisteredFaces.length === 0) {
+            verificationStatus.innerHTML = '<div class="verification-status not-verified">⚠️ No registered faces found in the system.</div>';
+            responseBox.style.color = "#ff4c4c";
+            responseBox.innerText = "No registered faces in database.";
+            return;
+        }
+
+        try {
+            // Detect face from webcam
+            const detection = await faceapi.detectSingleFace(video)
+                .withFaceLandmarks()
+                .withFaceDescriptor();
+
+            if (!detection) {
+                verificationStatus.innerHTML = '<div class="verification-status not-verified">❌ No face detected. Please position your face clearly in the camera.</div>';
+                responseBox.style.color = "#ff4c4c";
+                responseBox.innerText = "No face detected in webcam feed.";
+                return;
+            }
+
+            const currentDescriptor = Array.from(detection.descriptor);
+
+            // Compare with all registered faces
+            let bestMatch = null;
+            let minDistance = Infinity;
+
+            allRegisteredFaces.forEach(registered => {
+                const distance = euclideanDistance(currentDescriptor, registered.descriptor);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    bestMatch = registered;
+                }
+            });
+
+            // Threshold: 0.5 (same as backend)
+            if (minDistance < 0.5) {
+                verificationStatus.innerHTML = `
+                    <div class="verification-status verified">
+                        ✅ Face Verified!<br>
+                        <strong>Employee:</strong> ${bestMatch.name} (${bestMatch.employee_id})<br>
+                        <strong>Match Score:</strong> ${(100 - minDistance * 100).toFixed(1)}%
+                    </div>
+                `;
+                responseBox.style.color = "#0f0";
+                responseBox.innerText = `SUCCESS: Face matched with ${bestMatch.name}\nDistance: ${minDistance.toFixed(3)}`;
+            } else {
+                verificationStatus.innerHTML = `
+                    <div class="verification-status not-verified">
+                        ❌ Face Not Registered<br>
+                        Your face is not found in the system. Please register first.<br>
+                        <strong>Closest Match Distance:</strong> ${minDistance.toFixed(3)} (Threshold: 0.5)
+                    </div>
+                `;
+                responseBox.style.color = "#ff4c4c";
+                responseBox.innerText = `Face not registered. Minimum distance: ${minDistance.toFixed(3)}\nThreshold: 0.5`;
+            }
+
+        } catch (error) {
+            verificationStatus.innerHTML = '<div class="verification-status not-verified">❌ Error during face verification.</div>';
+            responseBox.style.color = "#ff4c4c";
+            responseBox.innerText = "Error: " + error.message;
+        }
+    }
+
+    // Helper: Calculate Euclidean Distance
+    function euclideanDistance(arr1, arr2) {
+        let sum = 0;
+        for (let i = 0; i < arr1.length; i++) {
+            const diff = arr1[i] - arr2[i];
+            sum += diff * diff;
+        }
+        return Math.sqrt(sum);
+    }
+
+    // Original function: Capture and send face request
+    function sendFaceRequest(endpoint) {
+        responseBox.style.color = "#aaa";
+        responseBox.innerText = "Processing... Detecting face and contacting API.";
+        tableContainer.innerHTML = "";
+        verificationStatus.innerHTML = "";
+        
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob(blob => {
+            const formData = new FormData();
+            formData.append('image', blob, 'capture.jpg');
+
+            if (endpoint === '/register-face') {
+                const empId = document.getElementById('emp_id').value;
+                if (!empId) {
+                    responseBox.style.color = "#ff4c4c";
+                    responseBox.innerText = "Error: Employee ID is required!";
+                    return;
+                }
+                formData.append('employee_id', empId);
+            }
+
+            fetch(API_BASE_URL + endpoint, { method: 'POST', body: formData })
+            .then(async response => {
+                const data = await response.json();
+                if (response.ok) {
+                    responseBox.style.color = "#0f0";
+                    responseBox.innerText = "SUCCESS:\n" + JSON.stringify(data, null, 2);
+                    if (endpoint !== '/register-face') fetchAttendanceData();
+                } else {
+                    responseBox.style.color = "#ff4c4c";
+                    responseBox.innerText = "Error " + response.status + ":\n" + JSON.stringify(data, null, 2);
+                }
+            })
+            .catch(error => {
+                responseBox.style.color = "#ff4c4c";
+                responseBox.innerText = "Network Error: \n" + error;
+            });
+        }, 'image/jpeg');
+    }
+
+    // Fetch attendance data
+    function fetchAttendanceData() {
+        responseBox.style.color = "#aaa";
+        responseBox.innerText = "Fetching attendance records from database...";
+        tableContainer.innerHTML = "";
+        verificationStatus.innerHTML = "";
+
+        const empId = document.getElementById('query_emp_id').value;
+        const startDate = document.getElementById('query_start_date').value;
+        const endDate = document.getElementById('query_end_date').value;
+
+        const params = new URLSearchParams();
+        if (empId) params.append('employee_id', empId);
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+
+        const queryString = params.toString() ? '?' + params.toString() : '';
+
+        fetch(API_BASE_URL + '/attendance' + queryString, { method: 'GET' })
+        .then(async response => {
+            const data = await response.json();
+            if (response.ok) {
+                responseBox.style.color = "#0f0";
+                responseBox.innerText = `Successfully fetched ${data.length} records.`;
+                if (data.length > 0) buildHtmlTable(data);
+            } else {
+                responseBox.style.color = "#ff4c4c";
+                responseBox.innerText = "Error " + response.status + ":\n" + JSON.stringify(data, null, 2);
+            }
+        })
+        .catch(error => {
+            responseBox.style.color = "#ff4c4c";
+            responseBox.innerText = "Network Error: \n" + error;
+        });
+    }
+
+    // Build HTML table
+    function buildHtmlTable(data) {
+        let tableHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Employee ID</th>
+                        <th>Shift</th>
+                        <th>Status</th>
+                        <th>Entry Time</th>
+                        <th>Exit Time</th>
+                        <th>Total Work</th>
+                        <th>Overtime</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        data.forEach(row => {
+            const entryTime = new Date(row.entry_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const exitTime = row.exit_time ? new Date(row.exit_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "Not Marked";
+
+            let statusBadge = `<span class="badge" style="background: #ccc; color: black;">${row.shift_status}</span>`;
+            
+            if (row.shift_status === "on_time") {
+                statusBadge = `<span class="badge" style="background: #28a745;">On Time</span>`;
+            } else if (row.shift_status === "late_but_full_shift") {
+                statusBadge = `<span class="badge" style="background: #17a2b8;">Late (Full Shift)</span>`;
+            } else if (row.shift_status === "half_shift") {
+                statusBadge = `<span class="badge" style="background: #fd7e14;">Half Shift</span>`;
+            } else if (row.shift_status === "absent_wrong_shift") {
+                statusBadge = `<span class="badge" style="background: #dc3545;">Absent (Wrong Shift)</span>`;
+            } else if (row.shift_status === "overtime") {
+                statusBadge = `<span class="badge" style="background: #6f42c1;">Overtime Worked</span>`;
+            }
+
+            let shiftBadge = `<span class="badge badge-shift">${row.shift_type}</span>`;
+            
+            let overtimeText = row.overtime_minutes > 0 
+                ? `<strong style="color: #6f42c1;">${row.overtime_hours}</strong>` 
+                : "No Overtime";
+
+            tableHTML += `
+                <tr>
+                    <td><strong>${row.date}</strong></td>
+                    <td>${row.employee_id}</td>
+                    <td>${shiftBadge}</td>
+                    <td>${statusBadge}</td>
+                    <td>${entryTime}</td>
+                    <td>${exitTime}</td>
+                    <td>${row.total_work_time || "N/A"}</td>
+                    <td>${overtimeText}</td>
+                </tr>
+            `;
+        });
+
+        tableHTML += `</tbody></table>`;
+        tableContainer.innerHTML = tableHTML;
+    }
+</script>
+
+</body>
+</html>

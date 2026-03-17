@@ -1,9 +1,33 @@
 <?php
-// Database Configuration
-$host = 'localhost';
-$dbname = 'attendance_db';
-$username = 'root';
-$password = '';
+// Load environment variables from Laravel .env
+$envPath = __DIR__ . '/cms/.env';
+if (file_exists($envPath)) {
+    $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        // Skip comments
+        if (str_starts_with(trim($line), '#')) {
+            continue;
+        }
+        // Parse KEY=VALUE
+        if (strpos($line, '=') !== false) {
+            [$key, $value] = explode('=', $line, 2);
+            $key = trim($key);
+            $value = trim($value);
+            // Strip surrounding quotes if present
+            if ((str_starts_with($value, '"') && str_ends_with($value, '"')) ||
+                (str_starts_with($value, "'") && str_ends_with($value, "'"))) {
+                $value = substr($value, 1, -1);
+            }
+            $_ENV[$key] = $value;
+        }
+    }
+}
+
+// Database Configuration from .env (fallbacks preserved)
+$host = $_ENV['DB_HOST'] ?? 'localhost';
+$dbname = $_ENV['DB_DATABASE'] ?? 'attendance_db';
+$username = $_ENV['DB_USERNAME'] ?? 'root';
+$password = $_ENV['DB_PASSWORD'] ?? '';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
@@ -14,25 +38,24 @@ try {
 
 // Handle form submission
 if ($_POST) {
-    $attendance_date = $_POST['attendance_date'];
+    $date = $_POST['date'];
     
     foreach ($_POST['employees'] as $employee_id => $data) {
-        $status = $data['status'];
-        $in_time = !empty($data['in_time']) ? $data['in_time'] : null;
-        $out_time = !empty($data['out_time']) ? $data['out_time'] : null;
+        $shift_status = $data['shift_status'];
+        $entry_time = !empty($data['entry_time']) ? $data['entry_time'] : null;
+        $exit_time = !empty($data['exit_time']) ? $data['exit_time'] : null;
         $reason = $data['reason'];
         
-        $sql = "INSERT INTO attendance (employee_id, attendance_date, status, in_time, out_time, reason) 
+        $sql = "INSERT INTO attendance_logs 
+                (employee_id, date, shift_shift_status, entry_time, exit_time, reason) 
                 VALUES (?, ?, ?, ?, ?, ?) 
                 ON DUPLICATE KEY UPDATE 
-                status = VALUES(status), 
-                in_time = VALUES(in_time), 
-                out_time = VALUES(out_time), 
-                reason = VALUES(reason),
-                updated_at = CURRENT_TIMESTAMP";
-        
+                shift_shift_status = VALUES(shift_shift_status),
+                entry_time = VALUES(entry_time),
+                exit_time = VALUES(exit_time),
+                reason = VALUES(reason)";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$employee_id, $attendance_date, $status, $in_time, $out_time, $reason]);
+        $stmt->execute([$employee_id, $date, $shift_status, $entry_time, $exit_time, $reason]);
     }
     
     $success_message = "Attendance saved successfully!";
@@ -44,11 +67,11 @@ $department_filter = $_GET['department'] ?? '';
 $search_employee = $_GET['search'] ?? '';
 
 // Get departments for filter
-$dept_sql = "SELECT DISTINCT department FROM employees WHERE status = 'active' ORDER BY department";
+$dept_sql = "SELECT DISTINCT department FROM employees WHERE shift_status = 'active' ORDER BY department";
 $departments = $pdo->query($dept_sql)->fetchAll(PDO::FETCH_COLUMN);
 
 // Build employee query with filters
-$employee_sql = "SELECT * FROM employees WHERE status = 'active'";
+$employee_sql = "SELECT * FROM employees WHERE shift_status = 'active'";
 $params = [];
 
 if ($department_filter) {
@@ -78,7 +101,9 @@ if ($employees) {
     $employee_ids = array_column($employees, 'id');
     $placeholders = str_repeat('?,', count($employee_ids) - 1) . '?';
     
-    $att_sql = "SELECT * FROM attendance WHERE employee_id IN ($placeholders) AND attendance_date = ?";
+    $att_sql = "SELECT * FROM attendance_logs 
+            WHERE employee_id IN ($placeholders) 
+            AND date = ?";
     $stmt = $pdo->prepare($att_sql);
     $stmt->execute(array_merge($employee_ids, [$selected_date]));
     
@@ -146,7 +171,7 @@ if ($employees) {
 
                         <!-- Attendance Form -->
                         <form method="POST">
-                            <input type="hidden" name="attendance_date" value="<?= $selected_date ?>">
+                            <input type="hidden" name="date" value="<?= $selected_date ?>">
                             
                             <div class="table-responsive">
                                 <table class="table table-bordered table-hover">
@@ -156,7 +181,7 @@ if ($employees) {
                                             <th>Employee Name</th>
                                             <th>Department</th>
                                             <th>Job Title</th>
-                                            <th>Status</th>
+                                            <th>shift_status</th>
                                             <th>In Time</th>
                                             <th>Out Time</th>
                                             <th>Reason</th>
@@ -174,18 +199,18 @@ if ($employees) {
                                                     <td><?= $emp['department'] ?></td>
                                                     <td><?= $emp['job_title'] ?></td>
                                                     <td>
-                                                        <select name="employees[<?= $emp['id'] ?>][status]" class="form-select form-select-sm">
-                                                            <option value="Present" <?= ($att['status'] ?? 'Present') === 'Present' ? 'selected' : '' ?>>Present</option>
-                                                            <option value="Absent" <?= ($att['status'] ?? '') === 'Absent' ? 'selected' : '' ?>>Absent</option>
-                                                            <option value="Leave" <?= ($att['status'] ?? '') === 'Leave' ? 'selected' : '' ?>>Leave</option>
-                                                            <option value="Half Day" <?= ($att['status'] ?? '') === 'Half Day' ? 'selected' : '' ?>>Half Day</option>
+                                                        <select name="employees[<?= $emp['id'] ?>][shift_status]" class="form-select form-select-sm">
+                                                            <option value="Present" <?= ($att['shift_shift_status'] ?? 'Present') === 'Present' ? 'selected' : '' ?>>Present</option>
+                                                            <option value="Absent" <?= ($att['shift_shift_status'] ?? '') === 'Absent' ? 'selected' : '' ?>>Absent</option>
+                                                            <option value="Leave" <?= ($att['shift_shift_status'] ?? '') === 'Leave' ? 'selected' : '' ?>>Leave</option>
+                                                            <option value="Half Day" <?= ($att['shift_shift_status'] ?? '') === 'Half Day' ? 'selected' : '' ?>>Half Day</option>
                                                         </select>
                                                     </td>
                                                     <td>
-                                                        <input type="time" name="employees[<?= $emp['id'] ?>][in_time]" class="form-control form-control-sm" value="<?= $att['in_time'] ?? '' ?>">
+                                                        <input type="time" name="employees[<?= $emp['id'] ?>][entry_time]" class="form-control form-control-sm" value="<?= $att['entry_time'] ?? '' ?>">
                                                     </td>
                                                     <td>
-                                                        <input type="time" name="employees[<?= $emp['id'] ?>][out_time]" class="form-control form-control-sm" value="<?= $att['out_time'] ?? '' ?>">
+                                                        <input type="time" name="employees[<?= $emp['id'] ?>][exit_time]" class="form-control form-control-sm" value="<?= $att['exit_time'] ?? '' ?>">
                                                     </td>
                                                     <td>
                                                         <input type="text" name="employees[<?= $emp['id'] ?>][reason]" class="form-control form-control-sm" placeholder="Reason" value="<?= $att['reason'] ?? '' ?>">
@@ -217,7 +242,7 @@ if ($employees) {
                                             <th>Employee Code</th>
                                             <th>Employee Name</th>
                                             <th>Department</th>
-                                            <th>Status</th>
+                                            <th>shift_status</th>
                                             <th>In Time</th>
                                             <th>Out Time</th>
                                             <th>Reason</th>
@@ -232,12 +257,12 @@ if ($employees) {
                                                     <td><?= $emp['name'] ?></td>
                                                     <td><?= $emp['department'] ?></td>
                                                     <td>
-                                                        <span class="badge bg-<?= $att['status'] === 'Present' ? 'success' : ($att['status'] === 'Absent' ? 'danger' : 'warning') ?>">
-                                                            <?= $att['status'] ?>
+                                                        <span class="badge bg-<?= $att['shift_status'] === 'Present' ? 'success' : ($att['shift_status'] === 'Absent' ? 'danger' : 'warning') ?>">
+                                                            <?= $att['shift_status'] ?>
                                                         </span>
                                                     </td>
-                                                    <td><?= $att['in_time'] ? date('h:i A', strtotime($att['in_time'])) : '-' ?></td>
-                                                    <td><?= $att['out_time'] ? date('h:i A', strtotime($att['out_time'])) : '-' ?></td>
+                                                    <td><?= $att['entry_time'] ? date('h:i A', strtotime($att['entry_time'])) : '-' ?></td>
+                                                    <td><?= $att['exit_time'] ? date('h:i A', strtotime($att['exit_time'])) : '-' ?></td>
                                                     <td><?= $att['reason'] ?: '-' ?></td>
                                                 </tr>
                                             <?php endif; ?>

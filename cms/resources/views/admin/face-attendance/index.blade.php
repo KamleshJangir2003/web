@@ -6,11 +6,6 @@
     padding-left: 130px !important; 
 }
 
-#video { 
-    width: 100%; 
-    max-width: 640px; 
-    border-radius: 10px; 
-}
 
 #canvas { 
     display: none; 
@@ -23,12 +18,12 @@
     padding-left:15px !important;
     padding-right:15px !important;
 }
-
 #video{
-    width:100%;
-    height:420px;      /* camera height increase */
+    width:215px;
+    height:215px;
+    border-radius: 50%;      /* camera height increase */
     object-fit:cover;  /* video stretch na ho */
-    border-radius:10px;
+    
 }
 
 .card-body{
@@ -38,6 +33,9 @@
 .btn-lg{
     width:100%;
     margin-bottom:10px;
+}
+.hidden {
+    display:none;
 }
 
 .table{
@@ -69,7 +67,7 @@
         <div class="col-12">
             <div class="card shadow">
                 <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                    <h4 class="mb-0"><i class="fas fa-user-check me-2"></i>Face Recognition Attendance</h4>
+                    <h6 class="mb-0"><i class="fas fa-user-check me-2"></i>Face Recognition Attendance</h6>
                 </div>
                 <div class="card-body">
                     <!-- <div class="alert alert-info">
@@ -96,11 +94,14 @@
                                 </div>
                             </div>
                             <div class="text-center">
-                                <button id="startCamera" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-camera me-2"></i>Start Camera
+                                <button id="startCamera" class="hidden">
+                                    
                                 </button>
-                                <button id="markAttendance" class="btn btn-success btn-lg" disabled>
-                                    <i class="fas fa-check me-2"></i>Mark Attendance
+                                <button id="markEntry" class="btn btn-success btn-lg" disabled>
+                                    <i class="fas fa-sign-in-alt me-2"></i>Mark Entry
+                                </button>
+                                <button id="markExit" class="btn btn-warning btn-lg" disabled>
+                                    <i class="fas fa-sign-out-alt me-2"></i>Mark Exit
                                 </button>
                             </div>
                         </div>
@@ -111,56 +112,17 @@
                                     <thead>
                                         <tr>
                                             <th>Employee ID</th>
-                                            <th>Name</th>
-                                            <th>Check-In</th>
-                                            <th>Check-Out</th>
-                                            <th>Late (min)</th>
-                                            <th>Early (min)</th>
+                                            <th>Date</th>
+                                            <th>Entry Time</th>
+                                            <th>Exit Time</th>
+                                            <th>Shift Type</th>
+                                            <th>Shift Status</th>
+                                            <th>Total Work Time</th>
                                             <th>Overtime (hrs)</th>
-                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody id="attendance-tbody">
-                                        @forelse($todayAttendance as $att)
-                                        <tr>
-                                            <td>{{ $att->employee->employee_id ?? 'N/A' }}</td>
-                                            <td>{{ $att->employee->first_name }} {{ $att->employee->last_name }}</td>
-                                            <td>{{ $att->in_time ? date('h:i A', strtotime($att->in_time)) : '-' }}</td>
-                                            <td>{{ $att->out_time ? date('h:i A', strtotime($att->out_time)) : '-' }}</td>
-                                            <td>
-                                                @if($att->late_minutes > 0)
-                                                    {{ floor($att->late_minutes / 60) }}h {{ $att->late_minutes % 60 }}m
-                                                @else
-                                                    -
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if($att->early_checkout_minutes > 0)
-                                                    {{ floor($att->early_checkout_minutes / 60) }}h {{ $att->early_checkout_minutes % 60 }}m
-                                                @else
-                                                    -
-                                                @endif
-                                            </td>
-                                            <td>{{ $att->overtime_hours ?? '-' }}</td>
-                                            <td>
-                                                @if($att->status === 'Present')
-                                                    <span class="badge bg-success">On Time</span>
-                                                @elseif($att->status === 'Late')
-                                                    <span class="badge bg-warning">Late</span>
-                                                @elseif($att->status === 'Half Day')
-                                                    <span class="badge bg-warning">Half Day</span>
-                                                @elseif($att->status === 'Week Off')
-                                                    <span class="badge bg-info">Week Off</span>
-                                                @elseif($att->status === 'Absent')
-                                                    <span class="badge bg-danger">Absent</span>
-                                                @else
-                                                    <span class="badge bg-secondary">{{ ucwords(str_replace('_', ' ', $att->status)) }}</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                        @empty
-                                        <tr><td colspan="8" class="text-center text-muted">No attendance marked yet</td></tr>
-                                        @endforelse
+                                        <tr><td colspan="8" class="text-center text-muted">No attendance data yet</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -172,262 +134,265 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 <script>
-// Check WebGL support
-function checkWebGLSupport() {
-    try {
-        const canvas = document.createElement('canvas');
-        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-        if (!gl) {
-            showStatus('WebGL is not supported. Using CPU backend (slower).', 'warning');
-            return false;
-        }
-        return true;
-    } catch (e) {
-        showStatus('WebGL check failed. Using CPU backend.', 'warning');
-        return false;
-    }
-}
+
+const API_BASE_URL = "https://face-recognition-attendance-dsq4.onrender.com";
 
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const startCameraBtn = document.getElementById('startCamera');
-const markAttendanceBtn = document.getElementById('markAttendance');
+const markEntryBtn = document.getElementById('markEntry');
+const markExitBtn = document.getElementById('markExit');
 const statusMessage = document.getElementById('status-message');
 
-let modelsLoaded = false;
 let stream = null;
 
-// Set backend before loading models
-checkWebGLSupport();
 
-async function loadModels() {
-    const MODEL_URL = '/models';
-    try {
-        // Force CPU backend if WebGL fails
-        await faceapi.tf.setBackend('cpu');
-        await faceapi.tf.ready();
-        
-        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-        await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-        await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-        modelsLoaded = true;
-        showStatus('Models loaded successfully', 'success');
-    } catch (error) {
-        showStatus('Error loading models: ' + error.message, 'danger');
-        console.error('Model loading error:', error);
-    }
-}
-
+// -----------------------------
+// Start Camera
+// -----------------------------
 async function startCamera() {
-    if (!modelsLoaded) {
-        await loadModels();
-    }
-    
-    try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: {} });
-        video.srcObject = stream;
-        startCameraBtn.disabled = true;
-        markAttendanceBtn.disabled = false;
-        showStatus('Camera started. Position your face and click Mark Attendance', 'info');
-    } catch (error) {
-        showStatus('Error accessing camera: ' + error.message, 'danger');
-    }
-}
 
-async function detectFace() {
     try {
-        const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 }))
-            .withFaceLandmarks()
-            .withFaceDescriptor();
-        return detection;
-    } catch (error) {
-        console.error('Face detection error:', error);
-        return null;
-    }
-}
 
-async function markAttendance() {
-    markAttendanceBtn.disabled = true;
-    showStatus('Detecting face...', 'info');
-    
-    const detection = await detectFace();
-    
-    if (!detection) {
-        showStatus('No face detected. Please try again.', 'warning');
-        markAttendanceBtn.disabled = false;
-        return;
-    }
-    
-    showStatus('Face detected. Matching...', 'info');
-    
-    try {
-        const response = await fetch('/admin/face-attendance/all-faces');
-        
-        if (!response.ok) {
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
-                const errorData = await response.json();
-                console.error('Server error:', errorData);
-                showStatus(`Server error: ${errorData.message || 'Unknown error'}`, 'danger');
-            } else {
-                const text = await response.text();
-                console.error('Server returned HTML:', text.substring(0, 500));
-                showStatus('Server error: Expected JSON but got HTML. Check Laravel logs.', 'danger');
-            }
-            markAttendanceBtn.disabled = false;
-            return;
-        }
-        
-        const data = await response.json();
-        console.log('Response data:', data);
-    
-        if (!data.success || data.employees.length === 0) {
-            showStatus('No registered faces found. Please register first.', 'warning');
-            markAttendanceBtn.disabled = false;
-            return;
-        }
-        
-        let bestMatch = null;
-        let minDistance = 0.65;
-        let secondBestDistance = Infinity;
-        
-        for (const emp of data.employees) {
-            const savedDescriptor = JSON.parse(emp.descriptor);
-            const distance = faceapi.euclideanDistance(detection.descriptor, savedDescriptor);
-            console.log(`${emp.name}: distance = ${distance.toFixed(3)}`);
-            
-            if (distance < minDistance) {
-                secondBestDistance = minDistance;
-                minDistance = distance;
-                bestMatch = emp;
-            } else if (distance < secondBestDistance) {
-                secondBestDistance = distance;
-            }
-        }
-        
-        console.log('Best match:', bestMatch?.name, 'Distance:', minDistance.toFixed(3));
-        console.log('Second best distance:', secondBestDistance.toFixed(3));
-        
-        if (!bestMatch) {
-            showStatus('Face not recognized. Distance too high. Please try again or register.', 'danger');
-            document.getElementById('face-preview').style.display = 'none';
-            markAttendanceBtn.disabled = false;
-            return;
-        }
-        
-        // Strict verification: Check if match is significantly better than second best
-        const confidenceGap = secondBestDistance - minDistance;
-        if (confidenceGap < 0.08) {
-            showStatus('Face match is ambiguous. Please try again with better lighting.', 'danger');
-            document.getElementById('face-preview').style.display = 'none';
-            markAttendanceBtn.disabled = false;
-            return;
-        }
-        
-        // Show face preview with employee details
-        const confidence = Math.round((1 - minDistance) * 100);
-        document.getElementById('preview-emp-id').textContent = bestMatch.employee_id;
-        document.getElementById('preview-emp-name').textContent = bestMatch.name;
-        document.getElementById('preview-confidence').textContent = confidence + '%';
-        document.getElementById('face-preview').style.display = 'block';
-        
-        const markResponse = await fetch('/admin/face-attendance/mark', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                employee_id: bestMatch.id,
-                face_descriptor: JSON.stringify(Array.from(detection.descriptor))
-            })
+        stream = await navigator.mediaDevices.getUserMedia({
+            video: true
         });
-        
-        if (!markResponse.ok) {
-            const errorText = await markResponse.text();
-            console.error('Mark attendance error:', errorText);
-            showStatus('Server error marking attendance. Check console.', 'danger');
-            markAttendanceBtn.disabled = false;
-            return;
-        }
-        
-        const result = await markResponse.json();
-        console.log('Mark response:', result);
-        
-        if (result.success) {
-            const actionType = result.type === 'check_in' ? 'Check-In' : 'Check-Out';
-            let statusBadge = result.type === 'check_in' 
-                ? (result.status === 'Half Day' 
-                    ? '<span class="badge bg-warning">Half Day</span>'
-                    : '<span class="badge bg-success">On Time</span>')
-                : '<span class="badge bg-info">Checked Out</span>';
-            
-            let message = `${actionType} successful for ${result.employee_name} at ${result.time}`;
-            if (result.type === 'check_out') {
-                if (result.early_checkout_minutes > 0) {
-                    message += ` (${result.early_checkout_minutes} min early)`;
-                }
-                if (result.overtime_hours > 0) {
-                    message += ` (${result.overtime_hours} hrs overtime)`;
-                }
-            }
-            message += `. <a href="/admin/attendance" class="alert-link">View Attendance Page</a>`;
-            
-            showStatus(message, 'success');
-            addToAttendanceList(bestMatch.employee_id, result.employee_name, result.time, statusBadge, actionType, result);
-        } else {
-            showStatus(result.message, 'danger');
-        }
+
+        video.srcObject = stream;
+
+        startCameraBtn.disabled = true;
+        markEntryBtn.disabled = false;
+        markExitBtn.disabled = false;
+
+        showStatus("Camera started. Look at the camera and click Mark Entry or Mark Exit.", "info");
+
     } catch (error) {
-        console.error('Fetch error:', error);
-        showStatus('Network error: ' + error.message, 'danger');
+
+        showStatus("Camera access error : " + error.message, "danger");
+
     }
+
+}
+
+
+// -----------------------------
+// Capture Image
+// -----------------------------
+function captureImage() {
+
+    const context = canvas.getContext('2d');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+}
+
+
+// -----------------------------
+// Send Image to API - Entry
+// -----------------------------
+async function markEntry() {
+
+    showStatus("Processing face recognition...", "info");
+
+    captureImage();
+
+    canvas.toBlob(async function(blob) {
+
+        const formData = new FormData();
+
+        formData.append("image", blob, "capture.jpg");
+
+        try {
+
+            const response = await fetch(API_BASE_URL + "/attendance/entry", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+
+                showStatus("Entry marked successfully ✔", "success");
+
+                // After marking attendance, fetch today's full attendance
+                fetchTodayAttendance();
+
+            } else {
+
+                showStatus("API Error : " + JSON.stringify(data), "danger");
+
+            }
+
+        } catch (error) {
+
+            showStatus("Network Error : " + error.message, "danger");
+
+        }
+
+    }, "image/jpeg");
+
+}
+
+
+// -----------------------------
+// Send Image to API - Exit
+// -----------------------------
+async function markExit() {
+
+    showStatus("Processing face recognition for exit...", "info");
+
+    captureImage();
+
+    canvas.toBlob(async function(blob) {
+
+        const formData = new FormData();
+
+        formData.append("image", blob, "capture.jpg");
+
+        try {
+
+            const response = await fetch(API_BASE_URL + "/attendance/exit", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+
+                showStatus("Exit marked successfully ✔", "success");
+
+                // After marking attendance, fetch today's full attendance
+                fetchTodayAttendance();
+
+            } else {
+
+                showStatus("API Error : " + JSON.stringify(data), "danger");
+
+            }
+
+        } catch (error) {
+
+            showStatus("Network Error : " + error.message, "danger");
+
+        }
+
+    }, "image/jpeg");
+
+}
+
+// -----------------------------
+// Fetch today's attendance from API
+// -----------------------------
+function fetchTodayAttendance() {
+
+    const today = new Date().toLocaleDateString('en-CA');// YYYY-MM-DD
     
-    markAttendanceBtn.disabled = false;
+    fetch(API_BASE_URL + '/attendance')
+        .then(async response => {
+            const data = await response.json();
+
+            const tbody = document.getElementById("attendance-tbody");
+            tbody.innerHTML = '';
+
+            if (response.ok && Array.isArray(data) && data.length > 0) {
+                data.forEach(function(record) {
+                    if (record && record.employee_id) {
+                        addToAttendanceList(record);
+                    }
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No attendance data yet</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching today attendance:', error);
+        });
 }
 
+// -----------------------------
+// Show Status Message
+// -----------------------------
 function showStatus(message, type) {
-    statusMessage.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show">
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>`;
+
+    statusMessage.innerHTML = `
+        <div class="alert alert-${type}">
+            ${message}
+        </div>
+    `;
+
 }
 
-function addToAttendanceList(empId, name, time, statusBadge, actionType, result) {
-    const tbody = document.getElementById('attendance-tbody');
-    if (tbody.querySelector('td[colspan]')) {
+
+// -----------------------------
+// Add row to table using API response shape
+// -----------------------------
+function addToAttendanceList(attendance) {
+
+    const tbody = document.getElementById("attendance-tbody");
+
+    // Remove "No attendance data yet" row if present
+    if (tbody.children.length === 1 && tbody.children[0].children.length === 1) {
         tbody.innerHTML = '';
     }
-    
-    const checkIn = actionType === 'Check-In' ? time : '-';
-    const checkOut = actionType === 'Check-Out' ? time : '-';
-    const earlyMin = result.early_checkout_minutes || '-';
-    const overtimeHrs = result.overtime_hours || '-';
-    const lateMin = result.late_minutes || '-';
-    
-    const row = document.createElement('tr');
+
+    const row = document.createElement("tr");
+
+    const entryTime = attendance.entry_time ? new Date(attendance.entry_time).toLocaleTimeString() : '-';
+    const exitTime = attendance.exit_time ? new Date(attendance.exit_time).toLocaleTimeString() : '-';
+
+    let statusBadgeClass = 'bg-secondary';
+    let statusLabel = attendance.shift_status || '-';
+    if (attendance.shift_status) {
+        const statusLower = attendance.shift_status.toLowerCase();
+        if (statusLower === 'present' || statusLower === 'on_time') {
+            statusBadgeClass = 'bg-success';
+        } else if (statusLower === 'absent') {
+            statusBadgeClass = 'bg-danger';
+        } else if (statusLower === 'late' || statusLower === 'half_day') {
+            statusBadgeClass = 'bg-warning';
+        }
+    }
+
     row.innerHTML = `
-        <td>${empId}</td>
-        <td>${name}</td>
-        <td>${checkIn}</td>
-        <td>${checkOut}</td>
-        <td>${lateMin}</td>
-        <td>${earlyMin}</td>
-        <td>${overtimeHrs}</td>
-        <td>${statusBadge}</td>
+        <td>${attendance.employee_id || '-'}</td>
+        <td>${attendance.date || '-'}</td>
+        <td>${entryTime}</td>
+        <td>${exitTime}</td>
+        <td>${attendance.shift_type || '-'}</td>
+        <td><span class="badge ${statusBadgeClass}">${statusLabel}</span></td>
+        <td>${attendance.total_work_time || '-'}</td>
+        <td>${attendance.overtime_hours || '-'}</td>
     `;
+
     tbody.insertBefore(row, tbody.firstChild);
+
 }
 
-startCameraBtn.addEventListener('click', startCamera);
-markAttendanceBtn.addEventListener('click', markAttendance);
 
-// Auto start camera on page load
-document.addEventListener("DOMContentLoaded", async function () {
-    await loadModels();
-    await startCamera();
+// -----------------------------
+// Event Listeners
+// -----------------------------
+startCameraBtn.addEventListener("click", startCamera);
+
+markEntryBtn.addEventListener("click", markEntry);
+markExitBtn.addEventListener("click", markExit);
+
+
+// -----------------------------
+// Auto start camera and load today's attendance
+// -----------------------------
+document.addEventListener("DOMContentLoaded", function(){
+
+    startCamera();
+    fetchTodayAttendance();
+
 });
+
 </script>
 @endsection

@@ -1,303 +1,279 @@
 @extends('auth.layouts.app')
 
 @section('content')
-<style>
 
-.container-fluid{
-    padding-left:130px;
-    padding-right:20px;
-}
+    <div class="container-fluid">
 
-/* MOBILE FIX */
+        <div class="row">
+            <div class="col-md-6">
 
-@media (max-width:768px){
+                <div class="card shadow">
 
-.container-fluid{
-    padding-left:10px !important;
-    padding-right:10px !important;
-    width:100% !important;
-}
-
-.row{
-    margin-left:0 !important;
-    margin-right:0 !important;
-}
-
-.card{
-    width:100%;
-}
-
-#employeeSelect{
-    width:100%;
-}
-
-}
-
-/* video box */
-#video{
-    width:100%;
-    max-width:640px;
-    border-radius:10px;
-}
-
-#canvas{
-    display:none;
-}
-
-/* -------- MOBILE RESPONSIVE -------- */
-
-@media (max-width:768px){
-
-.container-fluid{
-    padding-left:15px !important;
-    padding-right:15px !important;
-}
-
-.card-body{
-    padding:15px;
-}
-
-#video{
-    max-width:100%;
-}
-
-.btn-lg{
-    width:100%;
-    margin-bottom:10px;
-}
-
-.table{
-    font-size:12px;
-}
-
-}
-
-/* Fix dropdown overflow */
-.card{
-overflow:visible;
-}
-
-#employeeSelect{
-width:100%;
-max-width:100%;
-}
-
-.form-select{
-width:100%;
-}
-#employeeSelect{
-width:100%;
-max-width:100%;
-font-size:14px;
-}
-
-.form-select{
-width:100%;
-max-width:100%;
-}
-
-</style>
-
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                    <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i>Register Employee Face</h4>
-                </div>
-                <div class="card-body">
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Select an employee, start the camera, and capture their face for registration
+                    <div class="card-header bg-primary text-white">
+                        Register Employee Face
                     </div>
 
-                    <div id="status-message"></div>
+                    <div class="card-body">
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Select Employee</label>
-                                <select id="employeeSelect" class="form-select">
-                                    <option value="">-- Select Employee --</option>
-                                    @foreach($employees as $emp)
-                                        <option value="{{ $emp->id }}">
-                                            {{ $emp->employee_id }} - {{ $emp->full_name }} 
-                                            @if($emp->face_data) ✓ @endif
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        <div id="status-message"></div>
 
-                            <div class="text-center mb-3">
-                                <div style="position: relative; display: inline-block;">
-                                    <video id="video" autoplay muted></video>
-                                    <canvas id="canvas"></canvas>
-                                </div>
-                            </div>
+                        <label>Select Employee</label>
 
-                            <div class="text-center">
-                                <button id="startCamera" class="btn btn-primary btn-lg" disabled>
-                                    <i class="fas fa-camera me-2"></i>Start Camera
-                                </button>
-                                <button id="captureFace" class="btn btn-success btn-lg" disabled>
-                                    <i class="fas fa-camera-retro me-2"></i>Capture & Register
-                                </button>
-                            </div>
+                        <select id="employeeSelect" class="form-select mb-3">
+
+                            <option value="">Select Employee</option>
+
+                            @foreach($employees as $emp)
+
+                                <option value="{{ $emp->employee_id }}">
+                                    {{ $emp->employee_id }} - {{ $emp->full_name }}
+                                </option>
+
+                            @endforeach
+
+                        </select>
+
+
+                        <div class="text-center mb-3">
+
+                            <video id="video" width="100%" autoplay muted></video>
+
+                            <canvas id="canvas" style="display:none"></canvas>
+
                         </div>
 
-                        <div class="col-md-6">
-                            <h5>Registered Employees</h5>
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Employee ID</th>
-                                            <th>Name</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($employees as $emp)
-                                            <tr>
-                                                <td>{{ $emp->employee_id }}</td>
-                                                <td>{{ $emp->full_name }}</td>
-                                                <td>
-                                                    @if($emp->face_data)
-                                                        <span class="badge bg-success">Registered</span>
-                                                    @else
-                                                        <span class="badge bg-warning">Not Registered</span>
-                                                    @endif
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="text-center">
+
+                            <button id="startCamera" class="btn btn-primary">
+                                Start Camera
+                            </button>
+
+                            <button id="captureFace" class="btn btn-success">
+                                Capture & Register
+                            </button>
+
                         </div>
+
                     </div>
                 </div>
+
             </div>
+
+
+            <div class="col-md-6">
+
+                <div class="card shadow">
+
+                    <div class="card-header bg-success text-white">
+                        Registered Employees
+                    </div>
+
+                    <div class="card-body">
+
+                        <table class="table table-bordered">
+
+                            <thead>
+
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                @foreach($employees as $emp)
+
+                                    <tr>
+
+                                        <td>{{ $emp->employee_id }}</td>
+
+                                        <td>{{ $emp->full_name }}</td>
+
+                                        <td>
+
+                                            @if($emp->face_encoding)
+
+                                                <span class="badge bg-success">
+                                                    Registered
+                                                </span>
+
+                                            @else
+
+                                                <span class="badge bg-warning">
+                                                    Not Registered
+                                                </span>
+
+                                            @endif
+
+                                        </td>
+
+                                    </tr>
+
+                                @endforeach
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                </div>
+
+            </div>
+
         </div>
+
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-<script>
-const video = document.getElementById('video');
-const canvas = document.getElementById('canvas');
-const employeeSelect = document.getElementById('employeeSelect');
-const startCameraBtn = document.getElementById('startCamera');
-const captureFaceBtn = document.getElementById('captureFace');
-const statusMessage = document.getElementById('status-message');
 
-let modelsLoaded = false;
-let stream = null;
 
-async function loadModels() {
-    const MODEL_URL = '/models';
-    try {
-        await Promise.all([
-            faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-            faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-            faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
-        ]);
-        modelsLoaded = true;
-        showStatus('Models loaded successfully', 'success');
-    } catch (error) {
-        showStatus('Error loading models: ' + error.message, 'danger');
-    }
-}
+    <script>
 
-employeeSelect.addEventListener('change', function() {
-    startCameraBtn.disabled = !this.value;
-});
+        const API_BASE_URL = "https://face-recognition-attendance-dsq4.onrender.com";
 
-async function startCamera() {
-    if (!modelsLoaded) {
-        await loadModels();
-    }
-    
-    try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: {} });
-        video.srcObject = stream;
-        startCameraBtn.disabled = true;
-        captureFaceBtn.disabled = false;
-        showStatus('Camera started. Position face and click Capture', 'info');
-    } catch (error) {
-        showStatus('Error accessing camera: ' + error.message, 'danger');
-    }
-}
+        const video = document.getElementById("video");
+        const canvas = document.getElementById("canvas");
 
-async function captureFace() {
-    const employeeId = employeeSelect.value;
-    
-    if (!employeeId) {
-        showStatus('Please select an employee', 'warning');
-        return;
-    }
-    
-    captureFaceBtn.disabled = true;
-    showStatus('Detecting face...', 'info');
-    
-    try {
-        const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
-            .withFaceLandmarks()
-            .withFaceDescriptor();
-        
-        if (!detection) {
-            showStatus('No face detected. Please try again.', 'warning');
-            captureFaceBtn.disabled = false;
-            return;
+        const startCameraBtn = document.getElementById("startCamera");
+        const captureFaceBtn = document.getElementById("captureFace");
+
+        let stream = null;
+
+
+        function showStatus(message, type = "info") {
+
+            document.getElementById("status-message").innerHTML =
+
+                `<div class="alert alert-${type}">
+                    ${message}
+                </div>`;
+
         }
-        
-        showStatus('Face detected. Saving...', 'info');
-        
-        const descriptor = Array.from(detection.descriptor);
-        
-        const response = await fetch('/admin/face-attendance/save-face', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                employee_id: employeeId,
-                face_descriptor: descriptor
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (response.status === 409) {
-            showStatus('❌ ' + result.message + '<br><strong>Already registered to: ' + result.duplicate_employee + '</strong>', 'danger');
-            captureFaceBtn.disabled = false;
-            return;
+
+
+
+        async function startCamera() {
+
+            try {
+
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+                video.srcObject = stream;
+
+                showStatus("Camera Started", "success");
+
+            } catch (error) {
+
+                showStatus("Camera Error : " + error.message, "danger");
+
+            }
+
         }
-        
-        if (result.success) {
-            showStatus('✅ Face registered successfully!', 'success');
-            setTimeout(() => location.reload(), 1500);
-        } else {
-            showStatus('❌ ' + (result.message || 'Registration failed'), 'danger');
-            captureFaceBtn.disabled = false;
+
+
+
+        function captureImage(callback) {
+
+            const ctx = canvas.getContext("2d");
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            ctx.drawImage(video, 0, 0);
+
+            canvas.toBlob(blob => {
+
+                callback(blob);
+
+            }, "image/jpeg");
+
         }
-    } catch (error) {
-        console.error('Error:', error);
-        showStatus('Error: ' + error.message, 'danger');
-        captureFaceBtn.disabled = false;
-    }
-}
 
-function showStatus(message, type) {
-    statusMessage.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show">
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>`;
-}
 
-startCameraBtn.addEventListener('click', startCamera);
-captureFaceBtn.addEventListener('click', captureFace);
 
-loadModels();
-</script>
+        async function registerFace() {
+
+            const empId = document.getElementById("employeeSelect").value;
+
+            if (!empId) {
+
+                showStatus("Select employee first", "warning");
+                return;
+
+            }
+
+            captureImage(async function (blob) {
+
+                const formData = new FormData();
+
+                formData.append("image", blob, "capture.jpg");
+                formData.append("employee_id", empId);
+
+
+                try {
+
+                    const response = await fetch(API_BASE_URL + "/register-face", {
+
+                        method: "POST",
+                        body: formData
+
+                    });
+
+                    const result = await response.json();
+
+                    console.log(result);
+
+                    if (response.ok) {
+
+                        // API success
+                        showStatus("Face Registered Successfully", "success");
+
+                        // Laravel database update
+                        fetch('/admin/face-attendance/update-face-status', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                employee_id: empId
+                            })
+                        }).then(() => {
+                            // Update UI status badge in the table
+                            const rows = document.querySelectorAll('table tbody tr');
+                            rows.forEach(row => {
+                                const idCell = row.querySelector('td:nth-child(1)');
+                                if (idCell && idCell.textContent.trim() === empId) {
+                                    const statusCell = row.querySelector('td:nth-child(3)');
+                                    if (statusCell) {
+                                        statusCell.innerHTML = '<span class="badge bg-success">Registered</span>';
+                                    }
+                                }
+                            });
+                        });
+
+                    } else {
+
+                        showStatus("Error : " + JSON.stringify(result), "danger");
+
+                    }
+
+                } catch (error) {
+
+                    showStatus("Network Error " + error.message, "danger");
+
+                }
+
+            });
+
+        }
+
+        startCameraBtn.addEventListener("click", startCamera);
+
+        captureFaceBtn.addEventListener("click", registerFace);
+
+    </script>
+
 @endsection

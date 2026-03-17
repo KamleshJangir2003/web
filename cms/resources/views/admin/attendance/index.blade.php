@@ -112,7 +112,7 @@ body {
                     @if(($view_type ?? 'daily') === 'daily')
                     <form method="POST" action="{{ route('admin.attendance.store') }}">
                         @csrf
-                        <input type="hidden" name="attendance_date" value="{{ $selected_date }}">
+                        <input type="hidden" name="date" value="{{ $selected_date }}">
                         <input type="hidden" name="shift" value="{{ $selected_shift ?? 'Day' }}">
                         
                         <div class="alert alert-info mb-3">
@@ -132,7 +132,7 @@ body {
                                         <th>Email</th>
                                         <th>Department</th>
                                         <th>Shift</th>
-                                        <th>Status</th>
+                                        <th>shift_status</th>
                                         <th>In Time</th>
                                         <th>Out Time</th>
                                         <th>Reason</th>
@@ -152,29 +152,29 @@ body {
                                                 </span>
                                             </td>
                                             <td>
-                                                <select name="employees[{{ $emp->id }}][status]" class="form-select form-select-sm">
-                                                    <option value="">Select Status</option>
+                                                <select name="employees[{{ $emp->id }}][shift_status]" class="form-select form-select-sm">
+                                                    <option value="">Select shift_status</option>
                                                     @php
                                                         $isWeekOff = date('w', strtotime($selected_date)) == 0; // Sunday = 0
                                                     @endphp
                                                     @if($isWeekOff)
-                                                        <option value="Week Off" {{ ($att && $att->status === 'Week Off') ? 'selected' : '' }}>Week Off</option>
+                                                        <option value="Week Off" {{ ($att && $att->shift_status === 'Week Off') ? 'selected' : '' }}>Week Off</option>
                                                     @else
-                                                        <option value="Present" {{ ($att && $att->status === 'Present') ? 'selected' : '' }}>Present</option>
-                                                        <option value="Absent" {{ ($att && $att->status === 'Absent') ? 'selected' : '' }}>Absent</option>
-                                                        <option value="Half Day" {{ ($att && $att->status === 'Half Day') ? 'selected' : '' }}>Half Day</option>
-                                                        <option value="Paid Leave" {{ ($att && $att->status === 'Paid Leave') ? 'selected' : '' }}>Paid Leave</option>
-                                                        <option value="Comp Off" {{ ($att && $att->status === 'Comp Off') ? 'selected' : '' }}>Comp Off</option>
-                                                        <option value="Unauthorized Leave" {{ ($att && $att->status === 'Unauthorized Leave') ? 'selected' : '' }}>Unauthorized Leave</option>
-                                                        <option value="Holiday" {{ ($att && $att->status === 'Holiday') ? 'selected' : '' }}>Holiday</option>
+                                                        <option value="Present" {{ ($att && $att->shift_status === 'Present') ? 'selected' : '' }}>Present</option>
+                                                        <option value="Absent" {{ ($att && $att->shift_status === 'Absent') ? 'selected' : '' }}>Absent</option>
+                                                        <option value="Half Day" {{ ($att && $att->shift_status === 'Half Day') ? 'selected' : '' }}>Half Day</option>
+                                                        <option value="Paid Leave" {{ ($att && $att->shift_status === 'Paid Leave') ? 'selected' : '' }}>Paid Leave</option>
+                                                        <option value="Comp Off" {{ ($att && $att->shift_status === 'Comp Off') ? 'selected' : '' }}>Comp Off</option>
+                                                        <option value="Unauthorized Leave" {{ ($att && $att->shift_status === 'Unauthorized Leave') ? 'selected' : '' }}>Unauthorized Leave</option>
+                                                        <option value="Holiday" {{ ($att && $att->shift_status === 'Holiday') ? 'selected' : '' }}>Holiday</option>
                                                     @endif
                                                 </select>
                                             </td>
                                             <td>
-                                                <input type="time" name="employees[{{ $emp->id }}][in_time]" class="form-control form-control-sm" value="{{ isset($att->in_time) ? $att->in_time : '' }}">
+                                                <input type="time" name="employees[{{ $emp->id }}][entry_time]" class="form-control form-control-sm" value="{{ isset($att->entry_time) ? $att->entry_time : '' }}">
                                             </td>
                                             <td>
-                                                <input type="time" name="employees[{{ $emp->id }}][out_time]" class="form-control form-control-sm" value="{{ isset($att->out_time) ? $att->out_time : '' }}">
+                                                <input type="time" name="employees[{{ $emp->id }}][exit_time]" class="form-control form-control-sm" value="{{ isset($att->exit_time) ? $att->exit_time : '' }}">
                                             </td>
                                             <td>
                                                 <input type="text" name="employees[{{ $emp->id }}][reason]" class="form-control form-control-sm" placeholder="Reason" value="{{ isset($att->reason) ? $att->reason : '' }}">
@@ -252,7 +252,7 @@ body {
                     @endif
 
                     <!-- Saved Attendance Display -->
-                    @if(($view_type ?? 'daily') === 'daily' && count($attendance_data) > 0)
+                    @if(($view_type ?? 'daily') === 'daily')
                         <hr class="my-4">
                         <h5 class="mb-3"><i class="fas fa-list me-2"></i>Saved Attendance for {{ date('d M Y', strtotime($selected_date)) }}</h5>
                         <div class="table-responsive">
@@ -262,7 +262,7 @@ body {
                                         <th>Employee ID</th>
                                         <th>Employee Name</th>
                                         <th>Department</th>
-                                        <th>Status</th>
+                                        <th>Present/Absent</th>
                                         <th>In Time</th>
                                         <th>Out Time</th>
                                         <th>Early (min)</th>
@@ -279,12 +279,12 @@ body {
                                                 <td>{{ $emp->full_name ?: ($emp->first_name . ' ' . $emp->last_name) }}</td>
                                                 <td>{{ $emp->department ?? 'N/A' }}</td>
                                                 <td>
-                                                    <span class="badge bg-{{ $att->status === 'Present' ? 'success' : ($att->status === 'Absent' ? 'danger' : 'warning') }}">
-                                                        {{ $att->status }}
+                                                    <span class="badge bg-{{ $att->shift_status === 'Present' ? 'success' : ($att->shift_status === 'Absent' ? 'danger' : 'warning') }}">
+                                                        {{ $att->shift_status }}
                                                     </span>
                                                 </td>
-                                                <td>{{ isset($att->in_time) && $att->in_time ? date('h:i A', strtotime($att->in_time)) : '-' }}</td>
-                                                <td>{{ isset($att->out_time) && $att->out_time ? date('h:i A', strtotime($att->out_time)) : '-' }}</td>
+                                                <td>{{ isset($att->entry_time) && $att->entry_time ? date('h:i A', strtotime($att->entry_time)) : '-' }}</td>
+                                                <td>{{ isset($att->exit_time) && $att->exit_time ? date('h:i A', strtotime($att->exit_time)) : '-' }}</td>
                                                 <td>
                                                     @if(isset($att->early_checkout_minutes) && $att->early_checkout_minutes > 0)
                                                         {{ floor($att->early_checkout_minutes / 60) }}h {{ $att->early_checkout_minutes % 60 }}m
@@ -298,10 +298,62 @@ body {
                                         @endif
                                     @endforeach
                                 </tbody>
+                                <tbody>
+
                             </table>
+                        </div>
+                        <hr class="my-4">
+
+                        <h5 class="mb-3">
+                            <i class="fas fa-history me-2"></i>Attendance Logs
+                        </h5>
+
+                        <div class="table-responsive">
+                        <table class="table table-hover table-bordered">
+
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Date</th>
+                                <th>Entry</th>
+                                <th>Exit</th>
+                                <th>Shift</th>
+                                <th>Status</th>
+                                <th>Total Work</th>
+                                <th>Overtime</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @forelse($filtered_logs as $log)
+
+                            <tr>
+                                <td>{{ $log->employee_code ?? $log->employee_id }}</td>
+                                <td>{{ $log->date }}</td>
+                                <td>{{ $log->entry_time }}</td>
+                                <td>{{ $log->exit_time }}</td>
+                                <td>{{ $log->shift_type }}</td>
+                                <td>
+                                    <span class="badge bg-succes    s">
+                                        {{ $log->shift_status }}
+                                    </span>
+                                </td>
+                                <td>{{ $log->total_work_time ?? '-' }}</td>
+                                <td>{{ $log->overtime_hours ?? '-' }}</td>
+                            </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">
+                                        No attendance logs found
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                         </div>
                     @endif
                 </div>
+               
             </div>
         </div>
     </div>

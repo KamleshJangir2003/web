@@ -35,10 +35,10 @@ class AttendanceController extends Controller
 
         // Build employee query with filters
         $query = Employee::where('user_type', 'employee')
-    ->where('employee_status', 'active')
-    ->where('hired_status', 'hired')
-    ->whereNotNull('joining_date')
-    ->whereRaw('DATE_ADD(joining_date, INTERVAL certification_period DAY) <= CURDATE()');
+            ->where('employee_status', 'active')
+            ->where('hired_status', 'hired')
+            ->whereNotNull('joining_date')
+            ->whereRaw('DATE_ADD(joining_date, INTERVAL certification_period DAY) <= CURDATE()');
 
         if ($department_filter) {
             $query->where('department', $department_filter);
@@ -53,14 +53,23 @@ class AttendanceController extends Controller
             });
         }
 
+        $filtered_logs = DB::table('attendance_logs as al')
+            ->leftJoin('employees as e', 'al.employee_id', '=', 'e.id')
+            ->select(
+                'al.*',
+                'e.employee_id as employee_code',
+                DB::raw("CONCAT(e.first_name,' ',e.last_name) as employee_name")
+            )
+            ->orderBy('al.date', 'desc')
+            ->orderBy('al.entry_time', 'desc')
+            ->limit(50)
+            ->get();
         // Order employees with recent attendance first, then by name
         $employees = $query->leftJoin('attendance', function($join) use ($selected_date) {
                 $join->on('employees.id', '=', 'attendance.employee_id')
                      ->where('attendance.attendance_date', '=', $selected_date);
             })
-            ->select('employees.*', 'attendance.created_at as attendance_created_at', 'attendance.updated_at as attendance_updated_at')
-            ->orderByDesc('attendance.updated_at')
-            ->orderByDesc('attendance.created_at')
+            ->select('employees.*')
             ->orderBy('employees.first_name')
             ->get();
         $attendance_data = [];
@@ -104,6 +113,7 @@ class AttendanceController extends Controller
             'selected_week',
             'selected_month',
             'view_type',
+            'filtered_logs',
             'departments', 
             'department_filter', 
             'search_employee'

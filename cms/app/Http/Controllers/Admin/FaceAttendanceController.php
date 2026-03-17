@@ -7,27 +7,67 @@ use App\Models\Attendance;
 use App\Models\Employee;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class FaceAttendanceController extends Controller
 {
     public function index()
     {
         $today = Carbon::today()->format('Y-m-d');
-        $todayAttendance = Attendance::with('employee')
-            ->where('attendance_date', $today)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // Cache today's attendance snapshot briefly to reduce repeated hits
+        $todayAttendance = Cache::remember("face_attendance:today:{$today}", 30, function () use ($today) {
+            return Attendance::with('employee')
+                ->where('attendance_date', $today)
+                ->get();
+        });
         
         return view('admin.face-attendance.index', compact('todayAttendance'));
     }
 
+    /**
+     * Return today's attendance logs from the attendance_logs table
+     * in the format expected by the frontend.
+     */
+    public function todayLogs()
+    {
+        $today = Carbon::today()->format('Y-m-d');
+
+        // Assuming attendance_logs has compatible columns with the API response
+        $logs = DB::table('attendance_logs')
+            ->whereDate('date', $today)
+            ->orderBy('entry_time')
+            ->get([
+                'employee_id',
+                'date',
+                'entry_time',
+                'exit_time',
+                'shift_type',
+                'shift_status',
+                'total_work_time',
+                'overtime_minutes',
+                'overtime_hours',
+            ]);
+
+        return response()->json($logs);
+    }
+
     public function register()
     {
-        $employees = Employee::where('hired_status', 'hired')
-            ->where('employee_status', 'active')
+        $employees = DB::table('employees')
+            ->leftJoin('face_registrations', 'employees.employee_id', '=', 'face_registrations.employee_id')
+            ->select(
+                'employees.employee_id',
+                DB::raw("CONCAT(employees.first_name,' ',employees.last_name) as full_name"),
+                'face_registrations.face_encoding'
+            )
+            ->where('employees.employee_status', 'active')
+            ->where('employees.hired_status', 'hired')
             ->get();
-    
-        return view('admin.face-attendance.register', compact('employees'));
+
+        return view('admin.face-attendance.register', [
+            'employees' => $employees
+        ]);
     }
 
     public function saveFaceData(Request $request)

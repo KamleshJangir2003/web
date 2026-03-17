@@ -9,6 +9,7 @@ use App\Http\Controllers\SearchController;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SalaryCalculatorController;
@@ -460,7 +461,11 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/face-attendance/mark', [App\Http\Controllers\Admin\FaceAttendanceController::class, 'markAttendance'])->name('face-attendance.mark');
             Route::get('/face-attendance/employee/{id}', [App\Http\Controllers\Admin\FaceAttendanceController::class, 'getEmployeeFaceData'])->name('face-attendance.get-face');
             Route::get('/face-attendance/all-faces', [App\Http\Controllers\Admin\FaceAttendanceController::class, 'getAllFaceData'])->name('face-attendance.all-faces');
-            
+            Route::get('/face-attendance/today-logs', [App\Http\Controllers\Admin\FaceAttendanceController::class, 'todayLogs'])->name('face-attendance.today-logs');
+            Route::post(
+                '/face-attendance/update-face-status',
+                [App\Http\Controllers\Admin\FaceAttendanceController::class, 'updateFaceStatus']
+            )->name('face-attendance.update-status');
             /*
             |--------------------------------------------------------------------------
             | SALARY MANAGEMENT
@@ -624,12 +629,12 @@ Route::middleware(['auth'])->group(function () {
                     ->where('status', 'approved')->count();
                 
                 // Get attendance data
-                $todayAttendance = \DB::table('attendance')
+                $todayAttendance = DB::table('attendance')
                     ->where('employee_id', $user->id)
                     ->where('attendance_date', date('Y-m-d'))
                     ->first();
                     
-                $monthlyAttendance = \DB::table('attendance')
+                $monthlyAttendance = DB::table('attendance')
                     ->where('employee_id', $user->id)
                     ->whereMonth('attendance_date', date('m'))
                     ->whereYear('attendance_date', date('Y'))

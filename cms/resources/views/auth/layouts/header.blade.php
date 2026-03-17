@@ -1493,11 +1493,7 @@ function formatTime(dateString) {
 document.addEventListener('DOMContentLoaded', function() {
     loadNotifications();
     setInterval(loadNotifications, 30000);
-});lsInHeader(data.bills);
-            }
-        })
-        .catch(error => console.error('Error:', error));
-}
+});
 
 function showBillsInHeader(bills) {
     const content = document.getElementById('billsContent');
