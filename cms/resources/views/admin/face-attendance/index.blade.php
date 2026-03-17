@@ -60,6 +60,84 @@
 }
 
 }
+
+/* =========================
+   DESKTOP UI IMPROVEMENT
+   ========================= */
+   @media (min-width: 769px){
+
+.container-fluid{
+    padding-left: 130px !important; /* sidebar spacing fix */
+    padding-right: 30px;
+}
+
+/* Card Improve */
+.card{
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+/* Video Camera Fix */
+#video{
+    width: 100%;
+    max-width: 420px;
+    height: 420px;
+    border-radius: 12px; /* desktop pe circle mat rakho */
+    object-fit: cover;
+    border: 4px solid #eee;
+}
+
+/* Center alignment */
+.text-center{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Buttons spacing */
+.btn-lg{
+    width: 220px;
+    margin: 8px;
+}
+
+/* Table improve */
+.table{
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table thead{
+    background: #667eea;
+    color: white;
+}
+
+.table th{
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.table td{
+    font-size: 13px;
+}
+
+/* Attendance section scroll */
+#attendance-list{
+    max-height: 450px;
+    overflow-y: auto;
+}
+
+/* Face preview */
+#face-preview{
+    border-left: 4px solid #667eea;
+}
+
+/* Better spacing */
+.row{
+    align-items: center;
+}
+
+}
 </style>
 
 <div class="container-fluid">

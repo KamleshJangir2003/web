@@ -1,5 +1,93 @@
 @extends('auth.layouts.app')
+<style>
+    /* =========================
+   DESKTOP UI FIX ONLY
+   ========================= */
+@media (min-width: 769px){
 
+.container-fluid{
+    padding-left: 130px !important;
+    padding-right: 30px;
+}
+
+/* Card Styling */
+.card{
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+/* Header */
+.card-header{
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* Video Improve */
+#video{
+    width: 100%;
+    max-width: 420px;
+    height: 320px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 3px solid #eee;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Center Camera */
+.text-center{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Buttons */
+.btn{
+    min-width: 160px;
+    margin: 6px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+/* Select dropdown */
+#employeeSelect{
+    border-radius: 8px;
+    padding: 10px;
+}
+
+/* Table Improve */
+.table{
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table thead{
+    background: #28a745;
+    color: white;
+}
+
+.table th{
+    font-size: 13px;
+}
+
+.table td{
+    font-size: 13px;
+}
+
+/* Scroll table */
+.card-body{
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+/* Status badge spacing */
+.badge{
+    font-size: 12px;
+    padding: 6px 10px;
+}
+
+}
+</style>
 @section('content')
 
     <div class="container-fluid">
