@@ -63,6 +63,7 @@ class FaceAttendanceController extends Controller
             )
             ->where('employees.employee_status', 'active')
             ->where('employees.hired_status', 'hired')
+            ->whereDate('employees.joining_date', '<=', now()->subDays(5))
             ->get();
 
         return view('admin.face-attendance.register', [

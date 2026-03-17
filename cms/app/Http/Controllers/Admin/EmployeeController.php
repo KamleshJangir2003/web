@@ -18,7 +18,8 @@ class EmployeeController extends Controller
     {
         $query = Employee::where('user_type', '!=', 'admin')
             ->where('hired_status', 'hired')
-            ->whereNotNull('joining_date');
+            ->whereNotNull('joining_date')
+            ->whereDate('joining_date', '<=', now()->subDays(5));
         // Combined role and platform filtering
         if ($request->has('role') && $request->role) {
             $query->where('user_type', $request->role);
