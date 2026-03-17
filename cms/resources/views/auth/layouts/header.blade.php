@@ -1259,9 +1259,9 @@ function showStatusPopup(type, title, message, details = null) {
                 <div id="billsContent"></div>
                 
                 <!-- REGULAR NOTIFICATIONS -->
-                <!-- <div id="notificationsList">
+                <div id="notificationsList">
                     <li style="padding: 20px; text-align: center; color: #666;">Loading...</li>
-                </div> -->
+                </div>
             </ul>
         </div>
 
@@ -1345,28 +1345,52 @@ function showStatusPopup(type, title, message, details = null) {
     </div>
 </div>
 <script>
-document.getElementById('excelMenu').addEventListener('click', function (e) {
-    e.stopPropagation();   // ?? yahi main fix hai
-});
-</script>
-
-
-<script>
 /* ---------------- DROPDOWN FIX ---------------- */
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.dropdown-btn').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            // Close all other dropdowns
-            document.querySelectorAll('.dropdown').forEach(d => {
-                if (d !== this.parentElement) d.classList.remove('open');
-            });
-
-            // Toggle current dropdown
-            this.parentElement.classList.toggle('open');
+    // Excel Upload Button Click
+    const excelBtn = document.getElementById('excelUploadBtn');
+    if (!excelBtn) {
+        console.error('Excel button not found!');
+        return;
+    }
+    
+    const excelDropdown = excelBtn.closest('.dropdown');
+    console.log('Excel dropdown found:', excelDropdown);
+    
+    excelBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('Excel button clicked!');
+        console.log('Before toggle - has open class:', excelDropdown.classList.contains('open'));
+        
+        // Close other dropdowns
+        document.querySelectorAll('.dropdown').forEach(d => {
+            if (d !== excelDropdown) d.classList.remove('open');
         });
+        
+        // Toggle excel dropdown
+        excelDropdown.classList.toggle('open');
+        
+        console.log('After toggle - has open class:', excelDropdown.classList.contains('open'));
+    });
+    
+    // All other dropdown buttons
+    document.querySelectorAll('.dropdown-btn').forEach(btn => {
+        if (btn.id !== 'excelUploadBtn') {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Close all other dropdowns
+                document.querySelectorAll('.dropdown').forEach(d => {
+                    if (d !== this.parentElement) d.classList.remove('open');
+                });
+
+                // Toggle current dropdown
+                this.parentElement.classList.toggle('open');
+            });
+        }
     });
 
     // Close dropdowns when clicking outside
@@ -1436,6 +1460,8 @@ function updateNotificationBadge(count) {
 
 function displayNotifications(notifications) {
     const list = document.getElementById('notificationsList');
+    
+    if (!list) return; // Element not found, skip
     
     if (notifications.length === 0) {
         list.innerHTML = '';
@@ -1558,35 +1584,9 @@ function selectExcelFile(e) {
     document.getElementById('excelFileInput').click();
 }
 
-/* ---------------- PLATFORM FILTERING ---------------- */
-document.addEventListener('DOMContentLoaded', function() {
-    const platformSelect = document.getElementById('platformSelect');
-    const roleSelect = document.getElementById('roleSelect');
-    
-    function filterEmployees() {
-        const selectedPlatform = platformSelect.value;
-        const selectedRole = roleSelect.value;
-        
-        if (selectedPlatform || selectedRole) {
-            let url = '/admin/employees?';
-            let params = [];
-            
-            if (selectedRole) params.push(`role=${selectedRole}`);
-            if (selectedPlatform) params.push(`platform=${selectedPlatform}`);
-            
-            url += params.join('&');
-            window.location.href = url;
-        }
-    }
-    
-    if (platformSelect) {
-        platformSelect.addEventListener('change', filterEmployees);
-    }
-    
-    if (roleSelect) {
-        roleSelect.addEventListener('change', filterEmployees);
-    }
-});
+/* ---------------- PLATFORM FILTERING - REMOVED AUTO REDIRECT ---------------- */
+// Platform and role selects are now only used for Excel upload and manual entry
+// No automatic page filtering on change
 
 /* ---------------- UPLOAD EXCEL ---------------- */
 document.getElementById('excelFileInput').addEventListener('change', function (e) {

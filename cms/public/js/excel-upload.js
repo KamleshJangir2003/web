@@ -193,34 +193,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Dropdown functionality
-    document.addEventListener('click', function(e) {
-        // Close all dropdowns first
-        document.querySelectorAll('.dropdown').forEach(dropdown => {
-            dropdown.classList.remove('open');
-        });
-        
-        // If clicked on dropdown button, open that dropdown
-        if (e.target.closest('.dropdown-btn')) {
-            e.stopPropagation();
-            const dropdown = e.target.closest('.dropdown');
-            dropdown.classList.add('open');
-        }
-        
-        // If clicked inside dropdown menu, don't close
-        if (e.target.closest('.dropdown-menu')) {
-            e.stopPropagation();
-        }
-    });
-
-    // Excel upload button specific handler
-    const excelUploadBtn = document.getElementById('excelUploadBtn');
-    if (excelUploadBtn) {
-        excelUploadBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            console.log('Excel upload button clicked');
-            const dropdown = this.closest('.dropdown');
-            dropdown.classList.toggle('open');
+    // Real-time number validation
+    const manualNumberInput = document.getElementById('manualNumber');
+    if (manualNumberInput) {
+        manualNumberInput.addEventListener('input', function() {
+            const number = this.value;
+            if (number.length === 10) {
+                checkDuplicateNumber(number);
+            } else {
+                this.style.borderColor = '';
+                this.style.backgroundColor = '';
+                this.title = '';
+            }
         });
     }
 });
