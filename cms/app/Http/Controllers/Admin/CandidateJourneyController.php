@@ -187,12 +187,11 @@ class CandidateJourneyController extends Controller
                 $stageNotes = $lead->rejection_reason ?? $lead->reason ?? 'Rejected';
                 $journey['final_status'] = 'rejected';
                 $journey['rejection_reason'] = $lead->rejection_reason ?? $lead->reason;
-            } elseif ($isNotInterested) {
-                $stageStatus = 'rejected';
-                $stageNotes = $lead->reason ?? 'Not Interested';
-                $journey['final_status'] = 'rejected';
-                $journey['rejection_reason'] = $lead->reason;
-            } elseif ($isWrongNumber) {
+            } 
+            elseif ($isNotInterested) {
+                continue; // 👈 skip this lead
+            }
+            elseif ($isWrongNumber) {
                 $stageStatus = 'rejected';
                 $stageNotes = $lead->reason ?? 'Wrong Number';
                 $journey['final_status'] = 'rejected';
