@@ -18,17 +18,22 @@ class SearchController extends Controller
         
         try {
             $results = [];
+            $seenNames = []; // Track by name to avoid duplicates
             
-            // Employees
-            $employees = Employee::where('first_name', 'LIKE', "%{$query}%")
-                ->orWhere('last_name', 'LIKE', "%{$query}%")
-                ->orWhere('phone', 'LIKE', "%{$query}%")
-                ->orWhere('contact_number', 'LIKE', "%{$query}%")
-                ->limit(5)
-                ->get();
+            // Employees - Priority 1 (Hired employees should show)
+            $employees = Employee::where(function($q) use ($query) {
+                $q->where('first_name', 'LIKE', "%{$query}%")
+                  ->orWhere('last_name', 'LIKE', "%{$query}%")
+                  ->orWhere('phone', 'LIKE', "%{$query}%")
+                  ->orWhere('contact_number', 'LIKE', "%{$query}%");
+            })
+            ->limit(5)
+            ->get();
                 
             foreach($employees as $emp) {
-                // Determine page name based on status
+                $name = strtolower(trim($emp->first_name . ' ' . $emp->last_name));
+                $seenNames[$name] = true;
+                
                 $pageName = match($emp->hired_status) {
                     'hired' => 'Hired Employees',
                     'rejected' => 'Rejected Employees',
@@ -36,7 +41,6 @@ class SearchController extends Controller
                     default => 'All Employees'
                 };
                 
-                // Always go to detail page
                 $url = '/admin/employees/' . $emp->id . '/details';
                 
                 $results[] = [
@@ -52,15 +56,20 @@ class SearchController extends Controller
                 ];
             }
             
-            // Leads
+            // Leads - Skip if already in employees
             $leads = DB::table('leads')
-                ->where('name', 'LIKE', "%{$query}%")
-                ->orWhere('number', 'LIKE', "%{$query}%")
+                ->where(function($q) use ($query) {
+                    $q->where('name', 'LIKE', "%{$query}%")
+                      ->orWhere('number', 'LIKE', "%{$query}%");
+                })
                 ->limit(5)
                 ->get();
                 
             foreach($leads as $lead) {
-                // Determine page name and URL based on status
+                $name = strtolower($lead->name);
+                if (isset($seenNames[$name])) continue;
+                $seenNames[$name] = true;
+                
                 $statusData = match($lead->condition_status) {
                     'Rejected' => ['page' => 'Rejected Leads', 'url' => '/admin/leads/rejected'],
                     'Interested' => ['page' => 'Interested Leads', 'url' => '/admin/leads/interested'],
@@ -83,14 +92,20 @@ class SearchController extends Controller
                 ];
             }
             
-            // Callbacks
+            // Callbacks - Skip if already in employees or leads
             $callbacks = DB::table('callbacks')
-                ->where('name', 'LIKE', "%{$query}%")
-                ->orWhere('number', 'LIKE', "%{$query}%")
+                ->where(function($q) use ($query) {
+                    $q->where('name', 'LIKE', "%{$query}%")
+                      ->orWhere('number', 'LIKE', "%{$query}%");
+                })
                 ->limit(3)
                 ->get();
                 
             foreach($callbacks as $callback) {
+                $name = strtolower($callback->name);
+                if (isset($seenNames[$name])) continue;
+                $seenNames[$name] = true;
+                
                 $results[] = [
                     'id' => $callback->id,
                     'name' => $callback->name,
@@ -104,15 +119,20 @@ class SearchController extends Controller
                 ];
             }
             
-            // Interviews
+            // Interviews - Skip if already in employees, leads, or callbacks
             $interviews = DB::table('interviews')
-                ->where('candidate_name', 'LIKE', "%{$query}%")
-                ->orWhere('candidate_email', 'LIKE', "%{$query}%")
+                ->where(function($q) use ($query) {
+                    $q->where('candidate_name', 'LIKE', "%{$query}%")
+                      ->orWhere('candidate_email', 'LIKE', "%{$query}%");
+                })
                 ->limit(3)
                 ->get();
                 
             foreach($interviews as $interview) {
-                // Determine page name based on result
+                $name = strtolower($interview->candidate_name);
+                if (isset($seenNames[$name])) continue;
+                $seenNames[$name] = true;
+                
                 $pageName = match($interview->result) {
                     'Selected' => 'Selected Interviews',
                     'Rejected' => 'Rejected Interviews',
