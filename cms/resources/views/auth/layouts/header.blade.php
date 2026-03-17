@@ -1406,14 +1406,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-/* ---------------- AUTO POPUP UNIFIED NOTIFICATIONS ---------------- */
+
 @if(isset($todayBirthdays) && $todayBirthdays->count() > 0)
 document.addEventListener('DOMContentLoaded', function() {
+
+if (!localStorage.getItem('notifShown')) {
     setTimeout(function() {
         const notifDropdown = document.getElementById('notifBtn').parentElement;
         notifDropdown.classList.add('open');
-        setTimeout(() => notifDropdown.classList.remove('open'), 5000);
+
+        setTimeout(() => {
+            notifDropdown.classList.remove('open');
+            localStorage.setItem('notifShown', 'true');
+        }, 5000);
+
     }, 2000);
+}
+
 });
 @endif
 
@@ -1516,10 +1525,10 @@ function formatTime(dateString) {
 }
 
 // Load notifications on page load and refresh every 30 seconds
-document.addEventListener('DOMContentLoaded', function() {
-    loadNotifications();
-    setInterval(loadNotifications, 30000);
-});
+// document.addEventListener('DOMContentLoaded', function() {
+//     loadNotifications();
+//     setInterval(loadNotifications, 30000);
+// });
 
 function showBillsInHeader(bills) {
     const content = document.getElementById('billsContent');

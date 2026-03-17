@@ -334,7 +334,7 @@ body {
                                 <td>{{ $log->exit_time }}</td>
                                 <td>{{ $log->shift_type }}</td>
                                 <td>
-                                    <span class="badge bg-succes    s">
+                                    <span class="badge bg-success">
                                         {{ $log->shift_status }}
                                     </span>
                                 </td>
