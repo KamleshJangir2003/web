@@ -712,7 +712,7 @@ body {
             <div class="d-flex align-items-center">
                 <i class="fa-solid fa-phone fa-2x me-3"></i>
                 <div>
-                    <h5 class="mb-1">📞 आज Callback करना है!</h5>
+                    <h5 class="mb-1">📞 Schedule a callback today</h5>
                     <p class="mb-0">
                         @foreach($todayCallbacks as $callback)
                             <strong>{{ $callback->name }}</strong>@if(!$loop->last), @endif
