@@ -97,7 +97,7 @@ margin-top:20px !important;
                             <td>
                                 @if($lead->resume)
                                     <a href="{{ route('admin.leads.resume.view', $lead->resume) }}" target="_blank" class="view-btn">
-                                        View CV
+                                        View
                                     </a>
                                 @else
                                     <button class="upload-btn" onclick="openUploadModal({{ $lead->id }})">
@@ -106,10 +106,16 @@ margin-top:20px !important;
                                 @endif
                             </td>
                             <td>
-                                <a href="{{ route('admin.interviews.create', ['lead_id' => $lead->id]) }}" class="schedule-btn">
-                                    <i class="fas fa-calendar-plus"></i>Interview
-                                </a>
-                            </td>
+    @if($lead->resume)
+        <a href="{{ route('admin.interviews.create', ['lead_id' => $lead->id]) }}" class="schedule-btn">
+            <i class="fas fa-calendar-plus"></i> Interview
+        </a>
+    @else
+        <button onclick="showResumeAlert()" class="schedule-btn">
+            <i class="fas fa-calendar-plus"></i> Interview
+        </button>
+    @endif
+</td>
                         </tr>
                         @empty
                         <tr>
@@ -606,6 +612,55 @@ margin-top:20px !important;
     </div>
 </div>
 
+<style>
+   .small-swal {
+    padding: 3px !important;
+    border-radius: 10px;
+}
+
+/* Icon size */
+.small-swal .swal2-icon {
+    transform: scale(0.75);
+    margin-top: 4px;
+}
+
+/* Title */
+.small-swal .swal2-title {
+    font-size: 12px;
+    margin: 8px 0;
+}
+
+/* Text */
+.small-swal .swal2-html-container {
+    font-size: 12px;
+    margin: 5px 0 8px;
+    line-height: 1.4;
+}
+
+/* Button */
+.small-swal .swal2-confirm {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+</style>
+<script>
+function showResumeAlert() {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Resume Required',
+        text: 'Please upload resume first before scheduling interview',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#2eacb3',
+
+        width: '320px',
+        padding: '1em',
+
+        customClass: {
+            popup: 'small-swal'
+        }
+    });
+}
+</script>
 <script>
 let currentLeadId = null;
 
