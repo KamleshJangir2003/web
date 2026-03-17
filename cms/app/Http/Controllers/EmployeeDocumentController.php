@@ -351,18 +351,34 @@ class EmployeeDocumentController extends Controller
     /* =====================================================
        GENERATE OFFER LETTER
     ===================================================== */
-    public function generateOfferLetter($userId)
+    public function generateOfferLetter(Request $request, $userId)
     {
+        $request->validate([
+            'email' => 'required|email'
+        ]);
+        
         $employee = Employee::findOrFail($userId);
-        $employee->refresh(); // Force fresh data from database
+        $employee->refresh();
         $bankDetail = EmployeeBankDetail::where('user_id', $userId)->first();
         
-        // Add cache busting headers
-        return response()
-            ->view('auth.admin.employees.offer-letter', compact('employee', 'bankDetail'))
-            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-            ->header('Pragma', 'no-cache')
-            ->header('Expires', '0');
+        $emailAddress = $request->email;
+        
+        try {
+            Mail::to($emailAddress)->send(new \App\Mail\OfferLetterMail($employee, $bankDetail));
+            
+            EmailLog::create([
+                'to_email' => $emailAddress,
+                'subject' => 'Offer Letter - ' . $employee->full_name,
+                'content' => view('emails.offer-letter', compact('employee', 'bankDetail'))->render(),
+                'sent_at' => now(),
+                'status' => 'sent'
+            ]);
+            
+            return redirect()->route('admin.employees.document', ['userId' => $userId])
+                ->with('success', 'Offer letter generated and sent successfully to ' . $emailAddress);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to generate and send offer letter: ' . $e->getMessage());
+        }
     }
 
     /* =====================================================

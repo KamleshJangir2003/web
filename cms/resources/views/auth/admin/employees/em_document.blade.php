@@ -575,6 +575,11 @@ $submitRoute = $isAdminView ? route('admin.employees.document.submit', ['userId'
                         @if($allRequiredUploaded)
                         <form method="POST" action="{{ route('admin.employees.document.generate-offer-letter', ['userId' => $currentUser->id]) }}">
                             @csrf
+                            <div class="mb-3">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" name="email" class="form-control" value="{{ $currentUser->email }}" required>
+                                <small class="text-muted">Offer letter will be sent to this email</small>
+                            </div>
                             <button type="submit" class="btn btn-primary w-100">
                                 <i class="fa-solid fa-file-pdf me-1"></i> Generate Offer Letter
                             </button>
