@@ -15,12 +15,15 @@ class Attendance extends Model
     protected $fillable = [
         'employee_id',
         'attendance_date',
+        'entry_time',
+        'exit_time',
         'in_time',
         'out_time',
         'early_checkout_minutes',
         'overtime_hours',
         'late_minutes',
         'status',
+        'shift_status',
         'shift',
         'shift_id',
         'reason'

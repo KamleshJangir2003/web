@@ -152,32 +152,35 @@ body {
                                                 </span>
                                             </td>
                                             <td>
-                                                <select name="employees[{{ $emp->id }}][shift_status]" class="form-select form-select-sm">
+                                                <select name="employees[{{ $emp->id }}][shift_status]" class="form-select form-select-sm shift-status-dropdown" data-employee-id="{{ $emp->id }}">
                                                     <option value="">Select shift_status</option>
                                                     @php
                                                         $isWeekOff = date('w', strtotime($selected_date)) == 0; // Sunday = 0
+                                                        $currentStatus = $att->shift_status ?? '';
+                                                        // Normalize status for comparison
+                                                        $currentStatus = ucfirst(str_replace('_', ' ', strtolower($currentStatus)));
                                                     @endphp
                                                     @if($isWeekOff)
-                                                        <option value="Week Off" {{ ($att && $att->shift_status === 'Week Off') ? 'selected' : '' }}>Week Off</option>
+                                                        <option value="Week Off" {{ $currentStatus === 'Week Off' ? 'selected' : '' }}>Week Off</option>
                                                     @else
-                                                        <option value="Present" {{ ($att && $att->shift_status === 'Present') ? 'selected' : '' }}>Present</option>
-                                                        <option value="Absent" {{ ($att && $att->shift_status === 'Absent') ? 'selected' : '' }}>Absent</option>
-                                                        <option value="Half Day" {{ ($att && $att->shift_status === 'Half Day') ? 'selected' : '' }}>Half Day</option>
-                                                        <option value="Paid Leave" {{ ($att && $att->shift_status === 'Paid Leave') ? 'selected' : '' }}>Paid Leave</option>
-                                                        <option value="Comp Off" {{ ($att && $att->shift_status === 'Comp Off') ? 'selected' : '' }}>Comp Off</option>
-                                                        <option value="Unauthorized Leave" {{ ($att && $att->shift_status === 'Unauthorized Leave') ? 'selected' : '' }}>Unauthorized Leave</option>
-                                                        <option value="Holiday" {{ ($att && $att->shift_status === 'Holiday') ? 'selected' : '' }}>Holiday</option>
+                                                        <option value="Present" {{ $currentStatus === 'Present' ? 'selected' : '' }}>Present</option>
+                                                        <option value="Absent" {{ $currentStatus === 'Absent' ? 'selected' : '' }}>Absent</option>
+                                                        <option value="Half Day" {{ $currentStatus === 'Half Day' ? 'selected' : '' }}>Half Day</option>
+                                                        <option value="Paid Leave" {{ $currentStatus === 'Paid Leave' ? 'selected' : '' }}>Paid Leave</option>
+                                                        <option value="Comp Off" {{ $currentStatus === 'Comp Off' ? 'selected' : '' }}>Comp Off</option>
+                                                        <option value="Unauthorized Leave" {{ $currentStatus === 'Unauthorized Leave' ? 'selected' : '' }}>Unauthorized Leave</option>
+                                                        <option value="Holiday" {{ $currentStatus === 'Holiday' ? 'selected' : '' }}>Holiday</option>
                                                     @endif
                                                 </select>
                                             </td>
                                             <td>
-                                                <input type="time" name="employees[{{ $emp->id }}][entry_time]" class="form-control form-control-sm" value="{{ isset($att->entry_time) ? $att->entry_time : '' }}">
+                                                <input type="time" name="employees[{{ $emp->id }}][entry_time]" class="form-control form-control-sm" value="{{ $att->entry_time ?? '' }}">
                                             </td>
                                             <td>
-                                                <input type="time" name="employees[{{ $emp->id }}][exit_time]" class="form-control form-control-sm" value="{{ isset($att->exit_time) ? $att->exit_time : '' }}">
+                                                <input type="time" name="employees[{{ $emp->id }}][exit_time]" class="form-control form-control-sm" value="{{ $att->exit_time ?? '' }}">
                                             </td>
                                             <td>
-                                                <input type="text" name="employees[{{ $emp->id }}][reason]" class="form-control form-control-sm" placeholder="Reason" value="{{ isset($att->reason) ? $att->reason : '' }}">
+                                                <input type="text" name="employees[{{ $emp->id }}][reason]" class="form-control form-control-sm" placeholder="Reason" value="{{ $att->reason ?? '' }}">
                                             </td>
                                         </tr>
                                     @empty
@@ -283,8 +286,8 @@ body {
                                                         {{ $att->shift_status }}
                                                     </span>
                                                 </td>
-                                                <td>{{ isset($att->entry_time) && $att->entry_time ? date('h:i A', strtotime($att->entry_time)) : '-' }}</td>
-                                                <td>{{ isset($att->exit_time) && $att->exit_time ? date('h:i A', strtotime($att->exit_time)) : '-' }}</td>
+                                                <td>{{ $att->entry_time ?? ($att->in_time ? date('h:i A', strtotime($att->in_time)) : '-') }}</td>
+                                                <td>{{ $att->exit_time ?? ($att->out_time ? date('h:i A', strtotime($att->out_time)) : '-') }}</td>
                                                 <td>
                                                     @if(isset($att->early_checkout_minutes) && $att->early_checkout_minutes > 0)
                                                         {{ floor($att->early_checkout_minutes / 60) }}h {{ $att->early_checkout_minutes % 60 }}m
@@ -405,5 +408,10 @@ function generateSalaryNow() {
         form.submit();
     }
 }
+
+// Auto-refresh attendance logs every 30 seconds
+setInterval(function() {
+    location.reload();
+}, 30000);
 </script>
 @endsection

@@ -60,15 +60,15 @@ body {
                                         </tr>
                                         <tr>
                                             <td><strong>Employee ID:</strong></td>
-                                            <td>{{ $salaryRecord->employee->id }}</td>
+                                            <td>{{ $salaryRecord->employee->employee_id ?: 'N/A' }}</td>
                                         </tr>
                                         <tr>
                                             <td><strong>Department:</strong></td>
-                                            <td>{{ $salaryRecord->employee->department ?? 'N/A' }}</td>
+                                            <td>{{ $salaryRecord->employee->department ?: 'N/A' }}</td>
                                         </tr>
                                         <tr>
                                             <td><strong>Designation:</strong></td>
-                                            <td>{{ $salaryRecord->employee->job_title ?? 'N/A' }}</td>
+                                            <td>{{ $salaryRecord->employee->job_title ?: ($salaryRecord->employee->department ?: 'N/A') }}</td>
                                         </tr>
                                         <tr>
                                             <td><strong>Shift:</strong></td>

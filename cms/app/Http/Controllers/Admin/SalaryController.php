@@ -22,7 +22,7 @@ class SalaryController extends Controller
         
         // Load salary records from database
         $salaryRecords = SalaryRecord::with(['employee' => function($query) {
-            $query->select('id', 'first_name', 'last_name', 'job_title', 'department', 'shift', 'current_ctc', 'in_hand_salary');
+            $query->select('id', 'employee_id', 'first_name', 'last_name', 'job_title', 'department', 'shift', 'current_ctc', 'in_hand_salary', 'email');
         }])
         ->where('month', $month)
         ->where('year', $year)
@@ -117,18 +117,18 @@ class SalaryController extends Controller
                 ->whereMonth('attendance_date', $month)
                 ->get();
 
-            // Count different attendance statuses
-            $present = $attendanceRecords->where('status', 'Present')->count();
-            $absent = $attendanceRecords->where('status', 'Absent')->count();
-            $halfDay = $attendanceRecords->where('status', 'Half Day')->count();
-            $unauthorizedLeave = $attendanceRecords->where('status', 'Unauthorized Leave')->count();
-            $paidLeave = $attendanceRecords->where('status', 'Paid Leave')->count();
-            $holiday = $attendanceRecords->where('status', 'Holiday')->count();
-            $weekOff = $attendanceRecords->where('status', 'Week Off')->count();
-            $compOff = $attendanceRecords->where('status', 'Comp Off')->count();
+            // Count different attendance statuses (use shift_status field)
+            $present = $attendanceRecords->where('shift_status', 'Present')->count();
+            $absent = $attendanceRecords->where('shift_status', 'Absent')->count();
+            $halfDay = $attendanceRecords->where('shift_status', 'Half Day')->count();
+            $unauthorizedLeave = $attendanceRecords->where('shift_status', 'Unauthorized Leave')->count();
+            $paidLeave = $attendanceRecords->where('shift_status', 'Paid Leave')->count();
+            $holiday = $attendanceRecords->where('shift_status', 'Holiday')->count();
+            $weekOff = $attendanceRecords->where('shift_status', 'Week Off')->count();
+            $compOff = $attendanceRecords->where('shift_status', 'Comp Off')->count();
 
-            // Calculate working days (Week Off counts as paid day)
-            $workingDays = $present + $paidLeave + $compOff + $weekOff + ($halfDay * 0.5);
+            // Calculate working days (Week Off and Holiday count as paid days)
+            $workingDays = $present + $paidLeave + $compOff + $weekOff + $holiday + ($halfDay * 0.5);
 
             // Calculate per day salary
             $perDaySalary = $inHandSalary / $totalDaysInMonth;
@@ -136,9 +136,9 @@ class SalaryController extends Controller
             // Calculate salary based on working days only (proportional)
             $earnedSalary = $workingDays * $perDaySalary;
             
-            // No deductions - just pay for actual working days
+            // Deduct PF and ESI from earned salary
             $deduction = $inHandSalary - $earnedSalary;
-            $netSalary = $earnedSalary;
+            $netSalary = $earnedSalary - $employeePf - $employeeEsic;
 
             // Create salary record with proper breakdown
             SalaryRecord::create([
@@ -181,14 +181,14 @@ class SalaryController extends Controller
             ->get();
 
         $attendanceBreakdown = [
-            'Present' => $attendanceRecords->where('status', 'Present')->count(),
-            'Absent' => $attendanceRecords->where('status', 'Absent')->count(),
-            'Half Day' => $attendanceRecords->where('status', 'Half Day')->count(),
-            'Unauthorized Leave' => $attendanceRecords->where('status', 'Unauthorized Leave')->count(),
-            'Paid Leave' => $attendanceRecords->where('status', 'Paid Leave')->count(),
-            'Holiday' => $attendanceRecords->where('status', 'Holiday')->count(),
-            'Week Off' => $attendanceRecords->where('status', 'Week Off')->count(),
-            'Comp Off' => $attendanceRecords->where('status', 'Comp Off')->count(),
+            'Present' => $attendanceRecords->where('shift_status', 'Present')->count(),
+            'Absent' => $attendanceRecords->where('shift_status', 'Absent')->count(),
+            'Half Day' => $attendanceRecords->where('shift_status', 'Half Day')->count(),
+            'Unauthorized Leave' => $attendanceRecords->where('shift_status', 'Unauthorized Leave')->count(),
+            'Paid Leave' => $attendanceRecords->where('shift_status', 'Paid Leave')->count(),
+            'Holiday' => $attendanceRecords->where('shift_status', 'Holiday')->count(),
+            'Week Off' => $attendanceRecords->where('shift_status', 'Week Off')->count(),
+            'Comp Off' => $attendanceRecords->where('shift_status', 'Comp Off')->count(),
         ];
 
         return view('admin.salary.view', compact('salaryRecord', 'attendanceBreakdown'));
@@ -205,14 +205,14 @@ class SalaryController extends Controller
             ->get();
 
         $attendanceBreakdown = [
-            'Present' => $attendanceRecords->where('status', 'Present')->count(),
-            'Absent' => $attendanceRecords->where('status', 'Absent')->count(),
-            'Half Day' => $attendanceRecords->where('status', 'Half Day')->count(),
-            'Unauthorized Leave' => $attendanceRecords->where('status', 'Unauthorized Leave')->count(),
-            'Paid Leave' => $attendanceRecords->where('status', 'Paid Leave')->count(),
-            'Holiday' => $attendanceRecords->where('status', 'Holiday')->count(),
-            'Week Off' => $attendanceRecords->where('status', 'Week Off')->count(),
-            'Comp Off' => $attendanceRecords->where('status', 'Comp Off')->count(),
+            'Present' => $attendanceRecords->where('shift_status', 'Present')->count(),
+            'Absent' => $attendanceRecords->where('shift_status', 'Absent')->count(),
+            'Half Day' => $attendanceRecords->where('shift_status', 'Half Day')->count(),
+            'Unauthorized Leave' => $attendanceRecords->where('shift_status', 'Unauthorized Leave')->count(),
+            'Paid Leave' => $attendanceRecords->where('shift_status', 'Paid Leave')->count(),
+            'Holiday' => $attendanceRecords->where('shift_status', 'Holiday')->count(),
+            'Week Off' => $attendanceRecords->where('shift_status', 'Week Off')->count(),
+            'Comp Off' => $attendanceRecords->where('shift_status', 'Comp Off')->count(),
         ];
 
         return view('admin.salary.slip', compact('salaryRecord', 'attendanceBreakdown'));

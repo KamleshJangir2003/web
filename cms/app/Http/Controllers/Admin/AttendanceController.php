@@ -54,16 +54,20 @@ class AttendanceController extends Controller
         }
 
         $filtered_logs = DB::table('attendance_logs as al')
-            ->leftJoin('employees as e', 'al.employee_id', '=', 'e.id')
+            ->leftJoin('employees as e', 'al.employee_id', '=', 'e.employee_id')
             ->select(
                 'al.*',
                 'e.employee_id as employee_code',
-                DB::raw("CONCAT(e.first_name,' ',e.last_name) as employee_name")
+                'e.id as emp_id',
+                DB::raw("CONCAT(COALESCE(e.first_name, ''), ' ', COALESCE(e.last_name, '')) as employee_name")
             )
+            ->where('al.date', $selected_date)
             ->orderBy('al.date', 'desc')
             ->orderBy('al.entry_time', 'desc')
-            ->limit(50)
             ->get();
+            
+        // Debug: Check if logs are being fetched
+        // dd($filtered_logs);
         // Order employees with recent attendance first, then by name
         $employees = $query->leftJoin('attendance', function($join) use ($selected_date) {
                 $join->on('employees.id', '=', 'attendance.employee_id')
@@ -76,9 +80,11 @@ class AttendanceController extends Controller
         $attendance_summary = [];
 
         if ($view_type === 'daily') {
-            // Daily view - fetch attendance without shift filter (face attendance uses shift names)
+            // Daily view - merge data from both attendance and attendance_logs tables
             if ($employees->count() > 0) {
                 $employee_ids = $employees->pluck('id')->toArray();
+                
+                // Get manual attendance records
                 $attendance_records = DB::table('attendance')
                     ->whereIn('employee_id', $employee_ids)
                     ->where('attendance_date', $selected_date)
@@ -86,6 +92,46 @@ class AttendanceController extends Controller
 
                 foreach ($attendance_records as $att) {
                     $attendance_data[$att->employee_id] = $att;
+                }
+                
+                // Merge face recognition attendance logs
+                $face_logs = DB::table('attendance_logs')
+                    ->where('date', $selected_date)
+                    ->get();
+                
+                // Debug: Log the face recognition data
+                \Log::info('Face Recognition Logs:', ['count' => $face_logs->count(), 'logs' => $face_logs->toArray()]);
+                \Log::info('Employees:', ['count' => $employees->count(), 'employee_ids' => $employees->pluck('employee_id')->toArray()]);
+                    
+                foreach ($face_logs as $log) {
+                    // Find employee by employee_id (KIO03, etc)
+                    $employee = $employees->firstWhere('employee_id', $log->employee_id);
+                    
+                    if ($employee) {
+                        // If no manual attendance exists, create from face log
+                        if (!isset($attendance_data[$employee->id])) {
+                            $attendance_data[$employee->id] = (object)[
+                                'employee_id' => $employee->id,
+                                'attendance_date' => $log->date,
+                                'shift_status' => ucfirst(str_replace('_', ' ', $log->shift_status)),
+                                'entry_time' => $log->entry_time,
+                                'exit_time' => $log->exit_time,
+                                'reason' => null,
+                                'from_face_recognition' => true
+                            ];
+                        } else {
+                            // Update existing record with face log data if times are empty
+                            if (empty($attendance_data[$employee->id]->entry_time)) {
+                                $attendance_data[$employee->id]->entry_time = $log->entry_time;
+                            }
+                            if (empty($attendance_data[$employee->id]->exit_time)) {
+                                $attendance_data[$employee->id]->exit_time = $log->exit_time;
+                            }
+                            if (empty($attendance_data[$employee->id]->shift_status)) {
+                                $attendance_data[$employee->id]->shift_status = ucfirst(str_replace('_', ' ', $log->shift_status));
+                            }
+                        }
+                    }
                 }
             }
         } elseif ($view_type === 'weekly') {
@@ -130,14 +176,15 @@ class AttendanceController extends Controller
                 ->whereBetween('attendance_date', [$start_date->format('Y-m-d'), $end_date->format('Y-m-d')])
                 ->get();
             
-            $present = $attendance_records->where('status', 'Present')->count();
-            $absent = $attendance_records->where('status', 'Absent')->count();
-            $half_day = $attendance_records->where('status', 'Half Day')->count();
-            $paid_leave = $attendance_records->where('status', 'Paid Leave')->count();
-            $comp_off = $attendance_records->where('status', 'Comp Off')->count();
-            $unauthorized_leave = $attendance_records->where('status', 'Unauthorized Leave')->count();
-            $holiday = $attendance_records->where('status', 'Holiday')->count();
-            $week_off = $attendance_records->where('status', 'Week Off')->count();
+            // Use shift_status field (face recognition uses this)
+            $present = $attendance_records->where('shift_status', 'Present')->count();
+            $absent = $attendance_records->where('shift_status', 'Absent')->count();
+            $half_day = $attendance_records->where('shift_status', 'Half Day')->count();
+            $paid_leave = $attendance_records->where('shift_status', 'Paid Leave')->count();
+            $comp_off = $attendance_records->where('shift_status', 'Comp Off')->count();
+            $unauthorized_leave = $attendance_records->where('shift_status', 'Unauthorized Leave')->count();
+            $holiday = $attendance_records->where('shift_status', 'Holiday')->count();
+            $week_off = $attendance_records->where('shift_status', 'Week Off')->count();
             
             // Calculate total excluding Absent and Unauthorized Leave
             $total = $present + ($half_day * 0.5) + $paid_leave + $comp_off + $holiday + $week_off;
@@ -241,25 +288,25 @@ class AttendanceController extends Controller
                 ->whereBetween('attendance_date', [$startDate, $endDate])
                 ->get();
 
-            $present = $attendanceRecords->where('status', 'Present')->count();
-            $late = $attendanceRecords->where('status', 'Late')->count();
-            $absent = $attendanceRecords->where('status', 'Absent')->count();
-            $halfDay = $attendanceRecords->where('status', 'Half Day')->count();
-            $unauthorizedLeave = $attendanceRecords->where('status', 'Unauthorized Leave')->count();
-            $paidLeave = $attendanceRecords->where('status', 'Paid Leave')->count();
-            $holiday = $attendanceRecords->where('status', 'Holiday')->count();
-            $weekOff = $attendanceRecords->where('status', 'Week Off')->count();
-            $compOff = $attendanceRecords->where('status', 'Comp Off')->count();
+            $present = $attendanceRecords->where('shift_status', 'Present')->count();
+            $late = $attendanceRecords->where('shift_status', 'Late')->count();
+            $absent = $attendanceRecords->where('shift_status', 'Absent')->count();
+            $halfDay = $attendanceRecords->where('shift_status', 'Half Day')->count();
+            $unauthorizedLeave = $attendanceRecords->where('shift_status', 'Unauthorized Leave')->count();
+            $paidLeave = $attendanceRecords->where('shift_status', 'Paid Leave')->count();
+            $holiday = $attendanceRecords->where('shift_status', 'Holiday')->count();
+            $weekOff = $attendanceRecords->where('shift_status', 'Week Off')->count();
+            $compOff = $attendanceRecords->where('shift_status', 'Comp Off')->count();
 
-            // Calculate working days: Present + Late (both count as full day) + Half Day (0.5) + Paid Leave + Comp Off
-            $workingDays = $present + $late + ($halfDay * 0.5) + $paidLeave + $compOff;
+            // Calculate working days: Present + Late (both count as full day) + Half Day (0.5) + Paid Leave + Comp Off + Holiday + Week Off
+            $workingDays = $present + $late + ($halfDay * 0.5) + $paidLeave + $compOff + $holiday + $weekOff;
 
             // Per day salary based on 30-day cycle
             $perDaySalary = $inHandSalary / $totalDaysInCycle;
 
             $earnedSalary = $workingDays * $perDaySalary;
             $deduction = $inHandSalary - $earnedSalary;
-            $netSalary = $earnedSalary;
+            $netSalary = $earnedSalary - $employeePf - $employeeEsic;
 
             SalaryRecord::create([
                 'employee_id' => $employee->id,
@@ -310,35 +357,59 @@ class AttendanceController extends Controller
 
     public function store(Request $request)
     {
-        $attendance_date = $request->attendance_date;
+        $attendance_date = $request->date;
         $shift = $request->shift ?? 'Day';
         
         foreach ($request->employees as $employee_id => $data) {
-            $status = $data['status'] ?? '';
+            $status = $data['shift_status'] ?? '';
             
             // Skip if no status selected
             if (empty($status)) {
                 continue;
             }
             
-            $in_time = !empty($data['in_time']) ? $data['in_time'] : null;
-            $out_time = !empty($data['out_time']) ? $data['out_time'] : null;
+            $entry_time = !empty($data['entry_time']) ? $data['entry_time'] : null;
+            $exit_time = !empty($data['exit_time']) ? $data['exit_time'] : null;
             $reason = $data['reason'] ?? null;
             
-            // Use Eloquent updateOrCreate to handle duplicates
+            // Get employee details
+            $employee = Employee::find($employee_id);
+            
+            // Save to attendance table (manual)
             Attendance::updateOrCreate(
                 [
                     'employee_id' => $employee_id,
-                    'attendance_date' => $attendance_date,
-                    'shift' => $shift
+                    'attendance_date' => $attendance_date
                 ],
                 [
-                    'status' => $status,
-                    'in_time' => $in_time,
-                    'out_time' => $out_time,
+                    'shift' => $shift,
+                    'shift_status' => $status,
+                    'entry_time' => $entry_time,
+                    'exit_time' => $exit_time,
                     'reason' => $reason
                 ]
             );
+            
+            // Also sync to attendance_logs table if employee_id exists
+            if ($employee && $employee->employee_id) {
+                DB::table('attendance_logs')->updateOrInsert(
+                    [
+                        'employee_id' => $employee->employee_id,
+                        'date' => $attendance_date
+                    ],
+                    [
+                        'shift_type' => $shift,
+                        'shift_status' => strtolower($status),
+                        'entry_time' => $entry_time,
+                        'exit_time' => $exit_time,
+                        'overtime_minutes' => 0,
+                        'overtime_hours' => 0.00
+                    ]
+                );
+            }
+            
+            // Update salary record if already generated for this month
+            $this->updateSalaryIfExists($employee_id, $attendance_date);
         }
         
         // Check if month is complete and auto-generate salary
@@ -353,5 +424,76 @@ class AttendanceController extends Controller
         }
         
         return redirect()->back()->with('success', $message);
+    }
+    
+    private function updateSalaryIfExists($employee_id, $attendance_date)
+    {
+        $date = Carbon::parse($attendance_date);
+        $month = $date->month;
+        $year = $date->year;
+        
+        // Check if salary record exists for this month
+        $salaryRecord = SalaryRecord::where('employee_id', $employee_id)
+            ->where('month', $month)
+            ->where('year', $year)
+            ->first();
+            
+        if (!$salaryRecord) {
+            return; // No salary record to update
+        }
+        
+        $employee = Employee::find($employee_id);
+        if (!$employee || !$employee->in_hand_salary) {
+            return;
+        }
+        
+        // Recalculate based on current attendance
+        $attendanceRecords = Attendance::where('employee_id', $employee_id)
+            ->whereYear('attendance_date', $year)
+            ->whereMonth('attendance_date', $month)
+            ->get();
+            
+        $present = $attendanceRecords->where('shift_status', 'Present')->count();
+        $halfDay = $attendanceRecords->where('shift_status', 'Half Day')->count();
+        $paidLeave = $attendanceRecords->where('shift_status', 'Paid Leave')->count();
+        $holiday = $attendanceRecords->where('shift_status', 'Holiday')->count();
+        $weekOff = $attendanceRecords->where('shift_status', 'Week Off')->count();
+        $compOff = $attendanceRecords->where('shift_status', 'Comp Off')->count();
+        
+        $workingDays = $present + $paidLeave + $compOff + $weekOff + $holiday + ($halfDay * 0.5);
+        
+        $totalDaysInMonth = Carbon::create($year, $month)->daysInMonth;
+        $inHandSalary = $employee->in_hand_salary;
+        $perDaySalary = $inHandSalary / $totalDaysInMonth;
+        $earnedSalary = $workingDays * $perDaySalary;
+        
+        // Calculate PF/ESI
+        $gross = $this->calculateGrossFromInHand($inHandSalary);
+        $basic = $gross * 0.60;
+        $pfBasic = ($basic >= 15000) ? 15000 : $basic;
+        $employeePf = $pfBasic * 0.12;
+        $employerPf = $pfBasic * 0.13;
+        
+        if ($gross <= 21000) {
+            $employeeEsic = $gross * 0.0075;
+            $employerEsic = $gross * 0.0325;
+        } else {
+            $employeeEsic = 0;
+            $employerEsic = 0;
+        }
+        
+        $deduction = $inHandSalary - $earnedSalary;
+        $netSalary = $earnedSalary - $employeePf - $employeeEsic;
+        
+        // Update salary record
+        $salaryRecord->update([
+            'working_days' => $workingDays,
+            'deduction' => $deduction,
+            'employee_pf' => $employeePf,
+            'employee_esi' => $employeeEsic,
+            'employer_pf' => $employerPf,
+            'employer_esi' => $employerEsic,
+            'net_salary' => $netSalary,
+        ]);
     }
 }

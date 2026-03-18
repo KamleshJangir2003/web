@@ -172,12 +172,12 @@ body {
                                                     </div>
                                                     <div>
                                                         <div class="fw-bold">{{ $record->employee->first_name }} {{ $record->employee->last_name }}</div>
-                                                        <small class="text-muted">ID: {{ $record->employee->id }}</small>
+                                                        <small class="text-muted">ID: {{ $record->employee->employee_id ?: 'N/A' }}</small>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="badge bg-secondary">{{ $record->employee->job_title ?? 'N/A' }}</span>
+                                                <span class="badge bg-secondary">{{ $record->employee->job_title ?: ($record->employee->department ?: 'N/A') }}</span>
                                             </td>
                                             <td>
                                                 <span class="badge {{ $record->shift == 'Day' ? 'bg-warning' : 'bg-info' }}">

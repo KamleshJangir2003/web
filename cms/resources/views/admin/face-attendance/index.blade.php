@@ -421,8 +421,8 @@ function addToAttendanceList(attendance) {
 
     const row = document.createElement("tr");
 
-    const entryTime = attendance.entry_time ? new Date(attendance.entry_time).toLocaleTimeString() : '-';
-    const exitTime = attendance.exit_time ? new Date(attendance.exit_time).toLocaleTimeString() : '-';
+    const entryTime = attendance.entry_time || '-';
+    const exitTime = attendance.exit_time || '-';
 
     let statusBadgeClass = 'bg-secondary';
     let statusLabel = attendance.shift_status || '-';
@@ -437,6 +437,17 @@ function addToAttendanceList(attendance) {
         }
     }
 
+    // Calculate total work time if both entry and exit exist
+    let totalWorkTime = '-';
+    if (attendance.entry_time && attendance.exit_time) {
+        const entry = new Date('1970-01-01 ' + attendance.entry_time);
+        const exit = new Date('1970-01-01 ' + attendance.exit_time);
+        const diffMs = exit - entry;
+        const hours = Math.floor(diffMs / 3600000);
+        const minutes = Math.floor((diffMs % 3600000) / 60000);
+        totalWorkTime = `${hours}h ${minutes}m`;
+    }
+
     row.innerHTML = `
         <td>${attendance.employee_id || '-'}</td>
         <td>${attendance.date || '-'}</td>
@@ -444,8 +455,8 @@ function addToAttendanceList(attendance) {
         <td>${exitTime}</td>
         <td>${attendance.shift_type || '-'}</td>
         <td><span class="badge ${statusBadgeClass}">${statusLabel}</span></td>
-        <td>${attendance.total_work_time || '-'}</td>
-        <td>${attendance.overtime_hours || '-'}</td>
+        <td>${totalWorkTime}</td>
+        <td>${attendance.overtime_hours || '0.00'} hrs</td>
     `;
 
     tbody.insertBefore(row, tbody.firstChild);

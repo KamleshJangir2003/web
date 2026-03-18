@@ -152,7 +152,7 @@
                 <table class="info-table">
                     <tr>
                         <td>Employee ID:</td>
-                        <td>{{ $salaryRecord->employee->id }}</td>
+                        <td>{{ $salaryRecord->employee->employee_id ?: 'N/A' }}</td>
                     </tr>
                     <tr>
                         <td>Name:</td>
@@ -160,11 +160,11 @@
                     </tr>
                     <tr>
                         <td>Department:</td>
-                        <td>{{ $salaryRecord->employee->department ?? 'N/A' }}</td>
+                        <td>{{ $salaryRecord->employee->department ?: 'N/A' }}</td>
                     </tr>
                     <tr>
                         <td>Designation:</td>
-                        <td>{{ $salaryRecord->employee->job_title ?? 'N/A' }}</td>
+                        <td>{{ $salaryRecord->employee->job_title ?: ($salaryRecord->employee->department ?: 'N/A') }}</td>
                     </tr>
                 </table>
             </div>
