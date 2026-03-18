@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('attendance', function (Blueprint $table) {
+        Schema::table('attendance_logs', function (Blueprint $table) {
             // Change shift from enum to string to accept shift names
             $table->string('shift')->default('Day Shift')->change();
         });
@@ -16,7 +16,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('attendance', function (Blueprint $table) {
+        Schema::table('attendance_logs', function (Blueprint $table) {
             $table->enum('shift', ['Day', 'Night'])->default('Day')->change();
         });
     }

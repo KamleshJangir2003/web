@@ -629,16 +629,16 @@ Route::middleware(['auth'])->group(function () {
                     ->where('status', 'approved')->count();
                 
                 // Get attendance data
-                $todayAttendance = DB::table('attendance')
+                $todayAttendance = DB::table('attendance_logs')
                     ->where('employee_id', $user->id)
-                    ->where('attendance_date', date('Y-m-d'))
+                    ->where('date', date('Y-m-d'))
                     ->first();
                     
-                $monthlyAttendance = DB::table('attendance')
+                $monthlyAttendance = DB::table('attendance_logs')
                     ->where('employee_id', $user->id)
-                    ->whereMonth('attendance_date', date('m'))
-                    ->whereYear('attendance_date', date('Y'))
-                    ->where('status', 'Present')
+                    ->whereMonth('date', date('m'))
+                    ->whereYear('date', date('Y'))
+                    ->where('shift_status', 'Present')
                     ->count();
                 
                 // Birthday employees check
