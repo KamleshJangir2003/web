@@ -286,8 +286,20 @@ body {
                                                         {{ $att->shift_status }}
                                                     </span>
                                                 </td>
-                                                <td>{{ $att->entry_time ?? ($att->in_time ? date('h:i A', strtotime($att->in_time)) : '-') }}</td>
-                                                <td>{{ $att->exit_time ?? ($att->out_time ? date('h:i A', strtotime($att->out_time)) : '-') }}</td>
+                                                <td>
+                                                    {{
+                                                        !empty($att->entry_time)
+                                                            ? date('h:i A', strtotime($att->entry_time))
+                                                            : (isset($att->in_time) && !empty($att->in_time) ? date('h:i A', strtotime($att->in_time)) : '-')
+                                                    }}
+                                                </td>
+                                                <td>
+                                                    {{
+                                                        !empty($att->exit_time)
+                                                            ? date('h:i A', strtotime($att->exit_time))
+                                                            : (isset($att->out_time) && !empty($att->out_time) ? date('h:i A', strtotime($att->out_time)) : '-')
+                                                    }}
+                                                </td>
                                                 <td>
                                                     @if(isset($att->early_checkout_minutes) && $att->early_checkout_minutes > 0)
                                                         {{ floor($att->early_checkout_minutes / 60) }}h {{ $att->early_checkout_minutes % 60 }}m
