@@ -1,208 +1,241 @@
 @extends('auth.layouts.app')
 
 @section('content')
-<style>
-.container-fluid { 
-    padding-left: 130px !important; 
-}
+    <style>
+        .container-fluid {
+            padding-left: 130px !important;
+        }
 
 
-#canvas { 
-    display: none; 
-}
+        #canvas {
+            display: none;
+        }
 
-/* Mobile Responsive */
-@media (max-width: 768px) {
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
 
-.container-fluid{
-    padding-left:15px !important;
-    padding-right:15px !important;
-}
-#video{
-    width:215px;
-    height:215px;
-    border-radius: 50%;      /* camera height increase */
-    object-fit:cover;  /* video stretch na ho */
-    
-}
+            .container-fluid {
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+            }
 
-.card-body{
-    padding:15px;
-}
+            #video {
+                width: 215px;
+                height: 215px;
+                border-radius: 50%;
+                /* camera height increase */
+                object-fit: cover;
+                /* video stretch na ho */
 
-.btn-lg{
-    width:100%;
-    margin-bottom:10px;
-}
-.hidden {
-    display:none;
-}
+            }
 
-.table{
-    font-size:12px;
-}
+            .mobileView {
+                display: none;
+            }
 
-}
+            .card-body {
+                padding: 15px;
+            }
 
-/* Hide header and sidebar only on mobile */
-@media (max-width: 768px){
+            .btn-lg {
+                width: 100%;
+                margin-bottom: 10px;
+            }
 
-.sidebar,
-.top-header{
-    display:none !important;
-}
+            .hidden {
+                display: none;
+            }
 
-/* Full width content */
-.main-content{
-    margin-left:0 !important;
-    padding-top:0 !important;
-    margin-top:0 !important; 
-}
+            .table {
+                font-size: 12px;
+            }
 
-}
+        }
 
-/* =========================
-   DESKTOP UI IMPROVEMENT
-   ========================= */
-   @media (min-width: 769px){
+        /* Hide header and sidebar only on mobile */
+        @media (max-width: 768px) {
 
-.container-fluid{
-    padding-left: 130px !important; /* sidebar spacing fix */
-    padding-right: 30px;
-}
+            .sidebar,
+            .top-header {
+                display: none !important;
+            }
 
-/* Card Improve */
-.card{
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-}
+            /* Full width content */
+            .main-content {
+                margin-left: 0 !important;
+                padding-top: 0 !important;
+                margin-top: 0 !important;
+            }
 
-/* Video Camera Fix */
-#video{
-    width: 100%;
-    max-width: 420px;
-    height: 420px;
-    border-radius: 12px; /* desktop pe circle mat rakho */
-    object-fit: cover;
-    border: 4px solid #eee;
-}
+        }
 
-/* Center alignment */
-.text-center{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+        /* =========================
+                                   DESKTOP UI IMPROVEMENT
+                                   ========================= */
+        @media (min-width: 769px) {
 
-/* Buttons spacing */
-.btn-lg{
-    width: 220px;
-    margin: 8px;
-}
+            .container-fluid {
+                padding-left: 130px !important;
+                /* sidebar spacing fix */
+                padding-right: 30px;
+            }
 
-/* Table improve */
-.table{
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-}
+            /* Card Improve */
+            .card {
+                border-radius: 12px;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            }
 
-.table thead{
-    background: #667eea;
-    color: white;
-}
+            /* Video Camera Fix */
+            #video {
+                width: 100%;
+                max-width: 420px;
+                height: 420px;
+                border-radius: 12px;
+                /* desktop pe circle mat rakho */
+                object-fit: cover;
+                border: 4px solid #eee;
+            }
 
-.table th{
-    font-size: 13px;
-    white-space: nowrap;
-}
+            /* Center alignment */
+            .text-center {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
 
-.table td{
-    font-size: 13px;
-}
+            /* Buttons spacing */
+            .btn-lg {
+                width: 220px;
+                margin: 8px;
+            }
 
-/* Attendance section scroll */
-#attendance-list{
-    max-height: 450px;
-    overflow-y: auto;
-}
+            /* Table improve */
+            .table {
+                background: white;
+                border-radius: 10px;
+                overflow: hidden;
+            }
 
-/* Face preview */
-#face-preview{
-    border-left: 4px solid #667eea;
-}
+            .table thead {
+                background: #667eea;
+                color: white;
+            }
 
-/* Better spacing */
-.row{
-    align-items: center;
-}
+            .table th {
+                font-size: 13px;
+                white-space: nowrap;
+            }
 
-}
-</style>
+            .table td {
+                font-size: 13px;
+            }
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                    <h6 class="mb-0"><i class="fas fa-user-check me-2"></i>Face Recognition Attendance</h6>
-                </div>
-                <div class="card-body">
-                    <!-- <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Position your face in front of the camera and click "Mark Attendance"
-                    </div> -->
+            /* Attendance section scroll */
+            #attendance-list {
+                max-height: 450px;
+                overflow-y: auto;
+            }
 
-                    <div id="status-message"></div>
+            /* Face preview */
+            #face-preview {
+                border-left: 4px solid #667eea;
+            }
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="text-center mb-3">
-                                <div style="position: relative; display: inline-block;">
-                                    <video id="video" autoplay muted></video>
-                                    <canvas id="canvas"></canvas>
+            /* Better spacing */
+            .row {
+                align-items: center;
+            }
+
+        }
+    </style>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header"
+                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <h6 class="mb-0"><i class="fas fa-user-check me-2"></i>Face Recognition Attendance</h6>
+                    </div>
+                    <div class="card-body">
+                        <!-- <div class="alert alert-info">
+                                                        <i class="fas fa-info-circle me-2"></i>
+                                                        Position your face in front of the camera and click "Mark Attendance"
+                                                    </div> -->
+
+                        <div id="status-message"></div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="text-center mb-3">
+                                    <div style="position: relative; display: inline-block;">
+                                        <video id="video" autoplay muted></video>
+                                        <canvas id="canvas"></canvas>
+                                    </div>
+                                </div>
+                                <div id="face-preview" class="card mb-3" style="display: none;">
+                                    <div class="card-body text-center">
+                                        <h6 class="card-title">Face Detected</h6>
+                                        <p class="mb-2"><strong>Employee ID:</strong> <span id="preview-emp-id"
+                                                class="badge bg-primary"></span></p>
+                                        <p class="mb-2"><strong>Name:</strong> <span id="preview-emp-name"
+                                                class="text-success"></span></p>
+                                        <p class="mb-0"><strong>Confidence:</strong> <span id="preview-confidence"
+                                                class="badge bg-info"></span></p>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <button id="startCamera" class="hidden">
+
+                                    </button>
+                                    <button id="markEntry" class="btn btn-success btn-lg" disabled>
+                                        <i class="fas fa-sign-in-alt me-2"></i>Mark Entry
+                                    </button>
+                                    <button id="markExit" class="btn btn-warning btn-lg" disabled>
+                                        <i class="fas fa-sign-out-alt me-2"></i>Mark Exit
+                                    </button>
                                 </div>
                             </div>
-                            <div id="face-preview" class="card mb-3" style="display: none;">
-                                <div class="card-body text-center">
-                                    <h6 class="card-title">Face Detected</h6>
-                                    <p class="mb-2"><strong>Employee ID:</strong> <span id="preview-emp-id" class="badge bg-primary"></span></p>
-                                    <p class="mb-2"><strong>Name:</strong> <span id="preview-emp-name" class="text-success"></span></p>
-                                    <p class="mb-0"><strong>Confidence:</strong> <span id="preview-confidence" class="badge bg-info"></span></p>
+                            <div class="mobileView">
+                                <div class="col-md-6">
+                                    <h5>Today's Attendance</h5>
+                                    <div id="attendance-list" class="table-responsive">
+                                        <table class="table table-striped table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Employee ID</th>
+                                                    <th>Date</th>
+                                                    <th>Entry Time</th>
+                                                    <th>Exit Time</th>
+                                                    <th>Shift Type</th>
+                                                    <th>Shift Status</th>
+                                                    <th>Total Work Time</th>
+                                                    <th>Overtime (hrs)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="attendance-tbody">
+                                                @forelse($todayAttendance as $attendance)
+                                                    <tr>
+                                                        <td>{{ $attendance->employee_id ?? '-' }}</td>
+                                                        <td>{{ $attendance->date ?? '-' }}</td>
+                                                        <td>{{ $attendance->entry_time ?? '-' }}</td>
+                                                        <td>{{ $attendance->exit_time ?? '-' }}</td>
+                                                        <td>{{ $attendance->shift_type ?? '-' }}</td>
+                                                        <td>{{ $attendance->shift_status ?? '-' }}</td>
+                                                        <td>-</td>
+                                                        <td>{{ $attendance->overtime_hours ?? '0.00' }} hrs</td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="8" class="text-center text-muted">No attendance data yet
+                                                        </td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="text-center">
-                                <button id="startCamera" class="hidden">
-                                    
-                                </button>
-                                <button id="markEntry" class="btn btn-success btn-lg" disabled>
-                                    <i class="fas fa-sign-in-alt me-2"></i>Mark Entry
-                                </button>
-                                <button id="markExit" class="btn btn-warning btn-lg" disabled>
-                                    <i class="fas fa-sign-out-alt me-2"></i>Mark Exit
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <h5>Today's Attendance</h5>
-                            <div id="attendance-list" class="table-responsive">
-                                <table class="table table-striped table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Employee ID</th>
-                                            <th>Date</th>
-                                            <th>Entry Time</th>
-                                            <th>Exit Time</th>
-                                            <th>Shift Type</th>
-                                            <th>Shift Status</th>
-                                            <th>Total Work Time</th>
-                                            <th>Overtime (hrs)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="attendance-tbody">
-                                        <tr><td colspan="8" class="text-center text-muted">No attendance data yet</td></tr>
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
                     </div>
@@ -210,278 +243,295 @@
             </div>
         </div>
     </div>
-</div>
 
-<script>
+    <script>
 
-const API_BASE_URL = "https://face-recognition-attendance-dsq4.onrender.com";
+        const API_BASE_URL = "https://face-recognition-attendance-dsq4.onrender.com";
 
-const video = document.getElementById('video');
-const canvas = document.getElementById('canvas');
-const startCameraBtn = document.getElementById('startCamera');
-const markEntryBtn = document.getElementById('markEntry');
-const markExitBtn = document.getElementById('markExit');
-const statusMessage = document.getElementById('status-message');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const startCameraBtn = document.getElementById('startCamera');
+        const markEntryBtn = document.getElementById('markEntry');
+        const markExitBtn = document.getElementById('markExit');
+        const statusMessage = document.getElementById('status-message');
 
-let stream = null;
+        let stream = null;
 
 
-// -----------------------------
-// Start Camera
-// -----------------------------
-async function startCamera() {
+        // -----------------------------
+        // Start Camera
+        // -----------------------------
+        async function startCamera() {
 
-    try {
+            try {
 
-        stream = await navigator.mediaDevices.getUserMedia({
-            video: true
-        });
-
-        video.srcObject = stream;
-
-        startCameraBtn.disabled = true;
-        markEntryBtn.disabled = false;
-        markExitBtn.disabled = false;
-
-        showStatus("Camera started. Look at the camera and click Mark Entry or Mark Exit.", "info");
-
-    } catch (error) {
-
-        showStatus("Camera access error : " + error.message, "danger");
-
-    }
-
-}
-
-
-// -----------------------------
-// Capture Image
-// -----------------------------
-function captureImage() {
-
-    const context = canvas.getContext('2d');
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-}
-
-
-// -----------------------------
-// Send Image to API - Entry
-// -----------------------------
-async function markEntry() {
-
-    showStatus("Processing face recognition...", "info");
-
-    captureImage();
-
-    canvas.toBlob(async function(blob) {
-
-        const formData = new FormData();
-
-        formData.append("image", blob, "capture.jpg");
-
-        try {
-
-            const response = await fetch(API_BASE_URL + "/attendance/entry", {
-                method: "POST",
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-
-                showStatus("Entry marked successfully ✔", "success");
-
-                // After marking attendance, fetch today's full attendance
-                fetchTodayAttendance();
-
-            } else {
-
-                showStatus("API Error : " + JSON.stringify(data), "danger");
-
-            }
-
-        } catch (error) {
-
-            showStatus("Network Error : " + error.message, "danger");
-
-        }
-
-    }, "image/jpeg");
-
-}
-
-
-// -----------------------------
-// Send Image to API - Exit
-// -----------------------------
-async function markExit() {
-
-    showStatus("Processing face recognition for exit...", "info");
-
-    captureImage();
-
-    canvas.toBlob(async function(blob) {
-
-        const formData = new FormData();
-
-        formData.append("image", blob, "capture.jpg");
-
-        try {
-
-            const response = await fetch(API_BASE_URL + "/attendance/exit", {
-                method: "POST",
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-
-                showStatus("Exit marked successfully ✔", "success");
-
-                // After marking attendance, fetch today's full attendance
-                fetchTodayAttendance();
-
-            } else {
-
-                showStatus("API Error : " + JSON.stringify(data), "danger");
-
-            }
-
-        } catch (error) {
-
-            showStatus("Network Error : " + error.message, "danger");
-
-        }
-
-    }, "image/jpeg");
-
-}
-
-// -----------------------------
-// Fetch today's attendance from API
-// -----------------------------
-function fetchTodayAttendance() {
-
-    const today = new Date().toLocaleDateString('en-CA');// YYYY-MM-DD
-    
-    fetch(API_BASE_URL + '/attendance')
-        .then(async response => {
-            const data = await response.json();
-
-            const tbody = document.getElementById("attendance-tbody");
-            tbody.innerHTML = '';
-
-            if (response.ok && Array.isArray(data) && data.length > 0) {
-                data.forEach(function(record) {
-                    if (record && record.employee_id) {
-                        addToAttendanceList(record);
-                    }
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: true
                 });
-            } else {
-                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No attendance data yet</td></tr>';
+
+                video.srcObject = stream;
+
+                startCameraBtn.disabled = true;
+                markEntryBtn.disabled = false;
+                markExitBtn.disabled = false;
+
+                showStatus("Camera started. Look at the camera and click Mark Entry or Mark Exit.", "info");
+
+            } catch (error) {
+
+                showStatus("Camera access error : " + error.message, "danger");
+
             }
-        })
-        .catch(error => {
-            console.error('Error fetching today attendance:', error);
-        });
-}
 
-// -----------------------------
-// Show Status Message
-// -----------------------------
-function showStatus(message, type) {
-
-    statusMessage.innerHTML = `
-        <div class="alert alert-${type}">
-            ${message}
-        </div>
-    `;
-
-}
-
-
-// -----------------------------
-// Add row to table using API response shape
-// -----------------------------
-function addToAttendanceList(attendance) {
-
-    const tbody = document.getElementById("attendance-tbody");
-
-    // Remove "No attendance data yet" row if present
-    if (tbody.children.length === 1 && tbody.children[0].children.length === 1) {
-        tbody.innerHTML = '';
-    }
-
-    const row = document.createElement("tr");
-
-    const entryTime = attendance.entry_time || '-';
-    const exitTime = attendance.exit_time || '-';
-
-    let statusBadgeClass = 'bg-secondary';
-    let statusLabel = attendance.shift_status || '-';
-    if (attendance.shift_status) {
-        const statusLower = attendance.shift_status.toLowerCase();
-        if (statusLower === 'present' || statusLower === 'on_time') {
-            statusBadgeClass = 'bg-success';
-        } else if (statusLower === 'absent') {
-            statusBadgeClass = 'bg-danger';
-        } else if (statusLower === 'late' || statusLower === 'half_day') {
-            statusBadgeClass = 'bg-warning';
         }
-    }
-
-    // Calculate total work time if both entry and exit exist
-    let totalWorkTime = '-';
-    if (attendance.entry_time && attendance.exit_time) {
-        const entry = new Date('1970-01-01 ' + attendance.entry_time);
-        const exit = new Date('1970-01-01 ' + attendance.exit_time);
-        const diffMs = exit - entry;
-        const hours = Math.floor(diffMs / 3600000);
-        const minutes = Math.floor((diffMs % 3600000) / 60000);
-        totalWorkTime = `${hours}h ${minutes}m`;
-    }
-
-    row.innerHTML = `
-        <td>${attendance.employee_id || '-'}</td>
-        <td>${attendance.date || '-'}</td>
-        <td>${entryTime}</td>
-        <td>${exitTime}</td>
-        <td>${attendance.shift_type || '-'}</td>
-        <td><span class="badge ${statusBadgeClass}">${statusLabel}</span></td>
-        <td>${totalWorkTime}</td>
-        <td>${attendance.overtime_hours || '0.00'} hrs</td>
-    `;
-
-    tbody.insertBefore(row, tbody.firstChild);
-
-}
 
 
-// -----------------------------
-// Event Listeners
-// -----------------------------
-startCameraBtn.addEventListener("click", startCamera);
+        // -----------------------------
+        // Capture Image
+        // -----------------------------
+        function captureImage() {
 
-markEntryBtn.addEventListener("click", markEntry);
-markExitBtn.addEventListener("click", markExit);
+            const context = canvas.getContext('2d');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        }
 
 
-// -----------------------------
-// Auto start camera and load today's attendance
-// -----------------------------
-document.addEventListener("DOMContentLoaded", function(){
+        // -----------------------------
+        // Send Image to API - Entry
+        // -----------------------------
+        async function markEntry() {
 
-    startCamera();
-    fetchTodayAttendance();
+            showStatus("Processing face recognition...", "info");
+            captureImage();
+            canvas.toBlob(async function (blob) {
+                const formData = new FormData();
+                formData.append("image", blob, "capture.jpg");
+                try {
+                    const response = await fetch(API_BASE_URL + "/attendance/entry", {
+                        method: "POST",
+                        body: formData
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        showStatus("Entry marked successfully ✔", "success");
+                        fetchTodayAttendance();
+                    } else {
+                        showStatus("API Error : " + JSON.stringify(data), "danger");
+                    }
+                } catch (error) {
+                    showStatus("Network Error : " + error.message, "danger");
+                }
+            }, "image/jpeg");
+        }
 
-});
 
-</script>
+        // -----------------------------
+        // Send Image to API - Exit
+        // -----------------------------
+        async function markExit() {
+
+            showStatus("Processing face recognition for exit...", "info");
+
+            captureImage();
+
+            canvas.toBlob(async function (blob) {
+
+                const formData = new FormData();
+
+                formData.append("image", blob, "capture.jpg");
+
+                try {
+
+                    const response = await fetch(API_BASE_URL + "/attendance/exit", {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+
+                        showStatus("Exit marked successfully ✔", "success");
+
+                        // After marking attendance, fetch today's full attendance
+                        fetchTodayAttendance();
+
+                    } else {
+
+                        showStatus("API Error : " + JSON.stringify(data), "danger");
+
+                    }
+
+                } catch (error) {
+
+                    showStatus("Network Error : " + error.message, "danger");
+
+                }
+
+            }, "image/jpeg");
+
+        }
+
+        function fetchTodayAttendance() {
+            const tbody = document.getElementById("attendance-tbody");
+
+            fetch("{{ route('admin.face-attendance.today-logs') }}", {
+                method: "GET",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "Accept": "application/json"
+                }
+            })
+                .then(async response => {
+                    const result = await response.json();
+                    tbody.innerHTML = '';
+
+                    if (response.ok && result.success && Array.isArray(result.data) && result.data.length > 0) {
+                        result.data.forEach(attendance => {
+                            const row = document.createElement("tr");
+
+                            const entryTime = formatTime(attendance.entry_time);
+                            const exitTime = formatTime(attendance.exit_time);
+                            const totalWorkTime = calculateTotalWorkTime(attendance.entry_time, attendance.exit_time);
+                            const statusLabel = formatShiftStatus(attendance.shift_status);
+                            const statusBadgeClass = getStatusBadgeClass(attendance.shift_status);
+
+                            row.innerHTML = `
+                                        <td>${attendance.employee_id || '-'}</td>
+                                        <td>${attendance.date || '-'}</td>
+                                        <td>${entryTime}</td>
+                                        <td>${exitTime}</td>
+                                        <td>${attendance.shift_type || '-'}</td>
+                                        <td><span class="badge ${statusBadgeClass}">${statusLabel}</span></td>
+                                        <td>${totalWorkTime}</td>
+                                        <td>${attendance.overtime_hours || '0.00'} hrs</td>
+                                    `;
+
+                            tbody.appendChild(row);
+                        });
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No attendance data yet</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching today attendance:', error);
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-danger">Failed to load attendance</td></tr>';
+                });
+        }
+
+
+        // -----------------------------
+        // Show Status Message
+        // -----------------------------
+        function showStatus(message, type) {
+
+            statusMessage.innerHTML = `
+                    <div class="alert alert-${type}">
+                        ${message}
+                    </div>
+                    `;
+
+        }
+
+        function formatTime(timeStr) {
+            if (!timeStr) return '-';
+
+            const parts = timeStr.split(':');
+            if (parts.length < 2) return timeStr;
+
+            let hours = parseInt(parts[0], 10);
+            const minutes = parts[1];
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+
+            return `${hours.toString().padStart(2, '0')}:${minutes} ${ampm}`;
+        }
+
+        function formatShiftStatus(status) {
+            if (!status) return '-';
+
+            const map = {
+                on_time: 'On Time',
+                present: 'Present',
+                late: 'Late',
+                half_day: 'Half Day',
+                half_shift: 'Half Shift',
+                late_but_full_shift: 'Late but Full Shift',
+                absent: 'Absent',
+                absent_wrong_shift: 'Absent (Wrong Shift)',
+                overtime: 'Overtime',
+                week_off: 'Week Off'
+            };
+
+            return map[status.toLowerCase()] || status
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, char => char.toUpperCase());
+        }
+
+        function getStatusBadgeClass(status) {
+            if (!status) return 'bg-secondary';
+
+            const value = status.toLowerCase();
+
+            if (['present', 'on_time', 'week_off'].includes(value)) {
+                return 'bg-success';
+            }
+
+            if (['absent', 'absent_wrong_shift'].includes(value)) {
+                return 'bg-danger';
+            }
+
+            if (['late', 'half_day', 'half_shift', 'late_but_full_shift'].includes(value)) {
+                return 'bg-warning text-dark';
+            }
+
+            if (['overtime'].includes(value)) {
+                return 'bg-info text-dark';
+            }
+
+            return 'bg-secondary';
+        }
+
+        function calculateTotalWorkTime(entryTime, exitTime) {
+            if (!entryTime || !exitTime) return '-';
+
+            const entry = new Date('1970-01-01T' + entryTime);
+            const exit = new Date('1970-01-01T' + exitTime);
+
+            const diffMs = exit - entry;
+            if (isNaN(diffMs) || diffMs < 0) return '-';
+
+            const hours = Math.floor(diffMs / 3600000);
+            const minutes = Math.floor((diffMs % 3600000) / 60000);
+
+            return `${hours}h ${minutes}m`;
+        }
+
+        // -----------------------------
+        // Event Listeners
+        // -----------------------------
+        startCameraBtn.addEventListener("click", startCamera);
+
+        markEntryBtn.addEventListener("click", markEntry);
+        markExitBtn.addEventListener("click", markExit);
+
+
+        // -----------------------------
+        // Auto start camera and load today's attendance
+        // -----------------------------
+        document.addEventListener("DOMContentLoaded", function () {
+
+            startCamera();
+            fetchTodayAttendance();
+
+        });
+
+    </script>
 @endsection

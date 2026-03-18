@@ -447,6 +447,8 @@ Route::middleware(['auth'])->group(function () {
             | ATTENDANCE MANAGEMENT
             |--------------------------------------------------------------------------
             */
+    
+            Route::get('/admin/face-attendance/today-logs', [FaceAttendanceController::class, 'todayLogs'])->name('admin.face-attendance.today-logs');
             Route::get('/attendance', [App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendance.index');
             Route::post('/attendance', [App\Http\Controllers\Admin\AttendanceController::class, 'store'])->name('attendance.store');
             

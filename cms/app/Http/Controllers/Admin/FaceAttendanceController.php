@@ -12,46 +12,70 @@ use Illuminate\Support\Facades\Cache;
 
 class FaceAttendanceController extends Controller
 {
+    // public function index()
+    // {
+    //     $today = Carbon::today()->format('Y-m-d');
+    //     // Cache today's attendance snapshot briefly to reduce repeated hits
+    //     $todayAttendance = Cache::remember("face_attendance:today:{$today}", 30, function () use ($today) {
+    //         return Attendance::with('employee')
+    //             ->where('attendance_date', $today)
+    //             ->get();
+    //     });
+        
+    //     return view('admin.face-attendance.index', compact('todayAttendance'));
+    // }
     public function index()
     {
         $today = Carbon::today()->format('Y-m-d');
-        // Cache today's attendance snapshot briefly to reduce repeated hits
-        $todayAttendance = Cache::remember("face_attendance:today:{$today}", 30, function () use ($today) {
-            return Attendance::with('employee')
-                ->where('attendance_date', $today)
-                ->get();
+
+        $todayAttendance = Cache::remember("face_attendance_logs:today:{$today}", 30, function () use ($today) {
+            return DB::table('attendance_logs')
+                ->whereDate('date', $today)
+                ->orderByDesc('id')
+                ->get([
+                    'id',
+                    'employee_id',
+                    'date',
+                    'shift_type',
+                    'shift_status',
+                    'entry_time',
+                    'exit_time',
+                    'overtime_minutes',
+                    'overtime_hours',
+                ]);
         });
-        
-        return view('admin.face-attendance.index', compact('todayAttendance'));
-    }
+
+    return view('admin.face-attendance.index', compact('todayAttendance', 'today'));
+}
 
     /**
      * Return today's attendance logs from the attendance_logs table
      * in the format expected by the frontend.
      */
     public function todayLogs()
-    {
-        $today = Carbon::today()->format('Y-m-d');
+        {
+            $today = Carbon::today()->format('Y-m-d');
 
-        // Assuming attendance_logs has compatible columns with the API response
-        $logs = DB::table('attendance_logs')
-            ->whereDate('date', $today)
-            ->orderBy('entry_time')
-            ->get([
-                'employee_id',
-                'date',
-                'entry_time',
-                'exit_time',
-                'shift_type',
-                'shift_status',
-                'total_work_time',
-                'overtime_minutes',
-                'overtime_hours',
+            $logs = DB::table('attendance_logs')
+                ->whereDate('date', $today)
+                ->orderByDesc('id')
+                ->get([
+                    'id',
+                    'employee_id',
+                    'date',
+                    'entry_time',
+                    'exit_time',
+                    'shift_type',
+                    'shift_status',
+                    'overtime_minutes',
+                    'overtime_hours',
+                ]);
+
+            return response()->json([
+                'success' => true,
+                'data' => $logs
             ]);
-
-        return response()->json($logs);
-    }
-
+        }
     public function register()
     {
         $employees = DB::table('employees')
