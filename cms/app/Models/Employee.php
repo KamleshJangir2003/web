@@ -80,6 +80,8 @@ class Employee extends Authenticatable
         'user_type',
         'is_approved',
         'hired_status',
+        'otp',
+        'otp_expires_at',
     ];
 
     protected $hidden = [
@@ -96,6 +98,7 @@ class Employee extends Authenticatable
         'current_ctc' => 'decimal:2',
         'in_hand_salary' => 'decimal:2',
         'basic_salary' => 'decimal:2',
+        'otp_expires_at' => 'datetime',
     ];
 
     // ==========================

@@ -156,6 +156,11 @@ Route::get('/test-offer-letter/{userId}', function($userId) {
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
+// OTP Verification
+Route::get('/verify-otp', [AuthController::class, 'showOtpForm'])->name('otp.show');
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('otp.verify');
+Route::post('/resend-otp', [AuthController::class, 'resendOtp'])->name('otp.resend');
+
 // Register
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);

@@ -364,25 +364,6 @@
                     }
                 });
             }
-            
-            // Video card click
-            const videoCards = document.querySelectorAll('.video-card');
-            videoCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    const title = this.querySelector('.video-title').textContent;
-                    alert(`Playing: ${title} (Demo Mode)`);
-                });
-            });
-            
-            // Form submission
-            const loginForm = document.getElementById('loginForm');
-            if (loginForm) {
-                loginForm.addEventListener('submit', function(e) {
-                    // You can add additional validation here
-                    console.log('Logging in as:', userTypeInput.value);
-                    // Form will submit normally to Laravel route
-                });
-            }
         });
     </script>
 </body>

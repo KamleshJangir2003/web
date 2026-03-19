@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Mail\OtpMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -76,17 +78,15 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    // Handle Login - UPDATED VERSION
+    // Handle Login - 2-Step OTP Authentication (Only for Admin)
     public function login(Request $request)
     {
-        // Validate with user_type
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
             'user_type' => 'required|in:admin,employee,client',
         ]);
 
-        // Find user in employees table
         $employee = Employee::where('email', $request->email)
             ->where('user_type', $request->user_type)
             ->first();
@@ -109,13 +109,109 @@ class AuthController extends Controller
             ])->withInput($request->only('email', 'user_type', 'remember'));
         }
 
+        // OTP only for Admin users
+        if ($request->user_type === 'admin') {
+            // Generate and send OTP
+            $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+            $employee->update([
+                'otp' => $otp,
+                'otp_expires_at' => now()->addMinutes(10),
+            ]);
+
+            Mail::to($employee->email)->send(new OtpMail($otp, $employee->full_name));
+
+            // Store user ID and remember preference in session
+            session([
+                'otp_user_id' => $employee->id,
+                'otp_email' => $employee->email,
+                'remember_me' => $request->has('remember'),
+            ]);
+
+            return redirect()->route('otp.show')->with('success', 'OTP sent to your email.');
+        }
+
+        // Direct login for Employee and Client (no OTP)
         Auth::login($employee, $request->has('remember'));
         $request->session()->regenerate();
-        
-        // Update last login time
         $employee->update(['last_login' => now()]);
 
         return $this->redirectToDashboard($employee->user_type);
+    }
+
+    // Show OTP Verification Page
+    public function showOtpForm()
+    {
+        if (!session('otp_user_id')) {
+            return redirect()->route('login')->withErrors(['error' => 'Session expired. Please login again.']);
+        }
+        return view('auth.verify-otp');
+    }
+
+    // Verify OTP
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required|digits:6',
+        ]);
+
+        $userId = session('otp_user_id');
+        if (!$userId) {
+            return redirect()->route('login')->withErrors(['error' => 'Session expired. Please login again.']);
+        }
+
+        $employee = Employee::find($userId);
+        if (!$employee) {
+            return back()->withErrors(['otp' => 'Invalid session.']);
+        }
+
+        if ($employee->otp !== $request->otp) {
+            return back()->withErrors(['otp' => 'Invalid OTP. Please try again.']);
+        }
+
+        if (now()->greaterThan($employee->otp_expires_at)) {
+            return back()->withErrors(['otp' => 'OTP has expired. Please request a new one.']);
+        }
+
+        // Clear OTP
+        $employee->update([
+            'otp' => null,
+            'otp_expires_at' => null,
+            'last_login' => now(),
+        ]);
+
+        // Login user
+        Auth::login($employee, session('remember_me', false));
+        $request->session()->regenerate();
+
+        // Clear OTP session data
+        session()->forget(['otp_user_id', 'otp_email', 'remember_me']);
+
+        return $this->redirectToDashboard($employee->user_type);
+    }
+
+    // Resend OTP
+    public function resendOtp(Request $request)
+    {
+        $userId = session('otp_user_id');
+        if (!$userId) {
+            return redirect()->route('login')->withErrors(['error' => 'Session expired. Please login again.']);
+        }
+
+        $employee = Employee::find($userId);
+        if (!$employee) {
+            return redirect()->route('login')->withErrors(['error' => 'Invalid session.']);
+        }
+
+        // Generate new OTP
+        $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $employee->update([
+            'otp' => $otp,
+            'otp_expires_at' => now()->addMinutes(10),
+        ]);
+
+        Mail::to($employee->email)->send(new OtpMail($otp, $employee->full_name));
+
+        return back()->with('success', 'New OTP sent to your email.');
     }
 
     // Helper function to redirect to dashboard based on user type
