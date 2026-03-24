@@ -215,6 +215,16 @@ Route::middleware(['auth'])->group(function () {
     | Dashboard Redirect
     |--------------------------------------------------------------------------
     */
+    Route::get('/check-user', function () {
+        $user = Auth::user();
+        return response()->json([
+            'id' => $user->id,
+            'email' => $user->email,
+            'user_type' => $user->user_type,
+            'is_approved' => $user->is_approved
+        ]);
+    });
+
     Route::get('/dashboard', function () {
         $user = Auth::user();
 
@@ -232,7 +242,7 @@ Route::middleware(['auth'])->group(function () {
     | ADMIN ROUTES
     |--------------------------------------------------------------------------
     */
-    Route::middleware(['check.user.type:admin'])
+    Route::middleware(['check.user.type:admin,employee'])
         ->prefix('admin')
         ->name('admin.')
         ->group(function () {
@@ -620,7 +630,7 @@ Route::middleware(['auth'])->group(function () {
     | EMPLOYEE ROUTES
     |--------------------------------------------------------------------------
     */
-    Route::middleware(['check.user.type:employee'])
+    Route::middleware(['check.user.type:employee,admin'])
         ->prefix('employee')
         ->name('employee.')
         ->group(function () {
@@ -662,7 +672,7 @@ Route::middleware(['auth'])->group(function () {
                     'monthlyAttendance' => $monthlyAttendance,
                     'todayBirthdays' => $todayBirthdays,
                 ]);
-            })->name('dashboard');
+            })->name('dashboard')->middleware('auth');
             
             /*
             |--------------------------------------------------------------------------
@@ -818,7 +828,7 @@ Route::fallback(function () {
 
 
 // Employee Leave Routes - Added after employee routes
-Route::middleware(['auth', 'check.user.type:employee'])->prefix('employee')->name('employee.')->group(function () {
+Route::middleware(['auth', 'check.user.type:employee,admin'])->prefix('employee')->name('employee.')->group(function () {
     Route::get('/leaves', [App\Http\Controllers\Employee\LeaveController::class, 'index'])->name('leaves.index');
     Route::get('/leaves/create', [App\Http\Controllers\Employee\LeaveController::class, 'create'])->name('leaves.create');
     Route::post('/leaves', [App\Http\Controllers\Employee\LeaveController::class, 'store'])->name('leaves.store');
